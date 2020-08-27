@@ -1,0 +1,77 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/models-export/sonic.tres" type="ArrayMesh" id=1]
+[ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
+
+[sub_resource type="CapsuleShape" id=1]
+radius = 0.2
+height = 0.4
+
+[sub_resource type="PrismMesh" id=3]
+size = Vector3( 0.5, 0.5, 0.25 )
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 1, 0, 0.913725, 1 )
+
+[node name="sonic" type="KinematicBody"]
+collision_mask = 0
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.4, 0 )
+shape = SubResource( 1 )
+
+[node name="Sonic" type="MeshInstance" parent="."]
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="CamYaw" type="Spatial" parent="."]
+
+[node name="debug_yaw" type="MeshInstance" parent="CamYaw"]
+transform = Transform( 1, 0, 0, -2.11758e-22, -5.96046e-08, -1, 0, 1, -5.96046e-08, 0, -5.96046e-08, 0 )
+mesh = SubResource( 3 )
+material/0 = SubResource( 4 )
+
+[node name="CamFollow" type="Spatial" parent="CamYaw"]
+
+[node name="SpringArm" type="SpringArm" parent="CamYaw/CamFollow"]
+transform = Transform( 1, 0, 0, 6.08439e-15, -0.917602, 0.3975, -5.10775e-15, -0.3975, -0.917602, 0, 0.792057, 0 )
+spring_length = 3.0
+
+[node name="Camera" type="Camera" parent="CamYaw/CamFollow/SpringArm"]
+transform = Transform( -1, 0, -8.74228e-08, -1.0533e-08, -0.992715, 0.120483, -8.67859e-08, 0.120483, 0.992715, 0, 0.0199217, 3.03234 )
+doppler_tracking = 2
+near = 0.08
+far = 8192.0
+
+[node name="UI" type="PanelContainer" parent="CamYaw/CamFollow/SpringArm/Camera"]
+margin_right = 201.0
+margin_bottom = 155.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="status" type="VBoxContainer" parent="CamYaw/CamFollow/SpringArm/Camera/UI"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 194.0
+margin_bottom = 148.0
+
+[node name="State" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status"]
+margin_right = 187.0
+margin_bottom = 14.0
+
+[node name="Position" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status"]
+margin_top = 18.0
+margin_right = 187.0
+margin_bottom = 32.0
+
+[node name="Velocity" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status"]
+margin_top = 36.0
+margin_right = 187.0
+margin_bottom = 50.0
+
+[node name="Up" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status"]
+margin_top = 54.0
+margin_right = 187.0
+margin_bottom = 68.0
