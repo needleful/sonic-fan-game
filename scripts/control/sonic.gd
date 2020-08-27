@@ -152,7 +152,19 @@ func process_air(delta):
 	velocity = move_and_slide(velocity, up)
 	timer_air += delta
 	if timer_air >= TIME_REORIENT:
-		set_up(-gravity.normalized(), 0.05)
+		var forward = global_transform.basis.z
+		#forward.y = 0
+		#forward = forward.normalized()
+		var desiredUp = -gravity.normalized()
+		var upTarget = desiredUp - forward*(forward.dot(desiredUp))
+		var upCurrent = up - forward*(forward.dot(up))
+		var angle = upCurrent.angle_to(upTarget)
+		if abs(angle) < 0.1:
+			#Reorient based on real angle
+			set_up(desiredUp, 0.05)
+		else:
+			global_rotate(forward, angle*0.05)
+			up = up.rotated(forward, angle*0.05)
 
 func jump():
 	velocity += up*VEL_JUMP
@@ -181,7 +193,7 @@ func set_up(new_up:Vector3, interp:float):
 		return
 	var angle = up.angle_to(new_up)
 	var up_axis = up.cross(new_up).normalized()
-	rotate(up_axis, angle*interp)
+	global_rotate(up_axis, angle*interp)
 	
 	up = up.rotated(up_axis, angle*interp)
 

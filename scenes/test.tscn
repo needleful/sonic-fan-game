@@ -203,3 +203,17 @@ transform = Transform( 0.951828, 0, 0.306626, 0, 0.999998, 0, -0.306625, 0, 0.95
 operation = 2
 radius = 8.37553
 height = 14.105
+
+[node name="CSGBox3" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 46.0226, 5.2998, 76.7555 )
+use_collision = true
+width = 12.7874
+height = 13.336
+depth = 13.3318
+
+[node name="CSGCylinder" type="CSGCylinder" parent="CSGBox3"]
+transform = Transform( 0.997101, 4.53547e-09, 0.0760925, 0.0760925, -5.94318e-08, -0.997101, 0, 1, -5.96046e-08, -6.45119, 0.503583, 0 )
+operation = 2
+radius = 5.86617
+height = 16.0813
+sides = 24
