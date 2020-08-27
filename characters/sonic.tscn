@@ -29,6 +29,7 @@ material/0 = null
 
 [node name="debug_yaw" type="MeshInstance" parent="CamYaw"]
 transform = Transform( 1, 0, 0, -2.11758e-22, -5.96046e-08, -1, 0, 1, -5.96046e-08, 0, -5.96046e-08, 0 )
+visible = false
 mesh = SubResource( 3 )
 material/0 = SubResource( 4 )
 

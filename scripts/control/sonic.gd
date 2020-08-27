@@ -13,8 +13,8 @@ const ACCEL_AIR = 4
 const MAX_RUN = 90
 
 const DRAG_STOPPING = .8
-const DRAG_GROUND = 0.04
-const DRAG_AIR = 0.003
+const DRAG_GROUND = 0.035
+const DRAG_AIR = 0.00005
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -38,6 +38,7 @@ var cameraRot: Vector2 = Vector2(0,0)
 onready var camYaw = $CamYaw
 onready var camFollow: Spatial = $CamYaw/CamFollow
 onready var camSpring: Spatial = $CamYaw/CamFollow/SpringArm
+onready var mesh: Spatial = $Sonic
 var oldFollow: Transform
 
 func _ready():
@@ -101,6 +102,14 @@ func _physics_process(delta):
 		).basis
 	else:
 		camFollow.global_transform.basis = camYaw.global_transform.basis
+	
+	if velocity.length_squared() >= 0.01:
+		var by = up.cross(velocity).normalized()
+		mesh.global_transform.basis = Basis(
+			by,
+			up,
+			by.cross(up)
+		)
 	
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = pr(transform.origin)
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]

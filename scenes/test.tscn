@@ -21,6 +21,28 @@ data = PoolVector3Array( -15, 1, 5, 15, 1, 5, -15, -1, 5, 15, 1, 5, 15, -1, 5, -
 [node name="Camera" type="Camera" parent="sonic"]
 transform = Transform( 1, 0, 0, 0, 0.984665, 0.174456, 0, -0.174456, 0.984665, 0, 1.09429, 3.32225 )
 
+[node name="CSGBox2" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -69.4868, 18.1739, 80 )
+use_collision = true
+width = 59.5862
+height = 42.261
+depth = 53.5087
+
+[node name="CSGTorus" type="CSGTorus" parent="CSGBox2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13.111, -13.2129, 0.0759964 )
+operation = 2
+inner_radius = 15.8924
+outer_radius = 26.0
+sides = 24
+ring_sides = 24
+
+[node name="CSGTorus2" type="CSGTorus" parent="CSGBox2"]
+operation = 2
+inner_radius = 8.0
+outer_radius = 26.0776
+sides = 32
+ring_sides = 12
+
 [node name="MeshInstance" type="MeshInstance" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 mesh = SubResource( 1 )
