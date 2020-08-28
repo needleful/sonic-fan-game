@@ -43,7 +43,6 @@ var oldFollow: Transform
 
 func _ready():
 	oldFollow = Transform(camFollow.global_transform)
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -103,14 +102,6 @@ func _physics_process(delta):
 	else:
 		camFollow.global_transform.basis = camYaw.global_transform.basis
 	
-	if velocity.length_squared() >= 0.01:
-		var by = up.cross(velocity).normalized()
-		mesh.global_transform.basis = Basis(
-			by,
-			up,
-			by.cross(up)
-		)
-	
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = pr(transform.origin)
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
@@ -137,6 +128,9 @@ func process_ground(delta):
 	velocity = move_and_slide(velocity, up)
 	if is_on_floor():
 		set_up(get_floor_normal(), .99)
+	
+	if velocity.length_squared() >= 0.01:
+		rotate_by_speed()
 
 func process_jump(delta):
 	var accel: Vector3 = get_movement()*ACCEL_JUMPING + gravity
@@ -144,6 +138,8 @@ func process_jump(delta):
 	velocity += accel * delta
 	
 	velocity = move_and_slide(velocity, up)
+	if velocity.length_squared() >= 0.01:
+		rotate_by_speed()
 
 func process_air(delta):
 	var accel = get_movement()*ACCEL_AIR + gravity
@@ -165,6 +161,9 @@ func air_reorient(desiredUp):
 		$CamYaw/debug_yaw.color = Color.red
 		# Roll upright
 		var forward = camYaw.global_transform.basis.z
+		var right = camYaw.global_transform.basis.x
+		var df = Vector3(forward.x, 0, forward.z).normalized()
+		
 		var upTarget = desiredUp - forward*(forward.dot(desiredUp))
 		var upCurrent = up - forward*(forward.dot(up))
 		
@@ -173,13 +172,10 @@ func air_reorient(desiredUp):
 		up = up.rotated(forward, angle*interp)
 		
 		# Pitch upright
-		var right = camYaw.global_transform.basis.x
-		var df = Vector3(forward.x, 0, forward.z).normalized()
-		
 		angle = forward.angle_to(df)
 		global_rotate(right, angle*interp)
 		up = up.rotated(right, angle*interp)
-		#camSpring.rotate_x(-angle*0.04)
+		camSpring.rotate_x(-angle*interp)
 	else:
 		$CamYaw/debug_yaw.color = Color.blue
 		set_up(desiredUp, interp)
@@ -188,6 +184,13 @@ func jump():
 	velocity += up*VEL_JUMP
 	timer_air = 0
 
+func rotate_by_speed():
+	var by = up.cross(velocity).normalized()
+	mesh.global_transform.basis = Basis(
+		by,
+		up,
+		by.cross(up)
+	)
 
 func get_movement()->Vector3:
 	# x for sides, y for forward/back
