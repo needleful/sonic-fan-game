@@ -7,12 +7,14 @@ enum State {
 }
 
 const VEL_JUMP = 10
-const ACCEL_RUN = 25
+const ACCEL_RUN = 30
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
 const MAX_RUN = 90
+const MIN_SLIDE_ACCEL = 3
+const SPEED_STOPPED = 0.1
 
-const DRAG_STOPPING = .8
+const DRAG_STOPPING = 1.2
 const DRAG_GROUND = 0.035
 const DRAG_AIR = 0.00005
 
@@ -37,22 +39,44 @@ const SNS_CAM_MOUSE = 0.06
 var cameraRot: Vector2 = Vector2(0,0)
 onready var camYaw = $CamYaw
 onready var camFollow: Spatial = $CamYaw/CamFollow
+var oldFollow: Transform
 onready var camSpring: Spatial = $CamYaw/CamFollow/SpringArm
 onready var mesh: Spatial = $Sonic
-var oldFollow: Transform
+onready var cam : Camera = $CamYaw/CamFollow/SpringArm/Camera
+onready var cam_reverse : Camera = $CamYaw/CamFollow/Reverse/Camera
+
+onready var debug_imm : ImmediateGeometry = $debug_imm
+
+var stop = false
 
 func _ready():
+	cam.current = true
 	oldFollow = Transform(camFollow.global_transform)
 
 func _input(event):
 	if event is InputEventMouseMotion:
 		cameraRot += event.relative
+	elif event.is_action_pressed("cam_reverse"):
+		cam_reverse.current = true
+	elif event.is_action_released("cam_reverse"):
+		cam.current = true
+	elif event.is_action_pressed("dev_stop"):
+		stop = !stop
+		if stop:
+			Engine.time_scale = 0.1
+		else:
+			Engine.time_scale = 1
 
 func _process(delta):
 	var c = get_camera_rot()
 	camYaw.rotate_y(-c.x*delta)
 	camSpring.rotate_x(c.y*delta)
 	
+	$CamYaw/CamFollow/Reverse.rotate_x(-c.y*delta)
+
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = pr(up)
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
+
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
 		up = Vector3.UP
@@ -76,6 +100,7 @@ func _physics_process(delta):
 				new_state = State.Air
 		State.Air:
 			if is_on_floor():
+				$CamYaw/debug_yaw.color = Color.magenta
 				new_state = State.Ground
 	
 	state = new_state
@@ -91,94 +116,121 @@ func _physics_process(delta):
 	var followup = oldFollow.basis.y
 	
 	var upAngle = followup.angle_to(yawup)
-	if abs(upAngle) >= 0.01:
+	if abs(upAngle) >= 0.005:
 		var upAxis = followup.cross(yawup).normalized()
-		
-		#camFollow.global_transform.basis = oldFollow.basis
 		camFollow.global_transform.basis = oldFollow.rotated(
 			upAxis, 
 			sign(upAngle) * min(abs(upAngle), max(abs(upAngle)*SPEED_REORIENT, SPEED_REORIENT_MIN)*delta)
 		).basis
 	else:
 		camFollow.global_transform.basis = camYaw.global_transform.basis
-	
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = pr(transform.origin)
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = pr(up)
-
-
-func pr(vec:Vector3)->String:
-	return "{%05.3f, %05.3f, %05.3f}" % [vec.x, vec.y, vec.z]
 
 func process_ground(delta):
-	var accel: Vector3 = get_movement()
-	if accel.length_squared() == 0:
-		accel -= velocity.normalized()*velocity*velocity*DRAG_STOPPING
-		if velocity.length_squared() < 1:
-			velocity = Vector3(0,0,0)
+	var movement: Vector3 = get_movement()*ACCEL_RUN
+	var drag : Vector3
+	var v = reject(velocity, up)
+	debug_imm.clear()
+	debug_imm.begin(Mesh.PRIMITIVE_LINES)
+	debug_imm.add_vertex(Vector3(0,.5,0))
+	if movement.length_squared() == 0:
+		drag = -DRAG_STOPPING*v.normalized()*v*v
+		debug_imm.add_vertex(drag.normalized() + Vector3(0,.5,0))
 	else:
 		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
-			accel = Vector3(0,0,0)
-		accel *= ACCEL_RUN
-		accel -= velocity.normalized()*velocity*velocity*DRAG_GROUND
-	accel += gravity
-	velocity += accel * delta
+			movement = Vector3(0,0,0)
+		drag = -DRAG_GROUND*v.normalized()*v*v
+		debug_imm.add_vertex(v.normalized() + Vector3(0,.5,0))
 	
+	debug_imm.end()
+	velocity += (movement + gravity + drag) * delta
 	velocity = move_and_slide(velocity, up)
+	
 	if is_on_floor():
-		set_up(get_floor_normal(), .99)
+		reorient_ground(get_floor_normal(), .9)
 	
 	if velocity.length_squared() >= 0.01:
 		rotate_by_speed()
 
 func process_jump(delta):
-	var accel: Vector3 = get_movement()*ACCEL_JUMPING + gravity
-	accel -= DRAG_AIR*velocity*velocity*velocity
-	velocity += accel * delta
+	var movement: Vector3 = get_movement()*ACCEL_JUMPING
+	var drag = -DRAG_AIR*velocity*velocity*velocity
+	velocity += (movement + gravity + drag) * delta
 	
 	velocity = move_and_slide(velocity, up)
 	if velocity.length_squared() >= 0.01:
 		rotate_by_speed()
 
 func process_air(delta):
-	var accel = get_movement()*ACCEL_AIR + gravity
-	accel -= DRAG_AIR*velocity*velocity*velocity
-	velocity += accel * delta
+	var movement = get_movement()*ACCEL_AIR
+	var drag = -DRAG_AIR*velocity*velocity*velocity
+	velocity += (movement + gravity + drag) * delta
 	velocity = move_and_slide(velocity, up)
+	
 	timer_air += delta
-	var desiredUp = -gravity.normalized()
 	if timer_air >= TIME_REORIENT:
-		air_reorient(desiredUp)
+		var desiredUp = -gravity.normalized()
+		reorient_air(desiredUp, delta)
 	else:
 		$CamYaw/debug_yaw.color = Color.green
 
-func air_reorient(desiredUp):
-	var interp = 0.05
-	if ( up.angle_to(desiredUp) > 0.1 
-		#and abs(camSpring.global_transform.basis.z.y) < 0.7
+func reorient_ground(new_up:Vector3, interp:float):
+	if new_up.length_squared() <= 0.7:
+		new_up = Vector3.UP
+	if new_up == up:
+		return
+	var angle = min_angle(up, new_up)
+	var up_axis = up.cross(new_up).normalized()
+	global_rotate(up_axis, angle*interp)
+	
+	up = up.rotated(up_axis, angle*interp)
+
+func reorient_air(desiredUp:Vector3, delta:float):
+	var interp = min(delta*3, 1)
+	var diff = abs(up.angle_to(desiredUp))
+	if ( diff > 0.1 
+		#and diff < PI
 	):
 		$CamYaw/debug_yaw.color = Color.red
 		# Roll upright
 		var forward = camYaw.global_transform.basis.z
-		var right = camYaw.global_transform.basis.x
+		var left = camYaw.global_transform.basis.x
 		var df = Vector3(forward.x, 0, forward.z).normalized()
 		
-		var upTarget = desiredUp - forward*(forward.dot(desiredUp))
-		var upCurrent = up - forward*(forward.dot(up))
+		var upTarget = reject(desiredUp, forward).normalized()
+		var upCurrent = reject(up, forward).normalized()
 		
 		var angle = upCurrent.angle_to(upTarget)
+		$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = "Roll: %.2f" % angle
+		
 		global_rotate(forward, angle*interp)
 		up = up.rotated(forward, angle*interp)
+		var upRot = up.rotated(forward, angle)
 		
 		# Pitch upright
 		angle = forward.angle_to(df)
-		global_rotate(right, angle*interp)
-		up = up.rotated(right, angle*interp)
-		camSpring.rotate_x(-angle*interp)
+		$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = "Pitch: %.2f" % angle
+		global_rotate(left, angle*interp)
+		up = up.rotated(left, angle*interp)
+		#camSpring.rotate_x(-angle*interp)
+		
+		upRot = upRot.rotated(left, angle)
+		debug_imm.clear()
+		debug_imm.begin(Mesh.PRIMITIVE_LINE_STRIP)
+		debug_imm.add_vertex(Vector3(0,0,0))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + forward))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + left))
+		debug_imm.end()
+		
+		debug_imm.begin(Mesh.PRIMITIVE_TRIANGLES)
+		debug_imm.add_vertex(Vector3(0,0,0))
+		#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upCurrent))
+		#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upTarget))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upRot))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + desiredUp))
+		debug_imm.end()
 	else:
 		$CamYaw/debug_yaw.color = Color.blue
-		set_up(desiredUp, interp)
+		reorient_ground(desiredUp, interp)
 
 func jump():
 	velocity += up*VEL_JUMP
@@ -193,10 +245,12 @@ func rotate_by_speed():
 	)
 
 func get_movement()->Vector3:
-	# x for sides, y for forward/back
 	var input = Vector2(
 		Input.get_action_strength("mv_right") - Input.get_action_strength("mv_left"),
 		Input.get_action_strength("mv_forward") - Input.get_action_strength("mv_back"))
+	
+	if input.length_squared() > 1:
+		input = input.normalized()
 		
 	return (
 		camYaw.global_transform.basis.z * input.y
@@ -207,17 +261,19 @@ func get_camera_rot()->Vector2:
 	cameraRot = Vector2(0,0)
 	return ret
 
-func set_up(new_up:Vector3, interp:float):
-	if new_up.length_squared() <= 0.7:
-		new_up = Vector3.UP
-	if new_up == up:
-		return
-	var angle = up.angle_to(new_up)
-	var up_axis = up.cross(new_up).normalized()
-	global_rotate(up_axis, angle*interp)
-	
-	up = up.rotated(up_axis, angle*interp)
-
 func set_gravity(g):
 	gravity = g
 	up = -(g.normalized())
+
+func min_angle(v1: Vector3, v2: Vector3) ->float:
+	var theta = v1.angle_to(v2)
+	if abs(theta) <= PI:
+		return theta
+	else:
+		return -sign(theta)*(2*PI -abs(theta))
+
+func pr(vec:Vector3)->String:
+	return "{%05.3f, %05.3f, %05.3f}" % [vec.x, vec.y, vec.z]
+
+func reject(v1:Vector3, v2: Vector3) -> Vector3:
+	return v1 - v1.project(v2)
