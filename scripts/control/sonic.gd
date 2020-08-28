@@ -151,20 +151,38 @@ func process_air(delta):
 	velocity += accel * delta
 	velocity = move_and_slide(velocity, up)
 	timer_air += delta
+	var desiredUp = -gravity.normalized()
 	if timer_air >= TIME_REORIENT:
-		var forward = global_transform.basis.z
-		#forward.y = 0
-		#forward = forward.normalized()
-		var desiredUp = -gravity.normalized()
+		air_reorient(desiredUp)
+	else:
+		$CamYaw/debug_yaw.color = Color.green
+
+func air_reorient(desiredUp):
+	var interp = 0.05
+	if ( up.angle_to(desiredUp) > 0.1 
+		#and abs(camSpring.global_transform.basis.z.y) < 0.7
+	):
+		$CamYaw/debug_yaw.color = Color.red
+		# Roll upright
+		var forward = camYaw.global_transform.basis.z
 		var upTarget = desiredUp - forward*(forward.dot(desiredUp))
 		var upCurrent = up - forward*(forward.dot(up))
+		
 		var angle = upCurrent.angle_to(upTarget)
-		if abs(angle) < 0.1:
-			#Reorient based on real angle
-			set_up(desiredUp, 0.05)
-		else:
-			global_rotate(forward, angle*0.05)
-			up = up.rotated(forward, angle*0.05)
+		global_rotate(forward, angle*interp)
+		up = up.rotated(forward, angle*interp)
+		
+		# Pitch upright
+		var right = camYaw.global_transform.basis.x
+		var df = Vector3(forward.x, 0, forward.z).normalized()
+		
+		angle = forward.angle_to(df)
+		global_rotate(right, angle*interp)
+		up = up.rotated(right, angle*interp)
+		#camSpring.rotate_x(-angle*0.04)
+	else:
+		$CamYaw/debug_yaw.color = Color.blue
+		set_up(desiredUp, interp)
 
 func jump():
 	velocity += up*VEL_JUMP

@@ -45,6 +45,7 @@ ring_sides = 12
 
 [node name="CSGCylinder" type="CSGCylinder" parent="CSGBox2"]
 transform = Transform( 0.41663, -0.909076, 0, 0.909076, 0.41663, 0, 0, 0, 1, 3.06211, -0.606808, 22.5856 )
+visible = false
 operation = 2
 radius = 3.97173
 height = 77.6755
