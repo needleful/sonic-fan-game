@@ -2,8 +2,9 @@ extends KinematicBody
 
 enum State {
 	Ground,
+	Sneaking,
 	Jumping,
-	Air
+	Air,
 }
 
 const VEL_JUMP = 10
@@ -134,12 +135,12 @@ func process_ground(delta):
 	debug_imm.add_vertex(Vector3(0,.5,0))
 	if movement.length_squared() == 0:
 		drag = -DRAG_STOPPING*v.normalized()*v*v
-		debug_imm.add_vertex(drag.normalized() + Vector3(0,.5,0))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + drag.normalized()) + Vector3(0,.5,0))
 	else:
 		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
 			movement = Vector3(0,0,0)
 		drag = -DRAG_GROUND*v.normalized()*v*v
-		debug_imm.add_vertex(v.normalized() + Vector3(0,.5,0))
+		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + v.normalized()) + Vector3(0,.5,0))
 	
 	debug_imm.end()
 	velocity += (movement + gravity + drag) * delta
@@ -213,6 +214,7 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		up = up.rotated(left, angle*interp)
 		#camSpring.rotate_x(-angle*interp)
 		
+		#Debug visualization
 		upRot = upRot.rotated(left, angle)
 		debug_imm.clear()
 		debug_imm.begin(Mesh.PRIMITIVE_LINE_STRIP)
