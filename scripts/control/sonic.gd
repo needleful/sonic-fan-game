@@ -8,15 +8,17 @@ enum State {
 }
 
 const VEL_JUMP = 10
-const ACCEL_RUN = 30
+const ACCEL_RUN = 25
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
+const ACCEL_STOP = 80
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
-const SPEED_STOPPED = 0.1
+const SPEED_STOPPING = 4
+const SPEED_STOPPED = 1
 
 const DRAG_STOPPING = 1.2
-const DRAG_GROUND = 0.035
+const DRAG_GROUND = 0.025
 const DRAG_AIR = 0.00005
 
 var state = State.Ground
@@ -36,7 +38,7 @@ const SPEED_REORIENT = 5
 const TIME_COYOTE = 0.1
 var timer_coyote = 0
 
-const SNS_CAM_MOUSE = 0.06
+const SNS_CAM_MOUSE = 0.001
 var cameraRot: Vector2 = Vector2(0,0)
 onready var camYaw = $CamYaw
 onready var camFollow: Spatial = $CamYaw/CamFollow
@@ -70,10 +72,10 @@ func _input(event):
 
 func _process(delta):
 	var c = get_camera_rot()
-	camYaw.rotate_y(-c.x*delta)
-	camSpring.rotate_x(c.y*delta)
+	camYaw.rotate_y(-c.x)
+	camSpring.rotate_x(c.y)
 	
-	$CamYaw/CamFollow/Reverse.rotate_x(-c.y*delta)
+	$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
 
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = pr(up)
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
@@ -95,6 +97,8 @@ func _physics_process(delta):
 					new_state = State.Air
 			else:
 				timer_coyote = 0
+				if Input.is_action_pressed("mv_sneak"):
+					new_state = State.Sneaking
 		State.Jumping:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
@@ -103,6 +107,19 @@ func _physics_process(delta):
 			if is_on_floor():
 				$CamYaw/debug_yaw.color = Color.magenta
 				new_state = State.Ground
+		State.Sneaking:
+			if Input.is_action_just_pressed("mv_jump"):
+				jump()
+				new_state = State.Jumping
+			elif !is_on_floor():
+				timer_coyote += delta
+				if timer_coyote >= TIME_COYOTE:
+					timer_air = 0
+					new_state = State.Air
+			else:
+				timer_coyote = 0
+				if !Input.is_action_pressed("mv_sneak"):
+					new_state = State.Ground
 	
 	state = new_state
 	match state:
@@ -134,17 +151,27 @@ func process_ground(delta):
 	debug_imm.begin(Mesh.PRIMITIVE_LINES)
 	debug_imm.add_vertex(Vector3(0,.5,0))
 	if movement.length_squared() == 0:
-		drag = -DRAG_STOPPING*v.normalized()*v*v
+		drag = -DRAG_STOPPING*v
 		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + drag.normalized()) + Vector3(0,.5,0))
+		velocity += (movement + gravity + drag) * delta
+		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
+			var stop
+			if delta*ACCEL_STOP >= 1:
+				stop = velocity
+			else:
+				stop = velocity*delta*ACCEL_STOP
+			velocity -= stop
+		if velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
+			velocity = -up
 	else:
 		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
 			movement = Vector3(0,0,0)
 		drag = -DRAG_GROUND*v.normalized()*v*v
 		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + v.normalized()) + Vector3(0,.5,0))
+		velocity += (movement + gravity + drag) * delta
 	
-	debug_imm.end()
-	velocity += (movement + gravity + drag) * delta
 	velocity = move_and_slide(velocity, up)
+	debug_imm.end()
 	
 	if is_on_floor():
 		reorient_ground(get_floor_normal(), .9)
