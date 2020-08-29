@@ -11,7 +11,7 @@ enum State {
 
 const VEL_JUMP = 10
 const ACCEL_START = 30
-const ACCEL_RUN = 10
+const ACCEL_RUN = 12
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
 const ACCEL_STOP = 80
@@ -77,13 +77,14 @@ func _input(event):
 func _process(delta):
 	var c = get_camera_rot()
 	camYaw.rotate_y(-c.x)
-	camSpring.rotate_x(c.y)
-	
-	$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
+	if cam_reverse.current:
+		$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
+	else:
+		camSpring.rotate_x(c.y)
 
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = pr(up)
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = MoveMath.pr(up)
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = pr(global_transform.origin)
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = MoveMath.pr(global_transform.origin)
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -155,8 +156,8 @@ func process_ground(delta):
 	else:
 		movement *= ACCEL_START
 	var drag : Vector3
-	var v = reject(velocity, up)
-	if movement.dot(velocity) <= 0:
+	var v = MoveMath.reject(velocity, up)
+	if movement.dot(velocity) < 0 || movement.length_squared() == 0:
 		drag = -DRAG_STOPPING*v
 		velocity += (movement + gravity + drag) * delta
 		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
@@ -168,13 +169,13 @@ func process_ground(delta):
 			velocity -= stop
 		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
 			velocity = -up
-		velocity = move_and_slide(velocity, up)
 	else:
 		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
 			movement = Vector3(0,0,0)
 		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag) * delta
-		velocity = move_and_slide(velocity, up)
+
+	velocity = move_and_slide(velocity, up)
 	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
 		rotate_by_speed()
 	
@@ -204,22 +205,13 @@ func process_air(delta):
 		$CamYaw/debug_yaw.color = Color.green
 
 func reorient_ground(new_up:Vector3, interp:float):
-	if new_up.length_squared() <= 0.7:
+	if new_up.length_squared() <= 0.9:
 		new_up = Vector3.UP
-	if new_up == up:
+	if abs(new_up.dot(up)) >= 0.99999:
 		return
-	debug_imm.clear()
-	debug_imm.begin(Mesh.PRIMITIVE_TRIANGLES)
-	debug_imm.add_vertex(Vector3(0,0,0))
-	#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upCurrent))
-	#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upTarget))
-	debug_imm.add_vertex(transform.xform_inv(global_transform.origin + up))
-	debug_imm.add_vertex(transform.xform_inv(global_transform.origin + new_up))
-	debug_imm.end()
-	var angle = min_angle(up, new_up)
+	var angle = up.angle_to(new_up)
 	var up_axis = up.cross(new_up).normalized()
 	global_rotate(up_axis, angle*interp)
-	
 	up = up.rotated(up_axis, angle*interp)
 
 func reorient_air(desiredUp:Vector3, delta:float):
@@ -234,8 +226,8 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		var left = camYaw.global_transform.basis.x
 		var df = Vector3(forward.x, 0, forward.z).normalized()
 		
-		var upTarget = reject(desiredUp, forward).normalized()
-		var upCurrent = reject(up, forward).normalized()
+		var upTarget = MoveMath.reject(desiredUp, forward).normalized()
+		var upCurrent = MoveMath.reject(up, forward).normalized()
 		
 		var angle = upCurrent.angle_to(upTarget)
 		$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = "Roll: %.2f" % angle
@@ -303,16 +295,3 @@ func get_camera_rot()->Vector2:
 func set_gravity(g):
 	gravity = g
 	up = -(g.normalized())
-
-func min_angle(v1: Vector3, v2: Vector3) ->float:
-	var theta = v1.angle_to(v2)
-	if abs(theta) <= PI:
-		return theta
-	else:
-		return -sign(theta)*(2*PI -abs(theta))
-
-func pr(vec:Vector3)->String:
-	return "{%05.3f, %05.3f, %05.3f}" % [vec.x, vec.y, vec.z]
-
-func reject(v1:Vector3, v2: Vector3) -> Vector3:
-	return v1 - v1.project(v2)

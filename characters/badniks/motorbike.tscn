@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://assets/models-export/badniks/Motorbike.material" type="Material" id=1]
+[ext_resource path="res://scripts/control/badnik_ground.gd" type="Script" id=2]
 
 [sub_resource type="ArrayMesh" id=1]
 resource_name = "Cube"
@@ -34,7 +35,9 @@ surfaces/0 = {
 "vertex_count": 171
 }
 
-[node name="motorbike" type="KinematicBody"]
+[node name="motorbike" type="RigidBody"]
+mass = 250.0
+script = ExtResource( 2 )
 
 [node name="Cube" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )

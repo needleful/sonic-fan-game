@@ -9,10 +9,15 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "KinematicBody",
+"base": "RigidBody",
 "class": "BadnikGround",
 "language": "GDScript",
 "path": "res://scripts/control/badnik_ground.gd"
+}, {
+"base": "Reference",
+"class": "MoveMath",
+"language": "GDScript",
+"path": "res://scripts/util/move_math.gd"
 }, {
 "base": "KinematicBody",
 "class": "Sonic",
@@ -21,6 +26,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "BadnikGround": "",
+"MoveMath": "",
 "Sonic": ""
 }
 
