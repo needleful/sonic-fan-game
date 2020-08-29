@@ -8,9 +8,20 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "KinematicBody",
+"class": "BadnikGround",
+"language": "GDScript",
+"path": "res://scripts/control/badnik_ground.gd"
+}, {
+"base": "KinematicBody",
+"class": "Sonic",
+"language": "GDScript",
+"path": "res://scripts/control/sonic.gd"
+} ]
 _global_script_class_icons={
-
+"BadnikGround": "",
+"Sonic": ""
 }
 
 [application]

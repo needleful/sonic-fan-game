@@ -1,5 +1,7 @@
 extends KinematicBody
 
+class_name Sonic
+
 enum State {
 	Ground,
 	Sneaking,
@@ -8,17 +10,19 @@ enum State {
 }
 
 const VEL_JUMP = 10
-const ACCEL_RUN = 25
+const ACCEL_START = 30
+const ACCEL_RUN = 10
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
 const ACCEL_STOP = 80
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
+const SPEED_RUN = 10
 const SPEED_STOPPING = 4
 const SPEED_STOPPED = 1
 
 const DRAG_STOPPING = 1.2
-const DRAG_GROUND = 0.025
+const DRAG_GROUND = 0.15
 const DRAG_AIR = 0.00005
 
 var state = State.Ground
@@ -79,6 +83,7 @@ func _process(delta):
 
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = pr(up)
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = pr(global_transform.origin)
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -144,15 +149,15 @@ func _physics_process(delta):
 		camFollow.global_transform.basis = camYaw.global_transform.basis
 
 func process_ground(delta):
-	var movement: Vector3 = get_movement()*ACCEL_RUN
+	var movement: Vector3 = get_movement()
+	if velocity.length_squared() >= SPEED_RUN*SPEED_RUN:
+		movement *= ACCEL_RUN
+	else:
+		movement *= ACCEL_START
 	var drag : Vector3
 	var v = reject(velocity, up)
-	debug_imm.clear()
-	debug_imm.begin(Mesh.PRIMITIVE_LINES)
-	debug_imm.add_vertex(Vector3(0,.5,0))
-	if movement.length_squared() == 0:
+	if movement.dot(velocity) <= 0:
 		drag = -DRAG_STOPPING*v
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + drag.normalized()) + Vector3(0,.5,0))
 		velocity += (movement + gravity + drag) * delta
 		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
 			var stop
@@ -161,23 +166,20 @@ func process_ground(delta):
 			else:
 				stop = velocity*delta*ACCEL_STOP
 			velocity -= stop
-		if velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
+		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
 			velocity = -up
+		velocity = move_and_slide(velocity, up)
 	else:
 		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
 			movement = Vector3(0,0,0)
-		drag = -DRAG_GROUND*v.normalized()*v*v
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + v.normalized()) + Vector3(0,.5,0))
+		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag) * delta
-	
-	velocity = move_and_slide(velocity, up)
-	debug_imm.end()
+		velocity = move_and_slide(velocity, up)
+	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
+		rotate_by_speed()
 	
 	if is_on_floor():
 		reorient_ground(get_floor_normal(), .9)
-	
-	if velocity.length_squared() >= 0.01:
-		rotate_by_speed()
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -206,6 +208,14 @@ func reorient_ground(new_up:Vector3, interp:float):
 		new_up = Vector3.UP
 	if new_up == up:
 		return
+	debug_imm.clear()
+	debug_imm.begin(Mesh.PRIMITIVE_TRIANGLES)
+	debug_imm.add_vertex(Vector3(0,0,0))
+	#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upCurrent))
+	#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upTarget))
+	debug_imm.add_vertex(transform.xform_inv(global_transform.origin + up))
+	debug_imm.add_vertex(transform.xform_inv(global_transform.origin + new_up))
+	debug_imm.end()
 	var angle = min_angle(up, new_up)
 	var up_axis = up.cross(new_up).normalized()
 	global_rotate(up_axis, angle*interp)
@@ -242,8 +252,8 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		#camSpring.rotate_x(-angle*interp)
 		
 		#Debug visualization
-		upRot = upRot.rotated(left, angle)
 		debug_imm.clear()
+		upRot = upRot.rotated(left, angle)
 		debug_imm.begin(Mesh.PRIMITIVE_LINE_STRIP)
 		debug_imm.add_vertex(Vector3(0,0,0))
 		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + forward))
