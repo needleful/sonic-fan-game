@@ -20,7 +20,8 @@ params_cull_mode = 2
 albedo_color = Color( 1, 0, 0.937255, 1 )
 
 [node name="sonic" type="KinematicBody"]
-collision_mask = 0
+collision_layer = 3
+collision_mask = 2
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]

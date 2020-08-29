@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "RigidBody",
+"base": "KinematicBody",
 "class": "BadnikGround",
 "language": "GDScript",
 "path": "res://scripts/control/badnik_ground.gd"
@@ -91,4 +91,6 @@ mv_sneak={
 
 [rendering]
 
+quality/directional_shadow/size=8192
+quality/shadow_atlas/size=8192
 environment/default_environment="res://default_env.tres"

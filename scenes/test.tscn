@@ -46,7 +46,7 @@ pause_mode = 2
 script = ExtResource( 2 )
 
 [node name="motorbike" parent="." instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 19.8875, 0.118056, -3.06022 )
+transform = Transform( -0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 5.62635, 0.118056, 53.8779 )
 sonicNode = NodePath("../sonic")
 
 [node name="sonic" parent="." instance=ExtResource( 1 )]

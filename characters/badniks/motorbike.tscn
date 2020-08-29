@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://assets/models-export/badniks/Motorbike.material" type="Material" id=1]
 [ext_resource path="res://scripts/control/badnik_ground.gd" type="Script" id=2]
@@ -35,8 +35,20 @@ surfaces/0 = {
 "vertex_count": 171
 }
 
-[node name="motorbike" type="RigidBody"]
-mass = 250.0
+[sub_resource type="SphereMesh" id=5]
+radius = 0.5
+height = 1.0
+radial_segments = 8
+rings = 8
+
+[sub_resource type="SpatialMaterial" id=6]
+flags_unshaded = true
+albedo_color = Color( 0.972549, 0.498039, 1, 1 )
+
+[sub_resource type="BoxShape" id=4]
+extents = Vector3( 2.19831, 1.18658, 2.16153 )
+
+[node name="motorbike" type="KinematicBody"]
 script = ExtResource( 2 )
 
 [node name="Cube" type="MeshInstance" parent="."]
@@ -60,3 +72,28 @@ light_color = Color( 0.960784, 0.501961, 1, 1 )
 light_energy = 0.5
 spot_range = 3.7
 spot_angle = 90.0
+
+[node name="AttackLight" type="SpotLight" parent="."]
+transform = Transform( 0.995585, 0.0938647, -4.65659e-08, 0.0856045, -0.907972, 0.410194, 0.0385027, -0.408383, -0.911998, 0, 0.902042, 1.39255 )
+visible = false
+light_color = Color( 1, 0.737255, 0.811765, 1 )
+light_energy = 2.0
+shadow_enabled = true
+spot_angle = 75.0
+
+[node name="AttackMesh" type="MeshInstance" parent="AttackLight"]
+transform = Transform( 0.995585, 0.0856045, 0.0385027, 0.0938647, -0.907972, -0.408383, -4.84288e-08, 0.410194, -0.911998, 0.0172862, -0.183348, -0.698462 )
+cast_shadow = 0
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )
+
+[node name="AttackArea" type="Area" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape" type="CollisionShape" parent="AttackArea"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2.7528 )
+shape = SubResource( 4 )
+
+[node name="GroundCast" type="RayCast" parent="."]
+enabled = true
