@@ -16,9 +16,14 @@ export(float) var accel_air: float = 9
 export(float) var drag_move: float = 0.25
 export(float) var speed_rotation:float = 3*PI
 
+export(float) var time_to_chase:float = 0.25
+export(float) var time_to_forget: float = 10
+
 const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
 onready var weapon = $AttackArea/Weapon
+onready var visionCone = $VisionArea
+onready var visionRay = $VisionArea/VisionRay
 
 enum AIState {
 	Patrol,
@@ -31,7 +36,7 @@ enum MoveState {
 	Air
 }
 
-var state = AIState.Chase
+var state = AIState.Patrol
 var mstate = MoveState.Ground
 
 const ATTACK_TIME = 1
@@ -41,10 +46,15 @@ var attacking = false
 const COYOTE_TIME = 0.25
 var coyote_timer = 0
 
+var vision_timer = 0
+var player_in_cone = false
+
 func _ready():
 	$AttackArea.connect("body_entered", self, "onAttack")
 	$AttackArea.connect("body_exited", self, "onAttackStop")
 	$AttackArea/Weapon.connect("body_entered", self, "kill")
+	visionCone.connect("body_entered", self, "onVisionEntered")
+	visionCone.connect("body_exited", self, "onVisionExited")
 
 func kill(body):
 	if body is Sonic:
@@ -61,17 +71,36 @@ func _physics_process(delta):
 			if is_on_floor():
 				coyote_timer = 0
 				mstate = MoveState.Ground
-	process_chase(delta)
+	var dir
 	
-	if attacking:
-		attack_timer += delta
-	elif attack_timer > 0:
-		attack_timer += delta
-		if attack_timer > ATTACK_TIME:
-			doneAttacking()
-
-func process_chase(delta):
-	var dir:Vector3 = sonic.global_transform.origin - weapon.global_transform.origin
+	var s: RID = get_world().space
+	var space: PhysicsDirectSpaceState = PhysicsServer.space_get_direct_state(s)
+	var raycast = space.intersect_ray(
+		visionCone.global_transform.origin,
+		sonic.global_transform.origin,
+		[self, visionCone, $AttackArea, weapon]
+	)
+	var see_sonic:bool = raycast.has("collider") and raycast["collider"] is Sonic
+	
+	match state:
+		AIState.Chase:
+			if !player_in_cone and !see_sonic:
+				vision_timer = min(0, vision_timer - delta)
+				if vision_timer <= -time_to_forget:
+					state = AIState.Patrol
+		AIState.Patrol:
+			if player_in_cone and see_sonic:
+				vision_timer = max(0, vision_timer + delta)
+				if vision_timer >= time_to_chase:
+					state = AIState.Chase
+			else:
+				vision_timer -= delta*0.5
+	
+	match state:
+		AIState.Chase:
+			dir = get_chase_dir()
+		_:
+			dir = Vector3(0,0,0)
 	var move:Vector3 = MoveMath.reject(dir, up).normalized()
 	var drag:Vector3
 	if mstate == MoveState.Air:
@@ -95,6 +124,16 @@ func process_chase(delta):
 			reorient(cast.get_collision_normal(), 0.1, 60, delta)
 		else:
 			reorient(Vector3.UP, 0.1, 120, delta)
+	
+	if attacking:
+		attack_timer += delta
+	elif attack_timer > 0:
+		attack_timer += delta
+		if attack_timer > ATTACK_TIME:
+			doneAttacking()
+
+func get_chase_dir() -> Vector3:
+	return sonic.global_transform.origin - weapon.global_transform.origin
 	
 func reorient(new_up:Vector3, interp:float, max_degrees, delta):
 	if new_up.length_squared() <= 0.9:
@@ -123,6 +162,17 @@ func onAttack(_b):
 func onAttackStop(_b):
 	attacking = false
 
+func onVisionEntered(body):
+	if body is Sonic:
+		player_in_cone = true
+
+func onVisionExited(body):
+	if body is Sonic:
+		player_in_cone = false
+
 func doneAttacking():
 	attack_timer = 0
 	$AttackLight.visible = false
+
+func die():
+	queue_free()

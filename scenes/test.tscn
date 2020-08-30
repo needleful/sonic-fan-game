@@ -61,8 +61,13 @@ width = 59.5862
 height = 42.261
 depth = 53.5087
 
+[node name="CSGSphere" type="CSGSphere" parent="CSGBox2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00920868, -9.44965, 16.3615 )
+operation = 2
+radius = 4.01698
+
 [node name="CSGTorus" type="CSGTorus" parent="CSGBox2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13.111, -13.2129, 0.0759964 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13.111, -14.0482, 0.0759964 )
 operation = 2
 inner_radius = 15.3938
 outer_radius = 23.6841
