@@ -53,6 +53,7 @@ extents = Vector3( 3.23802, 1.18658, 3.32686 )
 
 [node name="motorbike" type="KinematicBody"]
 script = ExtResource( 2 )
+accel_air = 0.0
 
 [node name="Cube" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )

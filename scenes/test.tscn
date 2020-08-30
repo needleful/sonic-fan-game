@@ -5,7 +5,7 @@
 [ext_resource path="res://characters/badniks/motorbike.tscn" type="PackedScene" id=3]
 
 [sub_resource type="ProceduralSky" id=1]
-sky_top_color = Color( 0, 0, 0, 1 )
+sky_top_color = Color( 0.141176, 0.0823529, 0.0823529, 1 )
 sky_horizon_color = Color( 0.105882, 0.211765, 0.294118, 1 )
 ground_bottom_color = Color( 0, 0, 0, 1 )
 ground_horizon_color = Color( 0.0823529, 0.14902, 0.196078, 1 )

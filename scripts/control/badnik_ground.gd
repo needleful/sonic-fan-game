@@ -10,12 +10,15 @@ var velocity: Vector3 = Vector3(0,0,0)
 export(NodePath) var sonicNode: NodePath
 onready var sonic: Sonic = get_node(sonicNode)
 
-export(float) var accel_move:float = 18
+export(float) var accel_move:float = 25
 export(float) var accel_stop: float = 60
 export(float) var accel_air: float = 9
-export(float) var drag_move: float = 0.15
+export(float) var drag_move: float = 0.25
+export(float) var speed_rotation:float = 3*PI
+
 const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
+onready var weapon = $AttackArea/Weapon
 
 enum AIState {
 	Patrol,
@@ -68,7 +71,7 @@ func _physics_process(delta):
 			doneAttacking()
 
 func process_chase(delta):
-	var dir:Vector3 = sonic.global_transform.origin - global_transform.origin
+	var dir:Vector3 = sonic.global_transform.origin - weapon.global_transform.origin
 	var move:Vector3 = MoveMath.reject(dir, up).normalized()
 	var drag:Vector3
 	if mstate == MoveState.Air:
@@ -84,7 +87,7 @@ func process_chase(delta):
 	velocity += (gravity + move + drag)*delta
 	velocity = move_and_slide(velocity, up)
 	
-	rotate_by_speed()
+	rotate_by_speed(delta)
 	if is_on_floor():
 		reorient(get_floor_normal(), 0.9, 1800, delta)
 	elif mstate == MoveState.Air:
@@ -104,13 +107,13 @@ func reorient(new_up:Vector3, interp:float, max_degrees, delta):
 	up = up.rotated(up_axis, min(angle*interp, mr*delta))
 	global_rotate(up_axis, min(angle*interp, mr*delta))
 
-func rotate_by_speed():
-	var by = up.cross(velocity).normalized()
-	global_transform.basis = Basis(
-		by,
-		up,
-		by.cross(up)
-	)
+func rotate_by_speed(delta):
+	var target = MoveMath.reject(velocity, up).normalized()
+	var forward = global_transform.basis.z
+	var angle = forward.angle_to(target)
+	var axis = forward.cross(target).normalized()
+	if axis.length_squared() > 0.9:
+		global_rotate(axis, min(angle/2, speed_rotation*delta))
 
 func onAttack(_b):
 	attacking = true

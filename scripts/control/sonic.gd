@@ -4,14 +4,13 @@ class_name Sonic
 
 enum State {
 	Ground,
-	Sneaking,
 	Jumping,
 	Air,
 }
 
 const VEL_JUMP = 10
-const ACCEL_START = 30
-const ACCEL_RUN = 12
+const ACCEL_START = 40
+const ACCEL_RUN = 18
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
 const ACCEL_STOP = 80
@@ -21,14 +20,20 @@ const SPEED_RUN = 10
 const SPEED_STOPPING = 4
 const SPEED_STOPPED = 1
 
+const ACCEL_SNEAK = 18
+const MAX_SNEAK = 8
+
 const DRAG_STOPPING = 1.2
-const DRAG_GROUND = 0.15
+const DRAG_GROUND = 0.2
 const DRAG_AIR = 0.00005
+const FORCE_CENTRIFUGAL = 1
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
+var vel_difference: Vector3 = Vector3(0,0,0)
 var gravity: Vector3 = Vector3(0, -9.8, 0) setget set_gravity
 var up: Vector3 = Vector3(0, 1, 0)
+var sneaking: bool = false
 
 const TIME_JUMP = 0.1
 const TIME_REORIENT = 0.75
@@ -101,32 +106,13 @@ func _physics_process(delta):
 				if timer_coyote >= TIME_COYOTE:
 					timer_air = 0
 					new_state = State.Air
-			else:
-				timer_coyote = 0
-				if Input.is_action_pressed("mv_sneak"):
-					new_state = State.Sneaking
 		State.Jumping:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
 				new_state = State.Air
 		State.Air:
 			if is_on_floor():
-				$CamYaw/debug_yaw.color = Color.magenta
 				new_state = State.Ground
-		State.Sneaking:
-			if Input.is_action_just_pressed("mv_jump"):
-				jump()
-				new_state = State.Jumping
-			elif !is_on_floor():
-				timer_coyote += delta
-				if timer_coyote >= TIME_COYOTE:
-					timer_air = 0
-					new_state = State.Air
-			else:
-				timer_coyote = 0
-				if !Input.is_action_pressed("mv_sneak"):
-					new_state = State.Ground
-	
 	state = new_state
 	match state:
 		State.Ground:
@@ -148,18 +134,26 @@ func _physics_process(delta):
 		).basis
 	else:
 		camFollow.global_transform.basis = camYaw.global_transform.basis
+	
+	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
 
 func process_ground(delta):
+	sneaking = Input.is_action_pressed("mv_sneak")
+	
 	var movement: Vector3 = get_movement()
 	if velocity.length_squared() >= SPEED_RUN*SPEED_RUN:
 		movement *= ACCEL_RUN
+	elif sneaking:
+		movement *= ACCEL_SNEAK
 	else:
 		movement *= ACCEL_START
+	
 	var drag : Vector3
+	var centrifugal_force = FORCE_CENTRIFUGAL*vel_difference
 	var v = MoveMath.reject(velocity, up)
 	if movement.dot(velocity) < 0 || movement.length_squared() == 0:
 		drag = -DRAG_STOPPING*v
-		velocity += (movement + gravity + drag) * delta
+		velocity += (movement + gravity + drag + centrifugal_force) * delta
 		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
 			var stop
 			if delta*ACCEL_STOP >= 1:
@@ -168,19 +162,23 @@ func process_ground(delta):
 				stop = velocity*delta*ACCEL_STOP
 			velocity -= stop
 		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
-			velocity = -up
+			velocity = gravity.project(up)*delta
 	else:
-		if velocity.length_squared() >= MAX_RUN*MAX_RUN:
+		if velocity.length_squared() >= MAX_RUN*MAX_RUN or (
+			sneaking and velocity.length_squared() >= MAX_SNEAK*MAX_SNEAK
+		):
 			movement = Vector3(0,0,0)
 		drag = -DRAG_GROUND*v
-		velocity += (movement + gravity + drag) * delta
-
+		velocity += (movement + gravity + drag + centrifugal_force) * delta
+	
+	vel_difference = velocity
 	velocity = move_and_slide(velocity, up)
+	vel_difference -= velocity
 	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
 		rotate_by_speed()
 	
 	if is_on_floor():
-		reorient_ground(get_floor_normal(), .9)
+		reorient_ground(get_floor_normal(), 1)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -201,8 +199,6 @@ func process_air(delta):
 	if timer_air >= TIME_REORIENT:
 		var desiredUp = -gravity.normalized()
 		reorient_air(desiredUp, delta)
-	else:
-		$CamYaw/debug_yaw.color = Color.green
 
 func reorient_ground(new_up:Vector3, interp:float):
 	if new_up.length_squared() <= 0.9:
@@ -220,7 +216,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	if ( diff > 0.1 
 		#and diff < PI
 	):
-		$CamYaw/debug_yaw.color = Color.red
 		# Roll upright
 		var forward = camYaw.global_transform.basis.z
 		var left = camYaw.global_transform.basis.x
@@ -230,42 +225,28 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		var upCurrent = MoveMath.reject(up, forward).normalized()
 		
 		var angle = upCurrent.angle_to(upTarget)
-		$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = "Roll: %.2f" % angle
+		var rollAxis = upCurrent.cross(upTarget).normalized()
 		
-		global_rotate(forward, angle*interp)
-		up = up.rotated(forward, angle*interp)
-		var upRot = up.rotated(forward, angle)
+		var upRot: Vector3
+		if rollAxis.length_squared() > 0.9:
+			global_rotate(rollAxis, angle*interp)
+			up = up.rotated(rollAxis, angle*interp)
 		
 		# Pitch upright
 		angle = forward.angle_to(df)
-		$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = "Pitch: %.2f" % angle
-		global_rotate(left, angle*interp)
-		up = up.rotated(left, angle*interp)
-		#camSpring.rotate_x(-angle*interp)
-		
-		#Debug visualization
-		debug_imm.clear()
-		upRot = upRot.rotated(left, angle)
-		debug_imm.begin(Mesh.PRIMITIVE_LINE_STRIP)
-		debug_imm.add_vertex(Vector3(0,0,0))
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + forward))
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + left))
-		debug_imm.end()
-		
-		debug_imm.begin(Mesh.PRIMITIVE_TRIANGLES)
-		debug_imm.add_vertex(Vector3(0,0,0))
-		#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upCurrent))
-		#debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upTarget))
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + upRot))
-		debug_imm.add_vertex(transform.xform_inv(global_transform.origin + desiredUp))
-		debug_imm.end()
+		var pitchAxis = forward.cross(df).normalized()
+		if pitchAxis.length_squared() > 0.9:
+			global_rotate(left, angle*interp)
+			up = up.rotated(left, angle*interp)
+			camSpring.rotate_x(-angle*interp)
+
 	else:
-		$CamYaw/debug_yaw.color = Color.blue
 		reorient_ground(desiredUp, interp)
 
 func jump():
 	velocity += up*VEL_JUMP
 	timer_air = 0
+	sneaking = false
 
 func rotate_by_speed():
 	var by = up.cross(velocity).normalized()

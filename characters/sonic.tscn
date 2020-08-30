@@ -1,18 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.tres" type="ArrayMesh" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
-[ext_resource path="res://scripts/debug/vis_yaw.gd" type="Script" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.2
 height = 0.4
-
-[sub_resource type="PrismMesh" id=2]
-size = Vector3( 0.5, 0.5, 0.25 )
-
-[sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 1, 0, 0.913725, 1 )
 
 [sub_resource type="SpatialMaterial" id=4]
 flags_unshaded = true
@@ -33,12 +26,6 @@ mesh = ExtResource( 1 )
 material/0 = null
 
 [node name="CamYaw" type="Spatial" parent="."]
-
-[node name="debug_yaw" type="MeshInstance" parent="CamYaw"]
-transform = Transform( 1, 0, 0, -2.11758e-22, -5.96046e-08, -1, 0, 1, -5.96046e-08, 0, -5.96046e-08, 0 )
-mesh = SubResource( 2 )
-material/0 = SubResource( 3 )
-script = ExtResource( 3 )
 
 [node name="CamFollow" type="Spatial" parent="CamYaw"]
 
