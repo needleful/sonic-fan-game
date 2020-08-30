@@ -140,10 +140,14 @@ func _physics_process(delta):
 		camFollow.global_transform.basis = camYaw.global_transform.basis
 	
 	# Velocity
-	var speed = velocity.length()/MAX_SNEAK
-	anim["parameters/Ground/blend_position"] = speed
-	anim["parameters/Ground/1/speed/scale"] = max(1, .5 + speed/2)
-	anim["parameters/Ground/2/speed/scale"] = max(1, speed/3)
+	var speed: float
+	if state == State.Ground:
+		speed = velocity.length()/MAX_SNEAK
+		anim["parameters/Ground/blend_position"] = speed
+		anim["parameters/Ground/1/speed/scale"] = max(1, .5 + speed/2)
+		anim["parameters/Ground/2/speed/scale"] = max(1, speed/3)
+	else:
+		speed = MoveMath.reject(velocity, up).length()/MAX_SNEAK
 
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
 
