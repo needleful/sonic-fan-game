@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -6,6 +6,12 @@
 [sub_resource type="CapsuleShape" id=12]
 radius = 0.2
 height = 0.4
+
+[sub_resource type="SphereShape" id=24]
+radius = 0.2
+
+[sub_resource type="SphereShape" id=23]
+radius = 0.15
 
 [sub_resource type="SpatialMaterial" id=13]
 flags_unshaded = true
@@ -61,8 +67,8 @@ states/Ground/position = Vector2( 385, 49 )
 [sub_resource type="AnimationNodeStateMachinePlayback" id=21]
 
 [node name="sonic" instance=ExtResource( 1 )]
-collision_layer = 3
-collision_mask = 2
+collision_layer = 2
+collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="Sun" parent="." index="0"]
@@ -78,6 +84,7 @@ shape = SubResource( 12 )
 
 [node name="SpringArm" type="SpringArm" parent="CamYaw/CamFollow" index="0"]
 transform = Transform( 1, 0, 0, 6.08439e-15, -0.917602, 0.3975, -5.10775e-15, -0.3975, -0.917602, 0, 0.792057, 0 )
+shape = SubResource( 24 )
 spring_length = 3.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/SpringArm" index="0"]
@@ -121,6 +128,7 @@ margin_bottom = 68.0
 
 [node name="Reverse" type="SpringArm" parent="CamYaw/CamFollow" index="1"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707062, 0 )
+shape = SubResource( 23 )
 spring_length = 5.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/Reverse" index="0"]

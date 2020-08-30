@@ -9,11 +9,11 @@ enum State {
 }
 
 const VEL_JUMP = 10
-const ACCEL_START = 40
+const ACCEL_START = 55
 const ACCEL_RUN = 18
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
-const ACCEL_STOP = 80
+const ACCEL_STOP = 100
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
 const SPEED_RUN = 10
@@ -96,7 +96,7 @@ func _process(delta):
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
-		up = Vector3.UP
+		up = -gravity.normalized()
 	oldFollow.basis = camFollow.global_transform.basis
 	var new_state = state
 	match state:
@@ -216,7 +216,7 @@ func process_air(delta):
 
 func reorient_ground(new_up:Vector3, interp:float):
 	if new_up.length_squared() <= 0.9:
-		new_up = Vector3.UP
+		new_up = -gravity.normalized()
 	if abs(new_up.dot(up)) >= 0.99999:
 		return
 	var angle = up.angle_to(new_up)
@@ -226,36 +226,29 @@ func reorient_ground(new_up:Vector3, interp:float):
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta*3, 1)
-	var diff = abs(up.angle_to(desiredUp))
-	if ( diff > 0.1 
-		#and diff < PI
-	):
-		# Roll upright
-		var forward = camYaw.global_transform.basis.z
-		var left = camYaw.global_transform.basis.x
-		var df = Vector3(forward.x, 0, forward.z).normalized()
-		
-		var upTarget = MoveMath.reject(desiredUp, forward).normalized()
-		var upCurrent = MoveMath.reject(up, forward).normalized()
-		
-		var angle = upCurrent.angle_to(upTarget)
-		var rollAxis = upCurrent.cross(upTarget).normalized()
-		
-		var upRot: Vector3
-		if rollAxis.length_squared() > 0.9:
-			global_rotate(rollAxis, angle*interp)
-			up = up.rotated(rollAxis, angle*interp)
-		
-		# Pitch upright
-		angle = forward.angle_to(df)
-		var pitchAxis = forward.cross(df).normalized()
-		if pitchAxis.length_squared() > 0.9:
-			global_rotate(left, angle*interp)
-			up = up.rotated(left, angle*interp)
-			camSpring.rotate_x(-angle*interp)
-
-	else:
-		reorient_ground(desiredUp, interp)
+	# Roll upright
+	var forward = camYaw.global_transform.basis.z
+	var left = camYaw.global_transform.basis.x
+	var df = Vector3(forward.x, 0, forward.z).normalized()
+	
+	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
+	var upCurrent = MoveMath.reject(up, forward).normalized()
+	
+	var angle = upCurrent.angle_to(upTarget)
+	var rollAxis = upCurrent.cross(upTarget).normalized()
+	
+	var upRot: Vector3
+	if rollAxis.length_squared() > 0.9:
+		global_rotate(rollAxis, angle*interp)
+		up = up.rotated(rollAxis, angle*interp)
+	
+	# Pitch upright
+	angle = forward.angle_to(df)
+	var pitchAxis = forward.cross(df).normalized()
+	if pitchAxis.length_squared() > 0.9:
+		global_rotate(pitchAxis, angle*interp)
+		up = up.rotated(pitchAxis, angle*interp)
+		#camSpring.rotate_x(-angle*interp)
 
 func jump():
 	velocity += up*VEL_JUMP
