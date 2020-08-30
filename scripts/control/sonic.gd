@@ -53,10 +53,12 @@ onready var camYaw = $CamYaw
 onready var camFollow: Spatial = $CamYaw/CamFollow
 var oldFollow: Transform
 onready var camSpring: Spatial = $CamYaw/CamFollow/SpringArm
-onready var mesh: Spatial = $Sonic
+onready var mesh: Spatial = $Armature/Skeleton/Sonic
 onready var cam : Camera = $CamYaw/CamFollow/SpringArm/Camera
 onready var cam_reverse : Camera = $CamYaw/CamFollow/Reverse/Camera
 
+onready var anim: AnimationTree = $AnimationTree
+onready var statePlayback: AnimationNodeStateMachinePlayback = anim["parameters/playback"]
 onready var debug_imm : ImmediateGeometry = $debug_imm
 
 var stop = false
@@ -64,6 +66,7 @@ var stop = false
 func _ready():
 	cam.current = true
 	oldFollow = Transform(camFollow.global_transform)
+	statePlayback.start("Ground")
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -112,6 +115,7 @@ func _physics_process(delta):
 				new_state = State.Air
 		State.Air:
 			if is_on_floor():
+				statePlayback.travel("Ground")
 				new_state = State.Ground
 	state = new_state
 	match state:
@@ -135,6 +139,12 @@ func _physics_process(delta):
 	else:
 		camFollow.global_transform.basis = camYaw.global_transform.basis
 	
+	# Velocity
+	var speed = velocity.length()/MAX_SNEAK
+	anim["parameters/Ground/blend_position"] = speed
+	anim["parameters/Ground/1/speed/scale"] = max(1, .5 + speed/2)
+	anim["parameters/Ground/2/speed/scale"] = max(1, speed/3)
+
 	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
 
 func process_ground(delta):
