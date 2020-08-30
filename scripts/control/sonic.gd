@@ -10,7 +10,7 @@ enum State {
 
 const VEL_JUMP = 10
 const ACCEL_START = 55
-const ACCEL_RUN = 18
+const ACCEL_RUN = 16
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 4
 const ACCEL_STOP = 100
@@ -40,9 +40,9 @@ const TIME_REORIENT = 0.75
 var timer_air = 0
 
 # Radians per second
-const SPEED_REORIENT_MIN = deg2rad(180)
+const SPEED_REORIENT_MIN = deg2rad(90)
 # 1/x seconds to reorient
-const SPEED_REORIENT = 5
+const SPEED_REORIENT = 4
 
 const TIME_COYOTE = 0.1
 var timer_coyote = 0
@@ -128,18 +128,33 @@ func _physics_process(delta):
 		
 	var yawup = camYaw.global_transform.basis.y
 	var followup = oldFollow.basis.y
-	
 	var upAngle = followup.angle_to(yawup)
-	if abs(upAngle) >= 0.005:
+	
+	var yawZ = camYaw.global_transform.basis.z
+	var followZ = camFollow.global_transform.basis.z
+	var fAngle:float = followZ.angle_to(yawZ)
+	
+	if abs(upAngle) > 0.05:
 		var upAxis = followup.cross(yawup).normalized()
 		camFollow.global_transform.basis = oldFollow.rotated(
 			upAxis, 
-			sign(upAngle) * min(abs(upAngle), max(abs(upAngle)*SPEED_REORIENT, SPEED_REORIENT_MIN)*delta)
+			sign(upAngle) * min (
+				abs(upAngle), 
+				max( abs(upAngle)*SPEED_REORIENT, SPEED_REORIENT_MIN )*delta
+			)
 		).basis
-	else:
-		camFollow.global_transform.basis = camYaw.global_transform.basis
+		oldFollow = camFollow.global_transform
+	if abs(fAngle) >= 0.05:
+		var fAxis:Vector3 = followZ.cross(yawZ).normalized()
+		camFollow.global_transform.basis = oldFollow.rotated(
+			fAxis, 
+			sign(fAngle) * min (
+				abs(fAngle), 
+				max( abs(fAngle)*SPEED_REORIENT, SPEED_REORIENT_MIN )*delta
+			)
+		).basis
 	
-	# Velocity
+	# Animation Logic
 	var speed: float
 	if state == State.Ground:
 		speed = velocity.length()/MAX_SNEAK
@@ -212,6 +227,10 @@ func process_air(delta):
 	timer_air += delta
 	if timer_air >= TIME_REORIENT:
 		var desiredUp = -gravity.normalized()
+		for i in range(0, get_slide_count()):
+			var n = get_slide_collision(i).normal
+			if velocity.dot(n) < velocity.dot(desiredUp):
+				desiredUp = n
 		reorient_air(desiredUp, delta)
 
 func reorient_ground(new_up:Vector3, interp:float):

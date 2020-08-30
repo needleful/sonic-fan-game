@@ -24,7 +24,9 @@ extents = Vector3( 3.23802, 1.18658, 3.32686 )
 
 [node name="motorbike" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+accel_move = 25.0
 accel_air = 1.0
+speed_rotation = 8.0
 
 [node name="Sun" parent="." index="2"]
 visible = false
