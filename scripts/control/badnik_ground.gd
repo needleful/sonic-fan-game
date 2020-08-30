@@ -41,6 +41,11 @@ var coyote_timer = 0
 func _ready():
 	$AttackArea.connect("body_entered", self, "onAttack")
 	$AttackArea.connect("body_exited", self, "onAttackStop")
+	$AttackArea/Weapon.connect("body_entered", self, "kill")
+
+func kill(body):
+	if body is Sonic:
+		body.kill()
 
 func _physics_process(delta):
 	match mstate:

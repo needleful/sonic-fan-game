@@ -295,3 +295,6 @@ func get_camera_rot()->Vector2:
 func set_gravity(g):
 	gravity = g
 	up = -(g.normalized())
+
+func kill():
+	get_tree().reload_current_scene()
