@@ -115,6 +115,7 @@ func _physics_process(delta):
 				new_state = State.Air
 		State.Air:
 			if is_on_floor():
+				camFollow.global_transform.basis = camYaw.global_transform.basis
 				statePlayback.travel("Ground")
 				new_state = State.Ground
 	state = new_state
