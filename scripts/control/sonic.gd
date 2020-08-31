@@ -62,6 +62,7 @@ onready var statePlayback: AnimationNodeStateMachinePlayback = anim["parameters/
 onready var debug_imm : ImmediateGeometry = $debug_imm
 
 var stop = false
+var dead = false
 
 func _ready():
 	cam.current = true
@@ -306,4 +307,8 @@ func attack_position():
 	return $CollisionShape.global_transform.origin
 
 func kill():
+	dead = true
 	var _x = get_tree().reload_current_scene()
+
+func die():
+	$CustomAnimation.play("Die")

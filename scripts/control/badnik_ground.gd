@@ -11,7 +11,7 @@ export(NodePath) var sonicNode: NodePath
 onready var sonic: Sonic = get_node(sonicNode)
 
 export(float) var accel_move:float = 30
-export(float) var accel_stop: float = 60
+export(float) var accel_pivot: float = 20
 export(float) var accel_air: float = 9
 export(float) var drag_move: float = 0.25
 export(float) var speed_rotation:float = 3*PI
@@ -57,9 +57,11 @@ func _ready():
 
 func kill(body):
 	if body is Sonic:
-		body.kill()
+		body.die()
 
 func _physics_process(delta):
+	if global_transform.origin.y <= -90:
+		die()
 	match mstate:
 		MoveState.Ground:
 			if !is_on_floor():
@@ -106,10 +108,9 @@ func _physics_process(delta):
 		move *= accel_air
 		drag = -DRAG_AIR*velocity*velocity*velocity
 	else:
-		if dir.dot(velocity) <= 0:
-			move *= accel_stop
-		else:
-			move *= accel_move
+		move *= accel_move
+		var correction = move.normalized() - velocity.normalized()
+		move += correction*accel_pivot
 		drag = -drag_move*velocity
 	
 	velocity += (gravity + move + drag)*delta
@@ -162,7 +163,7 @@ func onAttackStop(_b):
 	attacking = false
 
 func onVisionEntered(body):
-	if body is Sonic:
+	if body is Sonic and !body.dead:
 		player_in_cone = true
 
 func onVisionExited(body):

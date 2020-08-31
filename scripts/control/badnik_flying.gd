@@ -5,14 +5,14 @@ export(NodePath) var weaponNode: NodePath = NodePath("Eye")
 
 export(float) var player_outer_radius = 8
 export(float) var player_inner_radius = 3
-export(float) var acceleration = 20
-export(float) var pivot_acceleration = 40
+export(float) var acceleration = 25
+export(float) var pivot_acceleration = 25
 export(float) var torque_to_player = 10
 export(float) var torque_to_reorient = 10
 export(float) var repulsion = 10
 export(float) var avoidance_strength = 18
 export(float) var angular_drag = .9
-export(float) var weapon_rotation_speed: float = deg2rad(45)
+export(float) var weapon_rotation_speed: float = deg2rad(33)
 
 const DRAG_AIR = 0.00005
 onready var sonic: Sonic = get_node(sonicNode)
@@ -22,6 +22,10 @@ onready var anim: AnimationPlayer = $AttackAnimations
 var aim = false
 var firing = false
 var commit = false
+var cancel = false
+
+const TIME_TO_CANCEL = .65
+var cancel_timer = 0
 
 func _ready():
 	var _c = $Eye/AttackArea.connect("body_entered", self, "onAttackEnter")
@@ -29,13 +33,23 @@ func _ready():
 
 func _physics_process(delta):
 	if firing:
-		if aim:
-			sonic.kill()
 		for b in $Eye/AttackArea.get_overlapping_bodies():
-			if b.has_method("die"):
+			if b != self and b.has_method("die"):
 				b.die()
-	var dist = sonic.global_transform.origin - global_transform.origin
-	var dir:Vector3 = dist.normalized()
+	elif cancel:
+		cancel_timer += delta
+		if commit:
+			cancel = false
+			cancel_timer = 0
+		elif cancel_timer >= TIME_TO_CANCEL:
+			anim.play("CancelAttack")
+			aim = false
+			cancel = false
+			commit = false
+			cancel_timer = 0
+	
+	var dist = sonic.global_transform.origin + sonic.velocity*delta - global_transform.origin
+	var dir:Vector3 = (dist).normalized()
 	var f = global_transform.basis.z
 	var l = global_transform.basis.x
 	var dl = MoveMath.reject(l, Vector3.UP).normalized()
@@ -58,22 +72,20 @@ func _physics_process(delta):
 			var p = rc.get_collision_point()
 			var strength = rc.cast_to.length_squared() - (p - rc.global_transform.origin).length_squared()
 			var d = (p - rc.global_transform.origin).normalized()*strength
-			#if dir.length_squared() > 0:
-			#	d = MoveMath.reject(d, dir)
 			if is_nan(d.x) or is_nan(d.y) or is_nan(d.z):
 				continue
 			avoidance -= d
 	if avoidance.length_squared() > 0:
 		avoidance = avoidance.normalized()
-	var move : Vector3
-	if dir.dot(linear_velocity) <= 0:
-		move = dir*pivot_acceleration
-	else:
-		move = dir*acceleration
+	
+	var move : Vector3 = (dir)*acceleration
 	var accel:Vector3 = move + avoidance*avoidance_strength
+	
+	var move_correction = accel.normalized() - linear_velocity.normalized()
+	var vcor = move_correction*pivot_acceleration
 	var drag:Vector3 = DRAG_AIR*linear_velocity*linear_velocity*linear_velocity
 	
-	add_central_force((accel-drag)*mass)
+	add_central_force((accel-drag+vcor)*mass)
 	add_torque(dtorq)
 	add_torque(rtorq)
 	add_torque(drtorq)
@@ -91,22 +103,29 @@ func kill_start():
 
 func kill_end():
 	firing = false
-	if aim:
-		anim.queue("Attack")
 
 func onAttackEnter(body):
-	if body is Sonic:
-		aim = true
+	if !(body is Sonic) or body.dead:
+		return
+	aim = true
+	cancel = false
+	cancel_timer = 0
+	if !anim.is_playing() and anim.current_animation != "Attack":
 		anim.play("Attack")
 
 func onAttackExit(body):
 	if body is Sonic:
-		aim = false
-		if not commit:
-			anim.play_backwards("Attack")
+		if !commit:
+			cancel_timer = 0
+			cancel = true
+		else:
+			aim = false
 
 func attack_commit():
 	commit = true
 
 func attack_start():
 	commit = false
+
+func die():
+	queue_free()
