@@ -11,7 +11,7 @@ func _input(event):
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	elif event.is_action_pressed("dev_reset"):
-		get_tree().reload_current_scene()
+		var _x = get_tree().reload_current_scene()
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

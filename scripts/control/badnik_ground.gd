@@ -23,7 +23,6 @@ const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
 onready var weapon = $AttackArea/Weapon
 onready var visionCone = $VisionArea
-onready var visionRay = $VisionArea/VisionRay
 
 enum AIState {
 	Patrol,
@@ -50,11 +49,11 @@ var vision_timer = 0
 var player_in_cone = false
 
 func _ready():
-	$AttackArea.connect("body_entered", self, "onAttack")
-	$AttackArea.connect("body_exited", self, "onAttackStop")
-	$AttackArea/Weapon.connect("body_entered", self, "kill")
-	visionCone.connect("body_entered", self, "onVisionEntered")
-	visionCone.connect("body_exited", self, "onVisionExited")
+	var _x = $AttackArea.connect("body_entered", self, "onAttack")
+	_x = $AttackArea.connect("body_exited", self, "onAttackStop")
+	_x = $AttackArea/Weapon.connect("body_entered", self, "kill")
+	_x = visionCone.connect("body_entered", self, "onVisionEntered")
+	_x = visionCone.connect("body_exited", self, "onVisionExited")
 
 func kill(body):
 	if body is Sonic:

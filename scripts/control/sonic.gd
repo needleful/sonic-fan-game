@@ -82,7 +82,7 @@ func _input(event):
 		else:
 			Engine.time_scale = 1
 
-func _process(delta):
+func _process(_delta):
 	var c = get_camera_rot()
 	camYaw.rotate_y(-c.x)
 	if cam_reverse.current:
@@ -185,12 +185,12 @@ func process_ground(delta):
 		drag = -DRAG_STOPPING*v
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
-			var stop
+			var stop_force
 			if delta*ACCEL_STOP >= 1:
-				stop = velocity
+				stop_force = velocity
 			else:
-				stop = velocity*delta*ACCEL_STOP
-			velocity -= stop
+				stop_force = velocity*delta*ACCEL_STOP
+			velocity -= stop_force
 		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
 			velocity = gravity.project(up)*delta
 	else:
@@ -248,7 +248,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta*3, 1)
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
-	var left = camYaw.global_transform.basis.x
 	var df = Vector3(forward.x, 0, forward.z).normalized()
 	
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
@@ -257,7 +256,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	var angle = upCurrent.angle_to(upTarget)
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	
-	var upRot: Vector3
 	if rollAxis.length_squared() > 0.9:
 		global_rotate(rollAxis, angle*interp)
 		up = up.rotated(rollAxis, angle*interp)
@@ -305,4 +303,4 @@ func set_gravity(g):
 	up = -(g.normalized())
 
 func kill():
-	get_tree().reload_current_scene()
+	var _x = get_tree().reload_current_scene()

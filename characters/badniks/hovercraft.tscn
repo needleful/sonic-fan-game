@@ -41,10 +41,10 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 4, 5 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 5 ),
+"transitions": PoolRealArray( 1, 0.108819, 0.125, 1 ),
 "update": 0,
-"values": [ Color( 0.980392, 0.647059, 1, 1 ), Color( 1, 0.0627451, 0.0627451, 1 ), Color( 0.980392, 0.647059, 1, 1 ) ]
+"values": [ Color( 0.980392, 0.647059, 1, 1 ), Color( 0.980392, 0.647059, 1, 1 ), Color( 0.997549, 0.135784, 0.179902, 1 ), Color( 0.980392, 0.647059, 1, 1 ) ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("Eye/SpotLight:light_energy")
@@ -53,10 +53,10 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 4, 5 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 2.0, 4.0, 2.0 ]
+"values": [ 2.0, 2.0, 4.0, 2.0 ]
 }
 tracks/3/type = "value"
 tracks/3/path = NodePath("Eye/AttackMesh:visible")
@@ -89,9 +89,15 @@ tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray( 4, 4.5 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 4.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "values": [ {
+"args": [  ],
+"method": "attack_start"
+}, {
+"args": [  ],
+"method": "attack_commit"
+}, {
 "args": [  ],
 "method": "kill_start"
 }, {
@@ -101,9 +107,10 @@ tracks/5/keys = {
 }
 
 [node name="hovercraft" instance=ExtResource( 1 )]
-mass = 250.0
-gravity_scale = 0.0
 script = ExtResource( 2 )
+
+[node name="Body" parent="." index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00628161, -0.0187172, -0.0176404 )
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="1"]
 shape = SubResource( 1 )
@@ -128,7 +135,7 @@ mesh = SubResource( 3 )
 material/0 = ExtResource( 3 )
 
 [node name="AttackArea" type="Area" parent="Eye" index="2"]
-collision_layer = 2
+collision_layer = 3
 collision_mask = 2
 
 [node name="CollisionShape" type="CollisionShape" parent="Eye/AttackArea" index="0"]
@@ -137,3 +144,45 @@ shape = SubResource( 4 )
 
 [node name="AttackAnimations" type="AnimationPlayer" parent="." index="3"]
 anims/Attack = SubResource( 5 )
+
+[node name="Avoidance" type="Spatial" parent="." index="4"]
+
+[node name="RayCast" type="RayCast" parent="Avoidance" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.812829, -0.834586 )
+enabled = true
+cast_to = Vector3( 0, -4, 0 )
+
+[node name="RayCast2" type="RayCast" parent="Avoidance" index="1"]
+transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 1.4892, -0.0372666, -0.434586 )
+enabled = true
+cast_to = Vector3( 0, -4, 0 )
+
+[node name="RayCast3" type="RayCast" parent="Avoidance" index="2"]
+transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -1.489, -0.037, -0.435 )
+enabled = true
+cast_to = Vector3( 0, 4, 0 )
+
+[node name="RayCast4" type="RayCast" parent="Avoidance" index="3"]
+transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0.887171, -0.834586 )
+enabled = true
+cast_to = Vector3( 0, -4, 0 )
+
+[node name="RayCast5" type="RayCast" parent="Avoidance" index="4"]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, -0.79895, 0.217209 )
+enabled = true
+cast_to = Vector3( 0, -3, 0 )
+
+[node name="RayCast6" type="RayCast" parent="Avoidance" index="5"]
+transform = Transform( 0.353553, -0.707107, -0.612372, 0.866025, -3.78552e-08, 0.5, -0.353553, -0.707107, 0.612372, 1.4892, 0.0727062, 0.175838 )
+enabled = true
+cast_to = Vector3( 0, -3, 0 )
+
+[node name="RayCast7" type="RayCast" parent="Avoidance" index="6"]
+transform = Transform( -0.353553, -0.707107, 0.612372, 0.866025, -3.78552e-08, 0.5, -0.353553, 0.707107, 0.612373, -1.489, 0.0727303, 0.175346 )
+enabled = true
+cast_to = Vector3( 0, 3, 0 )
+
+[node name="RayCast8" type="RayCast" parent="Avoidance" index="7"]
+transform = Transform( 1, 0, 0, 0, -0.642788, 0.766044, 0, -0.766044, -0.642788, 0, 0.673293, -0.632791 )
+enabled = true
+cast_to = Vector3( 0, -3, 0 )
