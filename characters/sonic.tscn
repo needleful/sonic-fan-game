@@ -3,68 +3,68 @@
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
 
-[sub_resource type="CapsuleShape" id=12]
+[sub_resource type="CapsuleShape" id=1]
 radius = 0.2
 height = 0.4
 
-[sub_resource type="SphereShape" id=24]
+[sub_resource type="SphereShape" id=2]
 radius = 0.2
 
-[sub_resource type="SphereShape" id=23]
+[sub_resource type="SphereShape" id=3]
 radius = 0.15
 
-[sub_resource type="SpatialMaterial" id=13]
+[sub_resource type="SpatialMaterial" id=4]
 flags_unshaded = true
 params_cull_mode = 2
 albedo_color = Color( 1, 0, 0.937255, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=14]
+[sub_resource type="AnimationNodeAnimation" id=5]
 animation = "Idle-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=15]
+[sub_resource type="AnimationNodeTimeScale" id=6]
 
-[sub_resource type="AnimationNodeAnimation" id=16]
+[sub_resource type="AnimationNodeAnimation" id=7]
 animation = "Walk-loop"
 
-[sub_resource type="AnimationNodeBlendTree" id=17]
+[sub_resource type="AnimationNodeBlendTree" id=8]
 resource_name = "walk_anim"
 graph_offset = Vector2( -404, 105 )
 nodes/output/position = Vector2( 280, 140 )
-nodes/speed/node = SubResource( 15 )
+nodes/speed/node = SubResource( 6 )
 nodes/speed/position = Vector2( 80, 140 )
-nodes/walk/node = SubResource( 16 )
+nodes/walk/node = SubResource( 7 )
 nodes/walk/position = Vector2( -120, 140 )
 node_connections = [ "speed", 0, "walk", "output", 0, "speed" ]
 
-[sub_resource type="AnimationNodeAnimation" id=11]
+[sub_resource type="AnimationNodeAnimation" id=9]
 animation = "Run-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=18]
+[sub_resource type="AnimationNodeTimeScale" id=10]
 
-[sub_resource type="AnimationNodeBlendTree" id=10]
+[sub_resource type="AnimationNodeBlendTree" id=11]
 nodes/output/position = Vector2( 600, 40 )
-nodes/run/node = SubResource( 11 )
+nodes/run/node = SubResource( 9 )
 nodes/run/position = Vector2( 200, 40 )
-nodes/speed/node = SubResource( 18 )
+nodes/speed/node = SubResource( 10 )
 nodes/speed/position = Vector2( 400, 40 )
 node_connections = [ "speed", 0, "run", "output", 0, "speed" ]
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=19]
-blend_point_0/node = SubResource( 14 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=12]
+blend_point_0/node = SubResource( 5 )
 blend_point_0/pos = 0.0
-blend_point_1/node = SubResource( 17 )
+blend_point_1/node = SubResource( 8 )
 blend_point_1/pos = 1.0
-blend_point_2/node = SubResource( 10 )
+blend_point_2/node = SubResource( 11 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 10.0
 snap = 1.0
 
-[sub_resource type="AnimationNodeStateMachine" id=20]
-states/Ground/node = SubResource( 19 )
+[sub_resource type="AnimationNodeStateMachine" id=13]
+states/Ground/node = SubResource( 12 )
 states/Ground/position = Vector2( 385, 49 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=21]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=14]
 
 [node name="sonic" instance=ExtResource( 1 )]
 collision_layer = 2
@@ -76,7 +76,7 @@ visible = false
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="3"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.4, 0 )
-shape = SubResource( 12 )
+shape = SubResource( 1 )
 
 [node name="CamYaw" type="Spatial" parent="." index="4"]
 
@@ -84,7 +84,7 @@ shape = SubResource( 12 )
 
 [node name="SpringArm" type="SpringArm" parent="CamYaw/CamFollow" index="0"]
 transform = Transform( 1, 0, 0, 6.08439e-15, -0.917602, 0.3975, -5.10775e-15, -0.3975, -0.917602, 0, 0.792057, 0 )
-shape = SubResource( 24 )
+shape = SubResource( 2 )
 spring_length = 3.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/SpringArm" index="0"]
@@ -128,7 +128,7 @@ margin_bottom = 68.0
 
 [node name="Reverse" type="SpringArm" parent="CamYaw/CamFollow" index="1"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707062, 0 )
-shape = SubResource( 23 )
+shape = SubResource( 3 )
 spring_length = 5.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/Reverse" index="0"]
@@ -137,13 +137,13 @@ near = 0.08
 far = 8192.0
 
 [node name="debug_imm" type="ImmediateGeometry" parent="." index="5"]
-material_override = SubResource( 13 )
+material_override = SubResource( 4 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="6"]
-tree_root = SubResource( 20 )
+tree_root = SubResource( 13 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 21 )
+parameters/playback = SubResource( 14 )
 parameters/Ground/blend_position = 0.979955
 parameters/Ground/1/speed/scale = 1.0
 parameters/Ground/2/speed/scale = 1.0

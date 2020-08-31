@@ -302,5 +302,8 @@ func set_gravity(g):
 	gravity = g
 	up = -(g.normalized())
 
+func attack_position():
+	return $CollisionShape.global_transform.origin
+
 func kill():
 	var _x = get_tree().reload_current_scene()
