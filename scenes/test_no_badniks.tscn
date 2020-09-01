@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/pause.gd" type="Script" id=2]
@@ -21,12 +21,6 @@ size = Vector3( 80, 2, 80 )
 
 [sub_resource type="ConcavePolygonShape" id=4]
 data = PoolVector3Array( -40, 1, 40, 40, 1, 40, -40, -1, 40, 40, 1, 40, 40, -1, 40, -40, -1, 40, 40, 1, -40, -40, 1, -40, 40, -1, -40, -40, 1, -40, -40, -1, -40, 40, -1, -40, 40, 1, 40, 40, 1, -40, 40, -1, 40, 40, 1, -40, 40, -1, -40, 40, -1, 40, -40, 1, -40, -40, 1, 40, -40, -1, -40, -40, 1, 40, -40, -1, 40, -40, -1, -40, 40, 1, 40, -40, 1, 40, 40, 1, -40, -40, 1, 40, -40, 1, -40, 40, 1, -40, -40, -1, 40, 40, -1, 40, -40, -1, -40, 40, -1, 40, 40, -1, -40, -40, -1, -40 )
-
-[sub_resource type="CubeMesh" id=7]
-size = Vector3( 80, 2, 900 )
-
-[sub_resource type="ConcavePolygonShape" id=8]
-data = PoolVector3Array( -40, 1, 450, 40, 1, 450, -40, -1, 450, 40, 1, 450, 40, -1, 450, -40, -1, 450, 40, 1, -450, -40, 1, -450, 40, -1, -450, -40, 1, -450, -40, -1, -450, 40, -1, -450, 40, 1, 450, 40, 1, -450, 40, -1, 450, 40, 1, -450, 40, -1, -450, 40, -1, 450, -40, 1, -450, -40, 1, 450, -40, -1, -450, -40, 1, 450, -40, -1, 450, -40, -1, -450, 40, 1, 450, -40, 1, 450, 40, 1, -450, -40, 1, 450, -40, 1, -450, 40, 1, -450, -40, -1, 450, 40, -1, 450, -40, -1, -450, 40, -1, 450, 40, -1, -450, -40, -1, -450 )
 
 [sub_resource type="CubeMesh" id=5]
 size = Vector3( 30, 2, 10 )
@@ -141,16 +135,6 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/MeshInstance6/StaticBody"]
 shape = SubResource( 4 )
-
-[node name="LargeWall" type="MeshInstance" parent="Environment/Ground"]
-transform = Transform( -4.37114e-08, 4.37114e-08, -1, 1, 1.91069e-15, -4.37114e-08, 0, -1, -4.37114e-08, -487.526, 14.985, -65.22 )
-mesh = SubResource( 7 )
-material/0 = null
-
-[node name="StaticBody" type="StaticBody" parent="Environment/Ground/LargeWall"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/LargeWall/StaticBody"]
-shape = SubResource( 8 )
 
 [node name="MeshInstance3" type="MeshInstance" parent="Environment/Ground"]
 transform = Transform( 1, 0, 0, 0, 0.996937, 0.0782155, 0, -0.0782155, 0.996937, 7.62939e-06, 3.10731, 158.58 )
@@ -351,3 +335,17 @@ operation = 2
 radius = 5.86617
 height = 16.0813
 sides = 24
+
+[node name="CSGBox" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -141.972, 7.62939e-06, -49.4806 )
+use_collision = true
+width = 220.126
+height = 109.92
+depth = 82.8674
+
+[node name="CSGCylinder" type="CSGCylinder" parent="CSGBox"]
+transform = Transform( 0.938782, 0, 0.344512, 0, 1, 0, -0.344512, 0, 0.938782, 74.1029, 0, 238.233 )
+operation = 2
+radius = 241.298
+height = 171.634
+sides = 64

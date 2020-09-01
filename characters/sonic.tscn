@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -125,15 +125,20 @@ tracks/3/keys = {
 "values": [ ExtResource( 3 ) ]
 }
 
+[sub_resource type="CapsuleShape" id=17]
+radius = 0.26548
+height = 0.389662
+
 [node name="sonic" instance=ExtResource( 1 )]
 collision_layer = 2
 collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="debugUI" type="PanelContainer" parent="." index="0"]
-visible = false
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -155.0
 margin_right = 201.0
-margin_bottom = 155.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -316,3 +321,10 @@ anims/Die = SubResource( 16 )
 [node name="Audio" type="AudioStreamPlayer" parent="." index="11"]
 stream = ExtResource( 3 )
 bus = "SFX_Sonic"
+
+[node name="WallRunArea" type="Area" parent="." index="12"]
+collision_layer = 0
+
+[node name="CollisionShape" type="CollisionShape" parent="WallRunArea" index="0"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.397762, 0 )
+shape = SubResource( 17 )
