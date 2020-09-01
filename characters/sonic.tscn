@@ -1,7 +1,8 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
+[ext_resource path="res://assets/sfx/death.wav" type="AudioStream" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.2
@@ -95,6 +96,30 @@ tracks/1/keys = {
 "method": "kill"
 } ]
 }
+tracks/2/type = "value"
+tracks/2/path = NodePath("Audio:playing")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.05 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("Audio:stream")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ ExtResource( 3 ) ]
+}
 
 [node name="sonic" instance=ExtResource( 1 )]
 collision_layer = 2
@@ -112,14 +137,17 @@ shape = SubResource( 1 )
 
 [node name="CamFollow" type="Spatial" parent="CamYaw" index="0"]
 
-[node name="SpringArm" type="SpringArm" parent="CamYaw/CamFollow" index="0"]
+[node name="Listener" type="Listener" parent="CamYaw/CamFollow" index="0"]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.657351, 0 )
+current = true
+
+[node name="SpringArm" type="SpringArm" parent="CamYaw/CamFollow" index="1"]
 transform = Transform( 1, 0, 0, 6.08439e-15, -0.917602, 0.3975, -5.10775e-15, -0.3975, -0.917602, 0, 0.792057, 0 )
 shape = SubResource( 2 )
 spring_length = 3.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/SpringArm" index="0"]
 transform = Transform( -1, 0, -8.74228e-08, -1.0533e-08, -0.992715, 0.120483, -8.67859e-08, 0.120483, 0.992715, 0, 0.0199217, 3.03234 )
-doppler_tracking = 2
 near = 0.08
 far = 8192.0
 
@@ -156,13 +184,12 @@ margin_top = 54.0
 margin_right = 187.0
 margin_bottom = 68.0
 
-[node name="Reverse" type="SpringArm" parent="CamYaw/CamFollow" index="1"]
+[node name="Reverse" type="SpringArm" parent="CamYaw/CamFollow" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707062, 0 )
 shape = SubResource( 3 )
 spring_length = 5.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/Reverse" index="0"]
-doppler_tracking = 2
 fov = 45.0
 near = 0.08
 far = 8192.0
@@ -180,7 +207,6 @@ parameters/Ground/1/speed/scale = 1.0
 parameters/Ground/2/speed/scale = 1.0
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="7"]
-pause_mode = 2
 anims/Die = SubResource( 15 )
 
 [node name="Black" type="ColorRect" parent="." index="8"]
@@ -198,3 +224,7 @@ anchor_bottom = 1.0
 text = "Game Over"
 align = 1
 valign = 1
+
+[node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
+stream = ExtResource( 3 )
+bus = "SFX_Sonic"

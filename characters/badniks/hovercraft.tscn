@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://assets/models-export/badniks/hovercraft.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/badnik_flying.gd" type="Script" id=2]
@@ -15,15 +15,32 @@ points = PoolVector3Array( 0, -0.694352, -1.17004, 0.269076, -0.754792, -0.94707
 [sub_resource type="CylinderMesh" id=2]
 top_radius = 0.1
 bottom_radius = 0.1
-height = 8.0
+height = 9.0
 
 [sub_resource type="SphereMesh" id=3]
 radius = 0.5
 height = 1.0
 
 [sub_resource type="CylinderShape" id=4]
-radius = 0.19375
-height = 8.2
+radius = 0.25
+height = 9.0
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_color = Color( 0.968627, 0.423529, 1, 1 )
+metallic = 1.0
+roughness = 0.0
+emission_enabled = true
+emission = Color( 1, 0.2, 0.92549, 1 )
+emission_energy = 2.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="SphereMesh" id=8]
+material = SubResource( 7 )
+radius = 0.2
+height = 0.4
+radial_segments = 6
+rings = 6
 
 [sub_resource type="Animation" id=5]
 length = 6.0
@@ -34,10 +51,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 4, 5 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 4, 4.2, 4.5, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 0.00248937, 1 ),
 "update": 0,
-"values": [ 8.0, 5.0, 8.0 ]
+"values": [ 8.0, 4.0, 20.0, 8.0, 8.0 ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("Eye/SpotLight:light_color")
@@ -46,10 +63,10 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 3.5, 4, 5 ),
-"transitions": PoolRealArray( 1, 0.108819, 0.125, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 4.2, 5 ),
+"transitions": PoolRealArray( 1, 0.108819, 0.125, 0.176777, 1 ),
 "update": 0,
-"values": [ Color( 0.980392, 0.647059, 1, 1 ), Color( 0.980392, 0.647059, 1, 1 ), Color( 0.997549, 0.135784, 0.179902, 1 ), Color( 0.980392, 0.647059, 1, 1 ) ]
+"values": [ Color( 0.980392, 0.647059, 1, 1 ), Color( 1, 0.980392, 0.909804, 1 ), Color( 0.997549, 0.135784, 0.179902, 1 ), Color( 1, 0.572549, 0.878431, 1 ), Color( 0.980392, 0.647059, 1, 1 ) ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("Eye/SpotLight:light_energy")
@@ -58,10 +75,10 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 3.5, 4, 5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 4.2, 4.5, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 0.00328476, 1 ),
 "update": 0,
-"values": [ 2.0, 2.0, 4.0, 2.0 ]
+"values": [ 2.0, 2.0, 4.0, 9.0, 2.0, 2.0 ]
 }
 tracks/3/type = "value"
 tracks/3/path = NodePath("Eye/AttackMesh:visible")
@@ -70,22 +87,22 @@ tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 3.5, 4, 4.5 ),
+"times": PoolRealArray( 0, 4, 4.5 ),
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 1,
 "values": [ false, true, false ]
 }
 tracks/4/type = "value"
-tracks/4/path = NodePath("Eye/AttackArea/CollisionShape:shape:radius")
+tracks/4/path = NodePath("Eye/AttackMesh/AttackArea/CollisionShape:shape:radius")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0, 4, 5 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
+"times": PoolRealArray( 0, 3.5, 4, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 0,
-"values": [ 0.5, 0.15, 0.5 ]
+"values": [ 0.25, 0.23, 0.09, 0.25 ]
 }
 tracks/5/type = "method"
 tracks/5/path = NodePath(".")
@@ -94,12 +111,9 @@ tracks/5/loop_wrap = true
 tracks/5/imported = false
 tracks/5/enabled = true
 tracks/5/keys = {
-"times": PoolRealArray( 0, 3.5, 4, 4.5 ),
-"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"times": PoolRealArray( 3.5, 4, 4.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
 "values": [ {
-"args": [  ],
-"method": "attack_start"
-}, {
 "args": [  ],
 "method": "attack_commit"
 }, {
@@ -158,12 +172,48 @@ tracks/9/keys = {
 "update": 1,
 "values": [ false, true ]
 }
+tracks/10/type = "value"
+tracks/10/path = NodePath("Eye/MeshInstance:mesh:material:emission")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/keys = {
+"times": PoolRealArray( 0, 3.4, 4, 5.2 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 0.243137, 0.933333, 1 ), Color( 1, 0.831373, 0.984314, 1 ), Color( 1, 0.831373, 0.984314, 1 ), Color( 1, 0.2, 0.92549, 1 ) ]
+}
+tracks/11/type = "value"
+tracks/11/path = NodePath("Eye/OmniLight:light_energy")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/keys = {
+"times": PoolRealArray( 0, 4, 4.1, 4.5, 5 ),
+"transitions": PoolRealArray( 1, 1, 0.170755, 0.170755, 1 ),
+"update": 0,
+"values": [ 0.6, 1.01463, 4.0, 4.0, 0.6 ]
+}
+tracks/12/type = "value"
+tracks/12/path = NodePath("Eye/MeshInstance:scale")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/keys = {
+"times": PoolRealArray( 3.5, 3.7, 4.2, 4.3 ),
+"transitions": PoolRealArray( 1, 0.31864, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 1, 1, 1 ), Vector3( 0.8, 0.8, 0.8 ), Vector3( 0.8, 0.8, 0.8 ), Vector3( 1, 1, 1 ) ]
+}
 
 [sub_resource type="Animation" id=6]
 resource_name = "CancelAttack"
 length = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("Eye/SpotLight:spot_range")
+tracks/0/path = NodePath("Eye/SpotLight:spot_angle")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -175,7 +225,7 @@ tracks/0/keys = {
 "values": [ 8.0 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("Eye/SpotLight:spot_angle")
+tracks/1/path = NodePath("Eye/SpotLight:light_color")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -184,22 +234,22 @@ tracks/1/keys = {
 "times": PoolRealArray( 0.5 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 8.0 ]
+"values": [ Color( 0.980392, 0.647059, 1, 1 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Eye/SpotLight:light_color")
+tracks/2/path = NodePath("AttackAudio:playing")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0.5 ),
+"times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Color( 0.980392, 0.647059, 1, 1 ) ]
+"update": 1,
+"values": [ true ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("AttackAudio:playing")
+tracks/3/path = NodePath("AttackAudio:stream")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -208,19 +258,57 @@ tracks/3/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ true ]
+"values": [ ExtResource( 6 ) ]
 }
-tracks/4/type = "value"
-tracks/4/path = NodePath("AttackAudio:stream")
+tracks/4/type = "method"
+tracks/4/path = NodePath(".")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
 tracks/4/enabled = true
 tracks/4/keys = {
-"times": PoolRealArray( 0 ),
+"times": PoolRealArray( 0.5 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ ExtResource( 6 ) ]
+"values": [ {
+"args": [  ],
+"method": "cancel_end"
+} ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("Eye/OmniLight:light_energy")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 0.6 ]
+}
+tracks/6/type = "value"
+tracks/6/path = NodePath("Eye/MeshInstance:mesh:material:emission")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Color( 1, 0.243137, 0.933333, 1 ) ]
+}
+tracks/7/type = "value"
+tracks/7/path = NodePath("Eye/SpotLight:light_energy")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 2.0 ]
 }
 
 [node name="hovercraft" instance=ExtResource( 1 )]
@@ -233,33 +321,46 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00628161, -0.0187172, -0.017
 shape = SubResource( 1 )
 
 [node name="SpotLight" type="SpotLight" parent="Eye" index="0"]
-transform = Transform( 2.46147, 0, 0, 0, -2.46147, 2.15188e-07, 0, -2.15188e-07, -2.46147, 0, 0, 0.492293 )
+transform = Transform( 1, 0, 0, 0, -1, 1.50996e-07, 0, -1.50996e-07, -1, 0, 0, 0.492293 )
 light_color = Color( 0.980392, 0.647059, 1, 1 )
 light_energy = 2.0
 shadow_enabled = true
-spot_range = 8.0
-spot_angle = 5.375
+spot_range = 12.0
+spot_angle = 8.0
 
 [node name="AttackMesh" type="MeshInstance" parent="Eye" index="1"]
-transform = Transform( 2.46147, 0, 0, 0, -1.07594e-07, -2.46147, 0, 2.46147, -1.07594e-07, 0, 0, 10.1695 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 4.67329 )
 visible = false
 cast_shadow = 0
 mesh = SubResource( 2 )
 material/0 = ExtResource( 3 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Eye/AttackMesh" index="0"]
-transform = Transform( 1, 0, 0, 0, 1, 7.10543e-15, 0, -7.10543e-15, 1, 0, 4, -1.74846e-07 )
+transform = Transform( 1, 0, 0, 0, 1, 7.10543e-15, 0, -7.10543e-15, 1, 0, 4.18337, -1.82861e-07 )
 cast_shadow = 0
 mesh = SubResource( 3 )
 material/0 = ExtResource( 3 )
 
-[node name="AttackArea" type="Area" parent="Eye" index="2"]
+[node name="AttackArea" type="Area" parent="Eye/AttackMesh" index="1"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.83935, -0.716811 )
 collision_layer = 3
 collision_mask = 2
 
-[node name="CollisionShape" type="CollisionShape" parent="Eye/AttackArea" index="0"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 4.3 )
+[node name="CollisionShape" type="CollisionShape" parent="Eye/AttackMesh/AttackArea" index="0"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.719425, 1.9084 )
 shape = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Eye" index="2"]
+cast_shadow = 0
+mesh = SubResource( 8 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Eye" index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.368106 )
+light_color = Color( 1, 0.654902, 0.996078, 1 )
+light_energy = 0.6
+light_specular = 0.3
+omni_range = 0.7
 
 [node name="AttackAnimations" type="AnimationPlayer" parent="." index="3"]
 anims/Attack = SubResource( 5 )
@@ -308,7 +409,7 @@ enabled = true
 cast_to = Vector3( 0, -3, 0 )
 
 [node name="AttackAudio" type="AudioStreamPlayer3D" parent="." index="5"]
-stream = ExtResource( 5 )
+stream = ExtResource( 4 )
 
 [node name="Secondary" type="AudioStreamPlayer3D" parent="AttackAudio" index="0"]
 stream = ExtResource( 7 )
