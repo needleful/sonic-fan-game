@@ -10,7 +10,7 @@ export(float) var pivot_acceleration = 25
 export(float) var torque_to_player = 10
 export(float) var torque_to_reorient = 10
 export(float) var repulsion = 10
-export(float) var avoidance_strength = 18
+export(float) var avoidance_strength = 30
 export(float) var angular_drag = .9
 export(float) var weapon_rotation_speed: float = deg2rad(40)
 
@@ -40,7 +40,13 @@ func _physics_process(delta):
 				set_state(WeaponState.Charging)
 		WeaponState.Firing:
 			for b in attackArea.get_overlapping_bodies():
-				if b != self and b.has_method("die"):
+				if b is Sonic:
+					var space = get_world().space
+					var dstate = PhysicsServer.space_get_direct_state(space)
+					var res = dstate.intersect_ray(weapon.global_transform.origin, b.attack_position(), [self])
+					if res.has("collider") and res["collider"] == b:
+						b.die()
+				elif b != self and b.has_method("die"):
 					b.die()
 		WeaponState.Charging:
 			if !anim.is_playing() or anim.current_animation != "Attack":

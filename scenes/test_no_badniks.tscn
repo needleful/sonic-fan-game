@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/pause.gd" type="Script" id=2]
@@ -21,6 +21,12 @@ size = Vector3( 80, 2, 80 )
 
 [sub_resource type="ConcavePolygonShape" id=4]
 data = PoolVector3Array( -40, 1, 40, 40, 1, 40, -40, -1, 40, 40, 1, 40, 40, -1, 40, -40, -1, 40, 40, 1, -40, -40, 1, -40, 40, -1, -40, -40, 1, -40, -40, -1, -40, 40, -1, -40, 40, 1, 40, 40, 1, -40, 40, -1, 40, 40, 1, -40, 40, -1, -40, 40, -1, 40, -40, 1, -40, -40, 1, 40, -40, -1, -40, -40, 1, 40, -40, -1, 40, -40, -1, -40, 40, 1, 40, -40, 1, 40, 40, 1, -40, -40, 1, 40, -40, 1, -40, 40, 1, -40, -40, -1, 40, 40, -1, 40, -40, -1, -40, 40, -1, 40, 40, -1, -40, -40, -1, -40 )
+
+[sub_resource type="CubeMesh" id=7]
+size = Vector3( 200, 2, 80 )
+
+[sub_resource type="ConcavePolygonShape" id=8]
+data = PoolVector3Array( -100, 1, 40, 100, 1, 40, -100, -1, 40, 100, 1, 40, 100, -1, 40, -100, -1, 40, 100, 1, -40, -100, 1, -40, 100, -1, -40, -100, 1, -40, -100, -1, -40, 100, -1, -40, 100, 1, 40, 100, 1, -40, 100, -1, 40, 100, 1, -40, 100, -1, -40, 100, -1, 40, -100, 1, -40, -100, 1, 40, -100, -1, -40, -100, 1, 40, -100, -1, 40, -100, -1, -40, 100, 1, 40, -100, 1, 40, 100, 1, -40, -100, 1, 40, -100, 1, -40, 100, 1, -40, -100, -1, 40, 100, -1, 40, -100, -1, -40, 100, -1, 40, 100, -1, -40, -100, -1, -40 )
 
 [sub_resource type="CubeMesh" id=5]
 size = Vector3( 30, 2, 10 )
@@ -135,6 +141,26 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/MeshInstance6/StaticBody"]
 shape = SubResource( 4 )
+
+[node name="BigWall1" type="MeshInstance" parent="Environment/Ground"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 139.462, 33.1787, -62.5535 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Environment/Ground/BigWall1"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/BigWall1/StaticBody"]
+shape = SubResource( 8 )
+
+[node name="BigWall2" type="MeshInstance" parent="Environment/Ground"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 139.462, 33.1787, -52.0757 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Environment/Ground/BigWall2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/BigWall2/StaticBody"]
+shape = SubResource( 8 )
 
 [node name="MeshInstance3" type="MeshInstance" parent="Environment/Ground"]
 transform = Transform( 1, 0, 0, 0, 0.996937, 0.0782155, 0, -0.0782155, 0.996937, 7.62939e-06, 3.10731, 158.58 )
