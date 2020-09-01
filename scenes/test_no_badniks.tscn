@@ -2,8 +2,6 @@
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/pause.gd" type="Script" id=2]
-[ext_resource path="res://characters/badniks/motorbike.tscn" type="PackedScene" id=3]
-[ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=4]
 
 [sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.141176, 0.0823529, 0.0823529, 1 )
@@ -24,6 +22,12 @@ size = Vector3( 80, 2, 80 )
 [sub_resource type="ConcavePolygonShape" id=4]
 data = PoolVector3Array( -40, 1, 40, 40, 1, 40, -40, -1, 40, 40, 1, 40, 40, -1, 40, -40, -1, 40, 40, 1, -40, -40, 1, -40, 40, -1, -40, -40, 1, -40, -40, -1, -40, 40, -1, -40, 40, 1, 40, 40, 1, -40, 40, -1, 40, 40, 1, -40, 40, -1, -40, 40, -1, 40, -40, 1, -40, -40, 1, 40, -40, -1, -40, -40, 1, 40, -40, -1, 40, -40, -1, -40, 40, 1, 40, -40, 1, 40, 40, 1, -40, -40, 1, 40, -40, 1, -40, 40, 1, -40, -40, -1, 40, 40, -1, 40, -40, -1, -40, 40, -1, 40, 40, -1, -40, -40, -1, -40 )
 
+[sub_resource type="CubeMesh" id=7]
+size = Vector3( 80, 2, 900 )
+
+[sub_resource type="ConcavePolygonShape" id=8]
+data = PoolVector3Array( -40, 1, 450, 40, 1, 450, -40, -1, 450, 40, 1, 450, 40, -1, 450, -40, -1, 450, 40, 1, -450, -40, 1, -450, 40, -1, -450, -40, 1, -450, -40, -1, -450, 40, -1, -450, 40, 1, 450, 40, 1, -450, 40, -1, 450, 40, 1, -450, 40, -1, -450, 40, -1, 450, -40, 1, -450, -40, 1, 450, -40, -1, -450, -40, 1, 450, -40, -1, 450, -40, -1, -450, 40, 1, 450, -40, 1, 450, 40, 1, -450, -40, 1, 450, -40, 1, -450, 40, 1, -450, -40, -1, 450, 40, -1, 450, -40, -1, -450, 40, -1, 450, 40, -1, -450, -40, -1, -450 )
+
 [sub_resource type="CubeMesh" id=5]
 size = Vector3( 30, 2, 10 )
 
@@ -32,22 +36,11 @@ data = PoolVector3Array( -15, 1, 5, 15, 1, 5, -15, -1, 5, 15, 1, 5, 15, -1, 5, -
 
 [node name="Spatial" type="Spatial"]
 
-[node name="hovercraft" parent="." instance=ExtResource( 4 )]
-transform = Transform( 0.957561, 0, -0.28823, 0, 1, 0, 0.28823, 0, 0.957561, 1.50351, 1.64561, -4.43503 )
-sonicNode = NodePath("../sonic")
-
-[node name="motorbike" parent="." instance=ExtResource( 3 )]
-transform = Transform( -0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 5.62635, 0.118056, 53.8779 )
-sonicNode = NodePath("../sonic")
-
-[node name="sonic" parent="." instance=ExtResource( 1 )]
-
-[node name="Camera" type="Camera" parent="sonic"]
-transform = Transform( 1, 0, 0, 0, 0.984665, 0.174456, 0, -0.174456, 0.984665, 0, 1.09429, 3.32225 )
-
 [node name="pause" type="Node" parent="."]
 pause_mode = 2
 script = ExtResource( 2 )
+
+[node name="sonic" parent="." instance=ExtResource( 1 )]
 
 [node name="Environment" type="Spatial" parent="."]
 
@@ -149,8 +142,18 @@ material/0 = null
 [node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/MeshInstance6/StaticBody"]
 shape = SubResource( 4 )
 
+[node name="LargeWall" type="MeshInstance" parent="Environment/Ground"]
+transform = Transform( -4.37114e-08, 4.37114e-08, -1, 1, 1.91069e-15, -4.37114e-08, 0, -1, -4.37114e-08, -487.526, 14.985, -65.22 )
+mesh = SubResource( 7 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="Environment/Ground/LargeWall"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/LargeWall/StaticBody"]
+shape = SubResource( 8 )
+
 [node name="MeshInstance3" type="MeshInstance" parent="Environment/Ground"]
-transform = Transform( 1, 0, 0, 0, 0.996937, 0.0782155, 0, -0.0782155, 0.996937, 0, 3.06588, 159.467 )
+transform = Transform( 1, 0, 0, 0, 0.996937, 0.0782155, 0, -0.0782155, 0.996937, 7.62939e-06, 3.10731, 158.58 )
 mesh = SubResource( 3 )
 material/0 = null
 
@@ -160,7 +163,7 @@ material/0 = null
 shape = SubResource( 4 )
 
 [node name="MeshInstance4" type="MeshInstance" parent="Environment/Ground"]
-transform = Transform( 1, 0, 0, 0, 0.773586, 0.633692, 0, -0.633692, 0.773586, 0, 31.2582, 229.685 )
+transform = Transform( 1, 0, 0, 0, 0.775716, 0.631083, 0, -0.631083, 0.775716, 0, 31.0568, 228.955 )
 mesh = SubResource( 3 )
 material/0 = null
 
@@ -323,7 +326,7 @@ radius = 2.88361
 height = 11.6261
 
 [node name="LoopHook" type="CSGCylinder" parent="Environment"]
-transform = Transform( 0, -1, 0, 1, 0, 0, 0, 0, 1, 33.1851, 67.2733, 259.748 )
+transform = Transform( 0, -1, 0, 0.991644, 0, 0.129003, -0.129003, 0, 0.991644, 33.1851, 66.8342, 257.223 )
 use_collision = true
 radius = 12.1142
 height = 7.86562

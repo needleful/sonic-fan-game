@@ -175,4 +175,5 @@ func doneAttacking():
 	$AttackLight.visible = false
 
 func die():
+	sonic.give_points(100)
 	queue_free()

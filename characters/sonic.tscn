@@ -1,8 +1,14 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
 [ext_resource path="res://assets/sfx/death.wav" type="AudioStream" id=3]
+[ext_resource path="res://ui/game_theme.tres" type="Theme" id=4]
+[ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=5]
+
+[sub_resource type="DynamicFont" id=3]
+size = 18
+font_data = ExtResource( 5 )
 
 [sub_resource type="CapsuleShape" id=1]
 radius = 0.2
@@ -11,64 +17,62 @@ height = 0.4
 [sub_resource type="SphereShape" id=2]
 radius = 0.2
 
-[sub_resource type="SphereShape" id=3]
+[sub_resource type="SphereShape" id=4]
 radius = 0.15
 
-[sub_resource type="SpatialMaterial" id=4]
+[sub_resource type="SpatialMaterial" id=5]
 flags_unshaded = true
 params_cull_mode = 2
 albedo_color = Color( 1, 0, 0.937255, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=5]
+[sub_resource type="AnimationNodeAnimation" id=6]
 animation = "Idle-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=6]
+[sub_resource type="AnimationNodeTimeScale" id=7]
 
-[sub_resource type="AnimationNodeAnimation" id=7]
+[sub_resource type="AnimationNodeAnimation" id=8]
 animation = "Walk-loop"
 
-[sub_resource type="AnimationNodeBlendTree" id=8]
-resource_name = "walk_anim"
+[sub_resource type="AnimationNodeBlendTree" id=9]
 graph_offset = Vector2( -404, 105 )
 nodes/output/position = Vector2( 280, 140 )
-nodes/speed/node = SubResource( 6 )
+nodes/speed/node = SubResource( 7 )
 nodes/speed/position = Vector2( 80, 140 )
-nodes/walk/node = SubResource( 7 )
+nodes/walk/node = SubResource( 8 )
 nodes/walk/position = Vector2( -120, 140 )
 node_connections = [ "speed", 0, "walk", "output", 0, "speed" ]
 
-[sub_resource type="AnimationNodeAnimation" id=9]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Run-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=10]
+[sub_resource type="AnimationNodeTimeScale" id=11]
 
-[sub_resource type="AnimationNodeBlendTree" id=11]
+[sub_resource type="AnimationNodeBlendTree" id=12]
 nodes/output/position = Vector2( 600, 40 )
-nodes/run/node = SubResource( 9 )
+nodes/run/node = SubResource( 10 )
 nodes/run/position = Vector2( 200, 40 )
-nodes/speed/node = SubResource( 10 )
+nodes/speed/node = SubResource( 11 )
 nodes/speed/position = Vector2( 400, 40 )
 node_connections = [ "speed", 0, "run", "output", 0, "speed" ]
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=12]
-blend_point_0/node = SubResource( 5 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=13]
+blend_point_0/node = SubResource( 6 )
 blend_point_0/pos = 0.0
-blend_point_1/node = SubResource( 8 )
+blend_point_1/node = SubResource( 9 )
 blend_point_1/pos = 1.0
-blend_point_2/node = SubResource( 11 )
+blend_point_2/node = SubResource( 12 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 10.0
 snap = 1.0
 
-[sub_resource type="AnimationNodeStateMachine" id=13]
-states/Ground/node = SubResource( 12 )
+[sub_resource type="AnimationNodeStateMachine" id=14]
+states/Ground/node = SubResource( 13 )
 states/Ground/position = Vector2( 385, 49 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=14]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=15]
 
-[sub_resource type="Animation" id=15]
-resource_name = "Die"
+[sub_resource type="Animation" id=16]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Black:visible")
@@ -126,14 +130,147 @@ collision_layer = 2
 collision_mask = 3
 script = ExtResource( 2 )
 
-[node name="Sun" parent="." index="0"]
+[node name="debugUI" type="PanelContainer" parent="." index="0"]
+visible = false
+margin_right = 201.0
+margin_bottom = 155.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="status" type="VBoxContainer" parent="debugUI" index="0"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 194.0
+margin_bottom = 148.0
+
+[node name="State" type="Label" parent="debugUI/status" index="0"]
+margin_right = 187.0
+margin_bottom = 14.0
+
+[node name="Position" type="Label" parent="debugUI/status" index="1"]
+margin_top = 18.0
+margin_right = 187.0
+margin_bottom = 32.0
+
+[node name="Velocity" type="Label" parent="debugUI/status" index="2"]
+margin_top = 36.0
+margin_right = 187.0
+margin_bottom = 50.0
+
+[node name="Up" type="Label" parent="debugUI/status" index="3"]
+margin_top = 54.0
+margin_right = 187.0
+margin_bottom = 68.0
+
+[node name="UI" type="HBoxContainer" parent="." index="1"]
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.05
+anchor_bottom = 0.05
+margin_left = -0.200001
+margin_right = 145.8
+margin_bottom = 83.0
+theme = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Labels" type="VBoxContainer" parent="UI" index="0"]
+margin_right = 104.0
+margin_bottom = 83.0
+size_flags_horizontal = 3
+
+[node name="L1" type="Label" parent="UI/Labels" index="0"]
+margin_right = 104.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -1
+custom_constants/shadow_offset_y = 2
+text = "SCORE"
+
+[node name="L2" type="Label" parent="UI/Labels" index="1"]
+margin_top = 29.0
+margin_right = 104.0
+margin_bottom = 54.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -1
+custom_constants/shadow_offset_y = 2
+text = "TIME"
+
+[node name="L3" type="Label" parent="UI/Labels" index="2"]
+margin_top = 58.0
+margin_right = 104.0
+margin_bottom = 83.0
+custom_fonts/font = SubResource( 3 )
+custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -1
+custom_constants/shadow_offset_y = 2
+text = "RINGS"
+
+[node name="Values" type="VBoxContainer" parent="UI" index="1"]
+margin_left = 108.0
+margin_right = 146.0
+margin_bottom = 83.0
+
+[node name="Score" type="Label" parent="UI/Values" index="0"]
+margin_right = 38.0
+margin_bottom = 25.0
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -2
+custom_constants/shadow_offset_y = 2
+text = "000"
+align = 2
+
+[node name="Time" type="Label" parent="UI/Values" index="1"]
+margin_top = 29.0
+margin_right = 38.0
+margin_bottom = 54.0
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -2
+custom_constants/shadow_offset_y = 2
+text = "0:00"
+align = 2
+
+[node name="Rings" type="Label" parent="UI/Values" index="2"]
+margin_top = 58.0
+margin_right = 38.0
+margin_bottom = 83.0
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -2
+custom_constants/shadow_offset_y = 2
+text = "0"
+align = 2
+
+[node name="Black" type="ColorRect" parent="." index="2"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Black" index="0"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Game Over"
+align = 1
+valign = 1
+
+[node name="Sun" parent="." index="3"]
 visible = false
 
-[node name="CollisionShape" type="CollisionShape" parent="." index="3"]
+[node name="CollisionShape" type="CollisionShape" parent="." index="6"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.4, 0 )
 shape = SubResource( 1 )
 
-[node name="CamYaw" type="Spatial" parent="." index="4"]
+[node name="CamYaw" type="Spatial" parent="." index="7"]
 
 [node name="CamFollow" type="Spatial" parent="CamYaw" index="0"]
 
@@ -151,42 +288,9 @@ transform = Transform( -1, 0, -8.74228e-08, -1.0533e-08, -0.992715, 0.120483, -8
 near = 0.08
 far = 8192.0
 
-[node name="UI" type="PanelContainer" parent="CamYaw/CamFollow/SpringArm/Camera" index="0"]
-visible = false
-margin_right = 201.0
-margin_bottom = 155.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="status" type="VBoxContainer" parent="CamYaw/CamFollow/SpringArm/Camera/UI" index="0"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 194.0
-margin_bottom = 148.0
-
-[node name="State" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status" index="0"]
-margin_right = 187.0
-margin_bottom = 14.0
-
-[node name="Position" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status" index="1"]
-margin_top = 18.0
-margin_right = 187.0
-margin_bottom = 32.0
-
-[node name="Velocity" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status" index="2"]
-margin_top = 36.0
-margin_right = 187.0
-margin_bottom = 50.0
-
-[node name="Up" type="Label" parent="CamYaw/CamFollow/SpringArm/Camera/UI/status" index="3"]
-margin_top = 54.0
-margin_right = 187.0
-margin_bottom = 68.0
-
 [node name="Reverse" type="SpringArm" parent="CamYaw/CamFollow" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.707062, 0 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 spring_length = 5.0
 
 [node name="Camera" type="Camera" parent="CamYaw/CamFollow/Reverse" index="0"]
@@ -194,37 +298,21 @@ fov = 45.0
 near = 0.08
 far = 8192.0
 
-[node name="debug_imm" type="ImmediateGeometry" parent="." index="5"]
-material_override = SubResource( 4 )
+[node name="debug_imm" type="ImmediateGeometry" parent="." index="8"]
+material_override = SubResource( 5 )
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="6"]
-tree_root = SubResource( 13 )
+[node name="AnimationTree" type="AnimationTree" parent="." index="9"]
+tree_root = SubResource( 14 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 14 )
+parameters/playback = SubResource( 15 )
 parameters/Ground/blend_position = 0.979955
 parameters/Ground/1/speed/scale = 1.0
 parameters/Ground/2/speed/scale = 1.0
 
-[node name="CustomAnimation" type="AnimationPlayer" parent="." index="7"]
-anims/Die = SubResource( 15 )
+[node name="CustomAnimation" type="AnimationPlayer" parent="." index="10"]
+anims/Die = SubResource( 16 )
 
-[node name="Black" type="ColorRect" parent="." index="8"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-color = Color( 0, 0, 0, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="Black" index="0"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-text = "Game Over"
-align = 1
-valign = 1
-
-[node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
+[node name="Audio" type="AudioStreamPlayer" parent="." index="11"]
 stream = ExtResource( 3 )
 bus = "SFX_Sonic"

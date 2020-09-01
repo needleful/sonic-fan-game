@@ -87,7 +87,11 @@ func _physics_process(delta):
 	var vcor = move_correction*pivot_acceleration
 	var drag:Vector3 = DRAG_AIR*linear_velocity*linear_velocity*linear_velocity
 	
-	add_central_force((accel-drag+vcor)*mass)
+	if weapState != WeaponState.Firing:
+		add_central_force((accel-drag+vcor)*mass)
+	else:
+		# Loses power while firing
+		add_central_force(-Vector3.UP*9.8*mass)
 	add_torque(dtorq)
 	add_torque(rtorq)
 	add_torque(drtorq)
@@ -124,4 +128,5 @@ func cancel_end():
 	set_state(WeaponState.Idle)
 
 func die():
+	sonic.give_points(100)
 	queue_free()

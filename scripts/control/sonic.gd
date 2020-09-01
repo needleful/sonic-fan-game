@@ -28,12 +28,18 @@ const DRAG_GROUND = 0.2
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
+const MIN_GROUNDED_ON_WALL = 0.5
+
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
 var vel_difference: Vector3 = Vector3(0,0,0)
 var gravity: Vector3 = Vector3(0, -9.8, 0) setget set_gravity
 var up: Vector3 = Vector3(0, 1, 0)
 var sneaking: bool = false
+
+export(float) var time_limit = 600
+export(int) var score = 0 setget set_score
+export(int) var rings = 0 setget set_rings
 
 const TIME_JUMP = 0.1
 const TIME_REORIENT = 0.75
@@ -65,6 +71,8 @@ var stop = false
 var dead = false
 
 func _ready():
+	set_score(score)
+	set_rings(rings)
 	cam.current = true
 	oldFollow = Transform(camFollow.global_transform)
 	statePlayback.start("Ground")
@@ -83,17 +91,20 @@ func _input(event):
 		else:
 			Engine.time_scale = 1
 
-func _process(_delta):
+func _process(delta):
 	var c = get_camera_rot()
 	camYaw.rotate_y(-c.x)
 	if cam_reverse.current:
 		$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
 	else:
 		camSpring.rotate_x(c.y)
+	
+	time_limit -= delta
+	$UI/Values/Time.text = "%2d:%02d" % [int(time_limit)/60, int(time_limit)%60]
 
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Up.text = MoveMath.pr(up)
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Velocity.text = str(velocity.length())
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/Position.text = MoveMath.pr(global_transform.origin)
+	$debugUI/status/Up.text = MoveMath.pr(up)
+	$debugUI/status/Velocity.text = str(velocity.length())
+	$debugUI/status/Position.text = MoveMath.pr(global_transform.origin)
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -119,6 +130,20 @@ func _physics_process(delta):
 				camFollow.global_transform.basis = camYaw.global_transform.basis
 				statePlayback.travel("Ground")
 				new_state = State.Ground
+			else:
+				var desiredUp = Vector3.UP
+				var found_target = false
+				for i in range(0, get_slide_count()):
+					var n = get_slide_collision(i).normal
+					var f = velocity.dot(n)
+					if f <= MIN_GROUNDED_ON_WALL and f < velocity.dot(desiredUp):
+						desiredUp = n
+						found_target = true
+				if found_target:
+					camFollow.global_transform.basis = camYaw.global_transform.basis
+					statePlayback.travel("Ground")
+					new_state = State.Ground
+					reorient_wall(desiredUp, delta*12)
 	state = new_state
 	match state:
 		State.Ground:
@@ -166,7 +191,7 @@ func _physics_process(delta):
 	else:
 		speed = MoveMath.reject(velocity, up).length()/MAX_SNEAK
 
-	$CamYaw/CamFollow/SpringArm/Camera/UI/status/State.text = State.keys()[state]
+	$debugUI/status/State.text = State.keys()[state]
 
 func process_ground(delta):
 	sneaking = Input.is_action_pressed("mv_sneak")
@@ -229,10 +254,6 @@ func process_air(delta):
 	timer_air += delta
 	if timer_air >= TIME_REORIENT:
 		var desiredUp = -gravity.normalized()
-		for i in range(0, get_slide_count()):
-			var n = get_slide_collision(i).normal
-			if velocity.dot(n) < velocity.dot(desiredUp):
-				desiredUp = n
 		reorient_air(desiredUp, delta)
 
 func reorient_ground(new_up:Vector3, interp:float):
@@ -250,6 +271,31 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
 	var df = Vector3(forward.x, 0, forward.z).normalized()
+	
+	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
+	var upCurrent = MoveMath.reject(up, forward).normalized()
+	
+	var angle = upCurrent.angle_to(upTarget)
+	var rollAxis = upCurrent.cross(upTarget).normalized()
+	
+	if rollAxis.length_squared() > 0.9:
+		global_rotate(rollAxis, angle*interp)
+		up = up.rotated(rollAxis, angle*interp)
+	
+	# Pitch upright
+	angle = forward.angle_to(df)
+	var pitchAxis = forward.cross(df).normalized()
+	if pitchAxis.length_squared() > 0.9:
+		global_rotate(pitchAxis, angle*interp)
+		up = up.rotated(pitchAxis, angle*interp)
+		#camSpring.rotate_x(-angle*interp)
+
+func reorient_wall(desiredUp:Vector3, delta:float):
+	var interp = min(delta*3, 1)
+	# Roll upright
+	var forward = camYaw.global_transform.basis.z
+	var left = camYaw.global_transform.basis.x
+	var df = left.cross(desiredUp).normalized()
 	
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
 	var upCurrent = MoveMath.reject(up, forward).normalized()
@@ -312,3 +358,14 @@ func kill():
 
 func die():
 	$CustomAnimation.play("Die")
+
+func set_score(s):
+	score = s
+	$UI/Values/Score.text = str(s)
+
+func set_rings(r):
+	rings = r
+	$UI/Values/Rings.text = str(r)
+
+func give_points(p):
+	set_score(score + p)

@@ -25,7 +25,7 @@ height = 1.0
 radius = 0.25
 height = 9.0
 
-[sub_resource type="SpatialMaterial" id=7]
+[sub_resource type="SpatialMaterial" id=5]
 albedo_color = Color( 0.968627, 0.423529, 1, 1 )
 metallic = 1.0
 roughness = 0.0
@@ -35,14 +35,14 @@ emission_energy = 2.0
 emission_operator = 0
 emission_on_uv2 = false
 
-[sub_resource type="SphereMesh" id=8]
-material = SubResource( 7 )
+[sub_resource type="SphereMesh" id=6]
+material = SubResource( 5 )
 radius = 0.2
 height = 0.4
 radial_segments = 6
 rings = 6
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=7]
 length = 6.0
 tracks/0/type = "value"
 tracks/0/path = NodePath("Eye/SpotLight:spot_angle")
@@ -209,8 +209,7 @@ tracks/12/keys = {
 "values": [ Vector3( 1, 1, 1 ), Vector3( 0.8, 0.8, 0.8 ), Vector3( 0.8, 0.8, 0.8 ), Vector3( 1, 1, 1 ) ]
 }
 
-[sub_resource type="Animation" id=6]
-resource_name = "CancelAttack"
+[sub_resource type="Animation" id=8]
 length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("Eye/SpotLight:spot_angle")
@@ -352,7 +351,7 @@ shape = SubResource( 4 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Eye" index="2"]
 cast_shadow = 0
-mesh = SubResource( 8 )
+mesh = SubResource( 6 )
 material/0 = null
 
 [node name="OmniLight" type="OmniLight" parent="Eye" index="3"]
@@ -363,8 +362,8 @@ light_specular = 0.3
 omni_range = 0.7
 
 [node name="AttackAnimations" type="AnimationPlayer" parent="." index="3"]
-anims/Attack = SubResource( 5 )
-anims/CancelAttack = SubResource( 6 )
+anims/Attack = SubResource( 7 )
+anims/CancelAttack = SubResource( 8 )
 
 [node name="Avoidance" type="Spatial" parent="." index="4"]
 
@@ -409,11 +408,13 @@ enabled = true
 cast_to = Vector3( 0, -3, 0 )
 
 [node name="AttackAudio" type="AudioStreamPlayer3D" parent="." index="5"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.446992 )
 stream = ExtResource( 4 )
 
 [node name="Secondary" type="AudioStreamPlayer3D" parent="AttackAudio" index="0"]
 stream = ExtResource( 7 )
 
 [node name="MovementAudio" type="AudioStreamPlayer3D" parent="." index="6"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.15372 )
 stream = ExtResource( 8 )
 autoplay = true
