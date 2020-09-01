@@ -56,7 +56,7 @@ func _ready():
 	_x = visionCone.connect("body_exited", self, "onVisionExited")
 
 func kill(body):
-	if body is Sonic:
+	if body != self and body.has_method("die"):
 		body.die()
 
 func _physics_process(delta):

@@ -35,7 +35,7 @@ const MIN_SPEED_WALL_RUN = 15
 const TIME_WALL_RUN = 0.0
 const WALL_RUN_MAGNETISM = 20
 const WALL_DOT = 0.7
-const MIN_ROLL_WALLRUN = .75
+const MIN_ROLL_WALLRUN = 1.2
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -54,11 +54,11 @@ export(int) var score = 0 setget set_score
 export(int) var rings = 0 setget set_rings
 
 const TIME_JUMP = 0.1
-const TIME_REORIENT = 0.1
+const TIME_REORIENT = 0
 var timer_air = 0
 
 # Radians per second
-const SPEED_REORIENT_MIN = deg2rad(90)
+const SPEED_REORIENT_MIN = deg2rad(80)
 # 1/x seconds to reorient
 const SPEED_REORIENT = 1.2
 
@@ -206,14 +206,14 @@ func _physics_process(delta):
 		State.Jumping:
 			process_jump(delta)
 		State.WallRun:
-			reorient_wall(wall, delta*3)
+			reorient_wall(wall, delta)
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_ground(delta, ACCEL_WALLRUN, ACCEL_WALLRUN)
 		State.Slip:
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_air(delta)
 	
-	var min_allowed_drift = 1 #radians
+	var min_allowed_drift = 0.4 #radians
 	var yawup = camYaw.global_transform.basis.y
 	var followup = oldFollow.basis.y
 	var upAngle = followup.angle_to(yawup)
@@ -394,18 +394,20 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	
 	var angle = upCurrent.angle_to(upTarget)
 	var rollAxis = upCurrent.cross(upTarget).normalized()
-	var min_angle = abs((abs(angle) - MIN_ROLL_WALLRUN))
+	var min_angle = max(0, (abs(angle) - MIN_ROLL_WALLRUN))
 	
-	#var rotation = sign(angle)*max(abs(angle*interp), min_angle)
-	var rotation = angle*interp
+	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
+	#var rotation = angle*interp
 	if rollAxis.length_squared() > 0.9:
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
 	
 	# Pitch upright
-	angle = forward.angle_to(df)
-	rotation = angle*interp
 	var pitchAxis = forward.cross(df).normalized()
+	angle = forward.angle_to(df)
+	min_angle = max(0, (abs(angle) - MIN_ROLL_WALLRUN))
+	#rotation = angle*interp
+	rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if pitchAxis.length_squared() > 0.9:
 		global_rotate(pitchAxis, rotation)
 		up = up.rotated(pitchAxis, rotation)

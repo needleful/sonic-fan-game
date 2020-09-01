@@ -384,3 +384,34 @@ operation = 2
 radius = 5.86617
 height = 16.0813
 sides = 24
+
+[node name="Road1" type="CSGBox" parent="Environment"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 59.1219, -5.0019, 39.9915 )
+use_collision = true
+width = 43.0333
+height = 9.90264
+depth = 20.0593
+
+[node name="CSGCylinder2" type="CSGCylinder" parent="Environment/Road1"]
+transform = Transform( 0.66467, -3.26584e-08, -0.747137, -0.747137, -2.90536e-08, -0.66467, 0, 1, -4.37114e-08, 91.3924, -18.646, 0 )
+radius = 5.18005
+height = 19.8548
+sides = 18
+
+[node name="Road2" type="CSGBox" parent="Environment/Road1"]
+transform = Transform( 0.66467, 0.747137, 0, -0.747137, 0.66467, 0, 0, 0, 1, 37.157, -16.1961, 0 )
+width = 43.0333
+height = 9.90264
+depth = 20.0593
+
+[node name="Road3" type="CSGBox" parent="Environment/Road1"]
+transform = Transform( 0.919183, -0.39383, 0, 0.39383, 0.919183, 0, 0, 0, 1, 70.5291, -27.7544, 0 )
+width = 43.0333
+height = 9.90264
+depth = 20.0593
+
+[node name="CSGCylinder" type="CSGCylinder" parent="Environment/Road1"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 22.5587, -0.281072, 0 )
+radius = 5.34275
+height = 19.8548
+sides = 18
