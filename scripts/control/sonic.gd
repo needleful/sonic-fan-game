@@ -42,7 +42,6 @@ var vel_difference: Vector3 = Vector3(0,0,0)
 var gravity: Vector3 = Vector3(0, -9.8, 0) setget set_gravity
 var up: Vector3 = Vector3(0, 1, 0)
 var sneaking: bool = false
-var has_jump: bool = true
 
 var timer_wall_run = 0
 var recover = true
@@ -125,8 +124,7 @@ func _physics_process(delta):
 	var new_state = state
 	match state:
 		State.Ground, State.WallRun:
-			if has_jump and Input.is_action_just_pressed("mv_jump"):
-				has_jump = state != State.WallRun
+			if Input.is_action_just_pressed("mv_jump"):
 				new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
@@ -177,7 +175,7 @@ func _physics_process(delta):
 					new_state = State.Slip
 		State.Slip:
 			var jumped: bool = false
-			if has_jump and Input.is_action_just_pressed("mv_jump"):
+			if Input.is_action_just_pressed("mv_jump"):
 				var new_wall = stick_to_wall()
 				if new_wall != Vector3.ZERO:
 					wall = new_wall
@@ -185,7 +183,6 @@ func _physics_process(delta):
 				jumped = true
 		
 			if jumped:
-				has_jump = false
 				new_state = State.Jumping
 			elif is_on_floor():
 				var n = get_floor_normal()
@@ -247,7 +244,7 @@ func _physics_process(delta):
 		speed = velocity.length()/MAX_SNEAK
 		anim["parameters/Ground/blend_position"] = speed
 		anim["parameters/Ground/1/speed/scale"] = max(1, .5 + speed/2)
-		anim["parameters/Ground/2/speed/scale"] = max(1, speed/3)
+		anim["parameters/Ground/2/speed/scale"] = speed/3
 	else:
 		speed = MoveMath.reject(velocity, up).length()/MAX_SNEAK
 
@@ -411,7 +408,6 @@ func set_state(new_state):
 			camFollow.global_transform.basis = camYaw.global_transform.basis
 			statePlayback.travel("Ground")
 			recover = true
-			has_jump = true
 		State.Air:
 			timer_air = 0
 			timer_wall_run = 0
