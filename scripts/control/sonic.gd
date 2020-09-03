@@ -21,7 +21,7 @@ enum State {
 }
 
 const VEL_JUMP = 10
-const ACCEL_START = 90
+const ACCEL_START = 60
 const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 8
 const ACCEL_JUMPING = 80
@@ -285,10 +285,10 @@ func process_ground(delta, accel_move, accel_start):
 	
 	var input: Vector3 = get_movement()
 	var movement:Vector3
-	if running and not sneaking:
-		movement = input.project(velocity)
-	else:
+	if sneaking:
 		movement = input
+	else:
+		movement = input.project(velocity)
 	
 	if sneaking:
 		movement *= min(ACCEL_SNEAK, accel_move)
@@ -304,7 +304,7 @@ func process_ground(delta, accel_move, accel_start):
 	if input.length_squared() == 0:
 		drag = -DRAG_STOPPING*v
 		velocity += (gravity + drag + centrifugal_force) * delta
-		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
+		if velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
 			velocity = (velocity + vel_difference).project(up)
 		elif velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
 			var stop_force
@@ -322,20 +322,14 @@ func process_ground(delta, accel_move, accel_start):
 		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 	
-	var steer_speed = 60/(velocity.length() + 1)
-	if sneaking or !running:
-		var vp = velocity.slide(up)
-		var steer = vp.angle_to(input)
-		var axis = vp.cross(input).normalized()
-		if steer != 0 and axis.length_squared() > 0.7:
-			var angle = sign(steer)*min(abs(steer), steer_speed*delta)
-			velocity = velocity.rotated(axis, angle)
-	elif movement != input and input != Vector3.ZERO and movement != Vector3.ZERO:
-		var steer = movement.angle_to(input)
-		var axis = movement.cross(input).normalized()
-		if steer != 0 and axis.length_squared() > 0.7:
-			var angle = sign(steer)*min(abs(steer), steer_speed*delta)
-			velocity = velocity.rotated(axis, angle)
+	var steer_speed = 60/(velocity.length()*1.5 + 1)
+	var vp = velocity.slide(up)
+	var steer = vp.angle_to(input)
+	var axis = vp.cross(input).normalized()
+	if steer != 0 and axis.is_normalized():
+		var angle = sign(steer)*min(abs(steer), steer_speed*delta)
+		var factor = (1 - (angle*angle)/(4*PI*PI))
+		velocity = velocity.rotated(axis, angle)*factor
 	
 	vel_difference = velocity
 	velocity = move_and_slide(velocity, up)
