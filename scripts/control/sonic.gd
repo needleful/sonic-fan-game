@@ -40,7 +40,7 @@ const DRAG_GROUND = 0.2
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = 0.001
+const MIN_GROUNDED_ON_WALL = 5
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 20
@@ -73,6 +73,8 @@ const SPEED_REORIENT = 1.2
 
 const TIME_COYOTE = 0.1
 var timer_coyote = 0
+
+const SPEED_ROTATE_MESH = 24
 
 const SNS_CAM_MOUSE = 0.001
 var cameraRot: Vector2 = Vector2(0,0)
@@ -136,6 +138,19 @@ func _process(delta):
 	#	debug_imm.add_vertex(Vector3(0,0,0))
 	#	debug_imm.add_vertex(global_transform.xform_inv(global_transform.origin + get_floor_normal()))
 	#	debug_imm.end()
+	
+	# Animation Logic
+	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
+		rotate_by_speed(delta)
+		
+	var speed: float = velocity.length()/MAX_SNEAK
+
+	var oldSpeed = anim["parameters/Ground/Walk/blend_position"]
+	speed = lerp(oldSpeed, speed, .1)
+	anim["parameters/Ground/Walk/blend_position"] = speed
+	anim["parameters/Ground/Speed/scale"] = min(0.75+speed/1.5, 2+speed/3)
+
+	$debugUI/status/State.text = State.keys()[state]
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -148,17 +163,8 @@ func _physics_process(delta):
 				new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
-				if timer_coyote >= TIME_COYOTE:
-					if $FloorArea.get_overlapping_bodies().size() == 0:
-						new_state = State.Air
-					else:
-						var w = find_good_wall()
-						if w != Vector3.ZERO:
-							set_wall(w)
-						if wall == Vector3.ZERO:
-							wall = up
-						if wall.dot(true_up) < WALL_DOT:
-							new_state = State.WallRun
+				if timer_coyote >= TIME_COYOTE and $FloorArea.get_overlapping_bodies().size() == 0:
+					new_state = State.Air
 			else:
 				timer_coyote = 0
 				if up.dot(true_up) < WALL_DOT and velocity.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
@@ -272,67 +278,73 @@ func _physics_process(delta):
 				max( rot, SPEED_REORIENT_MIN*delta )
 			)
 		).basis
-	
-	# Animation Logic
-	var speed: float
-	if state == State.Ground:
-		speed = velocity.length()/MAX_SNEAK
-	else:
-		speed = MoveMath.reject(velocity, up).length()/MAX_SNEAK
-
-	var oldSpeed = anim["parameters/Ground/Walk/blend_position"]
-	speed = lerp(oldSpeed, speed, .1)
-	anim["parameters/Ground/Walk/blend_position"] = speed
-	anim["parameters/Ground/Speed/scale"] = min(1+speed/1.5, 8+speed/4)
-
-	$debugUI/status/State.text = State.keys()[state]
 
 func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
+	var running = velocity.length_squared() > SPEED_RUN*SPEED_RUN
 	
-	var movement: Vector3 = get_movement()
-	if velocity.length_squared() >= SPEED_RUN*SPEED_RUN:
-		movement *= accel_move
-	elif sneaking:
-		movement *= max(ACCEL_SNEAK, accel_move)
+	var input: Vector3 = get_movement()
+	var movement:Vector3
+	if running and not sneaking:
+		movement = input.project(velocity)
 	else:
+		movement = input
+	
+	if sneaking:
+		movement *= min(ACCEL_SNEAK, accel_move)
+	elif velocity.dot(movement) < 0 or !running:
 		movement *= accel_start
+	else:
+		movement *= accel_move
 	
 	var drag : Vector3
-	var c = 1 #max(0, vel_difference.normalized().dot(-up))
 	var centrifugal_force = vel_difference*FORCE_CENTRIFUGAL
 	var v = MoveMath.reject(velocity, up)
 	
-	if movement.dot(velocity) < 0 || movement.length_squared() == 0:
+	if input.length_squared() == 0:
 		drag = -DRAG_STOPPING*v
-		velocity += (movement*c + gravity + drag + centrifugal_force) * delta
-		if velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
+		velocity += (gravity + drag + centrifugal_force) * delta
+		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
+			velocity = (velocity + vel_difference).project(up)
+		elif velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
 			var stop_force
 			if delta*accel_start >= 1:
 				stop_force = velocity
 			else:
 				stop_force = velocity*delta*accel_start
 			velocity -= stop_force
-		if movement.length_squared() == 0 and velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
-			velocity = (velocity + vel_difference).project(up)
 	else:
-		if velocity.length_squared() >= MAX_RUN*MAX_RUN or (
-			sneaking and velocity.length_squared() >= MAX_SNEAK*MAX_SNEAK
+		if movement.dot(velocity) > 0 and (
+			velocity.length_squared() >= MAX_RUN*MAX_RUN
+			or (sneaking and velocity.length_squared() >= MAX_SNEAK*MAX_SNEAK)
 		):
-			movement = Vector3(0,0,0)
+			movement = Vector3.ZERO
 		drag = -DRAG_GROUND*v
-		velocity += (movement*c + gravity + drag + centrifugal_force) * delta
+		velocity += (movement + gravity + drag + centrifugal_force) * delta
+	
+	var steer_speed = 60/(velocity.length() + 1)
+	if sneaking or !running:
+		var vp = velocity.slide(up)
+		var steer = vp.angle_to(input)
+		var axis = vp.cross(input).normalized()
+		if steer != 0 and axis.length_squared() > 0.7:
+			var angle = sign(steer)*min(abs(steer), steer_speed*delta)
+			velocity = velocity.rotated(axis, angle)
+	elif movement != input and input != Vector3.ZERO and movement != Vector3.ZERO:
+		var steer = movement.angle_to(input)
+		var axis = movement.cross(input).normalized()
+		if steer != 0 and axis.length_squared() > 0.7:
+			var angle = sign(steer)*min(abs(steer), steer_speed*delta)
+			velocity = velocity.rotated(axis, angle)
 	
 	vel_difference = velocity
 	velocity = move_and_slide(velocity, up)
 	vel_difference -= velocity
-	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
-		rotate_by_speed()
 	
 	if is_on_floor():
 		reorient_ground(get_floor_normal(), 0.9, 12, delta)
 	elif state == State.Ground:
-		reorient_ground(wall, 0.2, 2, delta)
+		reorient_ground(true_up, 0.2, 2, delta)
 	elif state == State.WallRun:
 		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
@@ -347,8 +359,6 @@ func process_jump(delta):
 	vel_difference = velocity
 	velocity = move_and_slide(velocity, up)
 	vel_difference -= velocity
-	if velocity.length_squared() >= 0.01:
-		rotate_by_speed()
 
 func process_air(delta):
 	var movement = get_movement()*ACCEL_AIR
@@ -485,13 +495,25 @@ func set_state(new_state):
 			recover = false
 			timer_air = 0
 
-func rotate_by_speed():
-	var by = up.cross(velocity).normalized()
-	mesh.global_transform.basis = Basis(
-		by,
-		up,
-		by.cross(up)
-	)
+func rotate_by_speed(delta):
+	var bx = up.cross(velocity).normalized()
+	var rx = mesh.global_transform.basis.x.normalized()
+	var r = rx.angle_to(bx)
+	if r == 0:
+		return
+	var axis = rx.cross(bx).normalized()
+	var angle = sign(r)*min(abs(r), delta*SPEED_ROTATE_MESH)
+	
+	if axis.is_normalized():
+		mesh.global_rotate(axis, angle)
+	
+	#var diff = velocity.project(mesh.global_transform.basis.x)
+	#var new_up = up+diff
+	#var l = up.angle_to(new_up)
+	#var lean = sign(l)*min(l, 1.2)
+	#var leanAxis = up.cross(new_up).normalized()
+	#if leanAxis.is_normalized():
+	#	mesh.global_rotate(leanAxis, lean)
 
 func get_movement()->Vector3:
 	var input = Vector2(
