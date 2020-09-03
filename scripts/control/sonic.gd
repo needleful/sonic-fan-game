@@ -15,7 +15,7 @@ const ACCEL_START = 90
 const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 8
 const ACCEL_JUMPING = 80
-const ACCEL_AIR = 4
+const ACCEL_AIR = 8
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
 const SPEED_RUN = 10
@@ -34,6 +34,7 @@ const MIN_GROUNDED_ON_WALL = 0.001
 const MIN_SPEED_WALL_RUN = 15
 const TIME_WALL_RUN = 0.0
 const WALL_RUN_MAGNETISM = 20
+const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
 const MIN_ROLL_WALLRUN = 1.2
 
@@ -46,8 +47,7 @@ var sneaking: bool = false
 
 var timer_wall_run = 0
 var recover = true
-var wall:Vector3 = Vector3(0,0,0)
-
+var wall:Vector3 = Vector3.UP
 
 export(float) var time_limit = 600
 export(int) var score = 0 setget set_score
@@ -112,11 +112,20 @@ func _process(delta):
 		camSpring.rotate_x(c.y)
 	
 	time_limit -= delta
-	$UI/Values/Time.text = "%2d:%02d" % [int(time_limit)/60, int(time_limit)%60]
+	if time_limit <= 0:
+		time_up()
+	else:
+		$UI/Values/Time.text = "%2d:%02d" % [int(time_limit)/60, int(time_limit)%60]
 
 	$debugUI/status/Up.text = MoveMath.pr(up)
 	$debugUI/status/Velocity.text = str(velocity.length())
 	$debugUI/status/Position.text = MoveMath.pr(global_transform.origin)
+	if is_on_floor():
+		debug_imm.clear()
+		debug_imm.begin(Mesh.PRIMITIVE_LINES)
+		debug_imm.add_vertex(Vector3(0,0,0))
+		debug_imm.add_vertex(global_transform.xform_inv(global_transform.origin + get_floor_normal()))
+		debug_imm.end()
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -132,11 +141,10 @@ func _physics_process(delta):
 					timer_coyote += delta
 					if timer_coyote >= TIME_COYOTE:
 						if state == State.WallRun:
-							var new_wall = stick_to_wall()
-							if wall != Vector3.ZERO:
-								wall = new_wall
-							elif $WallRunArea.get_overlapping_bodies().size() == 0:
-								print("fell from wall")
+							var new_wall = find_good_wall()
+							if new_wall != Vector3.ZERO:
+								set_wall(new_wall)
+							elif $FloorArea.get_overlapping_bodies().size() == 0:
 								new_state = State.Air
 						else:
 							new_state = State.Air
@@ -145,7 +153,6 @@ func _physics_process(delta):
 				if state == State.WallRun:
 					if !recover:
 						new_state = State.Slip
-						print("Bad wall run")
 					elif up.dot(Vector3.UP) >= WALL_DOT:
 						new_state = State.Ground
 					elif velocity.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
@@ -161,7 +168,7 @@ func _physics_process(delta):
 			if is_on_floor():
 				n = get_floor_normal()
 			else:
-				n = stick_to_wall()
+				n = find_good_wall()
 				if n != Vector3.ZERO:
 					timer_wall_run += delta
 					if timer_wall_run < TIME_WALL_RUN:
@@ -171,18 +178,19 @@ func _physics_process(delta):
 			if n.dot(Vector3.UP) >= WALL_DOT:
 				new_state = State.Ground
 			elif n != Vector3.ZERO:
+				set_wall(n)
 				if recover:
-					reorient_wall(n, delta*12)
+					#reorient_wall(wall, delta*12)
 					new_state = State.WallRun
 				else:
 					new_state = State.Slip
 		State.Slip:
 			var jumped: bool = false
 			if Input.is_action_just_pressed("mv_jump"):
-				var new_wall = stick_to_wall()
+				var new_wall = find_good_wall()
 				if new_wall != Vector3.ZERO:
-					wall = new_wall
-				reorient_wall(wall, delta*20)
+					set_wall(new_wall)
+				#reorient_wall(wall, delta*20)
 				jumped = true
 		
 			if jumped:
@@ -192,11 +200,11 @@ func _physics_process(delta):
 				if n.dot(Vector3.UP) >= WALL_DOT:
 					new_state = State.Ground
 			else:
-				var new_wall = stick_to_wall()
-				if new_wall == Vector3.ZERO:
+				var new_wall = find_good_wall()
+				if new_wall.length_squared() == 0:
 					new_state = State.Air
 				else:
-					wall = new_wall
+					set_wall(new_wall)
 	set_state(new_state)
 	match state:
 		State.Ground:
@@ -206,7 +214,6 @@ func _physics_process(delta):
 		State.Jumping:
 			process_jump(delta)
 		State.WallRun:
-			reorient_wall(wall, delta)
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_ground(delta, ACCEL_WALLRUN, ACCEL_WALLRUN)
 		State.Slip:
@@ -259,6 +266,10 @@ func _physics_process(delta):
 		speed = MoveMath.reject(velocity, up).length()/MAX_SNEAK
 
 	$debugUI/status/State.text = State.keys()[state]
+	
+	print(wall)
+	if wall == Vector3.ZERO:
+		get_tree().paused = true
 
 func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
@@ -304,13 +315,13 @@ func process_ground(delta, accel_move, accel_start):
 	
 	if is_on_floor():
 		reorient_ground(get_floor_normal(), 0.9, 12, delta)
-	elif state == State.Ground:
-		reorient_ground(Vector3.UP, 0.2, 2, delta)
-	else:
-		var new_wall = stick_to_wall()
+	#elif state == State.Ground:
+		#reorient_ground(Vector3.UP, 0.2, 2, delta)
+	elif state == State.WallRun:
+		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
-			wall = new_wall
-		reorient_wall(wall, delta*3)
+			set_wall(new_wall)
+		reorient_wall(wall, delta*WALL_RUN_REORIENT_SPEED)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -371,18 +382,11 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		up = up.rotated(pitchAxis, angle*interp)
 		#camSpring.rotate_x(-angle*interp)
 
-func stick_to_wall():
-	var desiredUp = Vector3.ZERO
-	var v = velocity + vel_difference
-	for i in range(0, get_slide_count()):
-		var n = get_slide_collision(i).normal
-		var f = v.dot(n)
-		if f <= -MIN_GROUNDED_ON_WALL and f < v.dot(desiredUp):
-			desiredUp = n.normalized()
-	
-	return desiredUp
-
 func reorient_wall(desiredUp:Vector3, delta:float):
+	if desiredUp == Vector3.ZERO:
+		print("ERROR: ZERO used for reorient_wall")
+		print_stack()
+		return
 	var interp = min(delta, 1)
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
@@ -397,21 +401,41 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var min_angle = max(0, (abs(angle) - MIN_ROLL_WALLRUN))
 	
 	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
-	#var rotation = angle*interp
 	if rollAxis.length_squared() > 0.9:
-		global_rotate(rollAxis, rotation)
-		up = up.rotated(rollAxis, rotation)
+		var t = up.rotated(rollAxis, rotation)
+		if t.dot(desiredUp) < 0:
+			print("Bad rotation: from %s to %s (result: %s)" 
+				% [up, desiredUp, t]
+			)
+		else:
+			global_rotate(rollAxis, rotation)
+			up = up.rotated(rollAxis, rotation)
 	
 	# Pitch upright
 	var pitchAxis = forward.cross(df).normalized()
 	angle = forward.angle_to(df)
 	min_angle = max(0, (abs(angle) - MIN_ROLL_WALLRUN))
-	#rotation = angle*interp
 	rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if pitchAxis.length_squared() > 0.9:
-		global_rotate(pitchAxis, rotation)
-		up = up.rotated(pitchAxis, rotation)
-		#camSpring.rotate_x(-angle*interp)
+		var t = up.rotated(pitchAxis, rotation)
+		if t.dot(desiredUp) < 0:
+			print("Bad rotation: from %s to %s (result: %s)" 
+				% [up, desiredUp, t]
+			)
+		else:
+			global_rotate(pitchAxis, rotation)
+			up = up.rotated(pitchAxis, rotation)
+
+func find_good_wall() -> Vector3:
+	var desiredUp = Vector3.ZERO
+	var v = velocity + vel_difference
+	for i in range(0, get_slide_count()):
+		var n = get_slide_collision(i).normal
+		var f = v.dot(n)
+		if f <= -MIN_GROUNDED_ON_WALL and f < v.dot(desiredUp):
+			desiredUp = n.normalized()
+	
+	return desiredUp
 
 func set_state(new_state):
 	if state == new_state:
@@ -435,6 +459,7 @@ func set_state(new_state):
 			velocity += up*VEL_JUMP
 			sneaking = false
 		State.WallRun:
+			print(wall)
 			$Ball.visible = false
 			timer_coyote = 0
 			camFollow.global_transform.basis = camYaw.global_transform.basis
@@ -482,6 +507,11 @@ func kill():
 	var _x = get_tree().reload_current_scene()
 
 func die():
+	$DeathScreen/Label.text = "Game Over"
+	$CustomAnimation.play("Die")
+
+func time_up():
+	$DeathScreen/Label.text = "Time's Up"
 	$CustomAnimation.play("Die")
 
 func set_score(s):
@@ -494,3 +524,10 @@ func set_rings(r):
 
 func give_points(p):
 	set_score(score + p)
+
+func set_wall(w):
+	if w == Vector3.ZERO:
+		print_debug("Bad Wall")
+		print_stack()
+		get_tree().paused = true
+	wall = w
