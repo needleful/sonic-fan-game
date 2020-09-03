@@ -3,7 +3,7 @@ extends Spatial
 export(float) var power = 30
 
 func _ready():
-	$Area.connect("body_entered", self, "bounce")
+	var _x = $Area.connect("body_entered", self, "bounce")
 
 func bounce(body):
 	if body is Sonic:

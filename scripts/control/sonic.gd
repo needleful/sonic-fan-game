@@ -124,7 +124,7 @@ func _process(delta):
 	if time_limit <= 0:
 		time_up()
 	else:
-		$UI/Values/Time.text = "%2d:%02d" % [int(time_limit)/60, int(time_limit)%60]
+		$UI/Values/Time.text = "%2d:%02d" % [int(time_limit/60), int(time_limit)%60]
 
 	$debugUI/status/Up.text = MoveMath.pr(up)
 	$debugUI/status/Velocity.text = str(velocity.length())
