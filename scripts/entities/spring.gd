@@ -10,6 +10,6 @@ func bounce(body):
 		var n = global_transform.basis.y
 		var v = body.velocity
 		var t = v.normalized().angle_to(n)
-		var a = v.cross(n)
+		var a = v.cross(n).normalized()
 		var v2 = v.rotated(a, t*2)
 		body.velocity = v2 + n*power
