@@ -150,6 +150,7 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="debugUI" type="PanelContainer" parent="." index="0"]
+visible = false
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -155.0

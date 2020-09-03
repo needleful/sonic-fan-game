@@ -76,7 +76,7 @@ func _physics_process(delta):
 		if !(r is RayCast):
 			continue
 		var rc: RayCast = r
-		if rc.is_colliding():
+		if rc.is_colliding() and !(rc.get_collider() is Sonic):
 			var p = rc.get_collision_point()
 			var strength = rc.cast_to.length_squared() - (p - rc.global_transform.origin).length_squared()
 			var d = (p - rc.global_transform.origin).normalized()*strength

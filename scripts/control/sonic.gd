@@ -46,7 +46,7 @@ const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 20
 const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
-const MIN_DOT_WALLJUMP = 0.4
+const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
 
@@ -129,12 +129,13 @@ func _process(delta):
 	$debugUI/status/Up.text = MoveMath.pr(up)
 	$debugUI/status/Velocity.text = str(velocity.length())
 	$debugUI/status/Position.text = MoveMath.pr(global_transform.origin)
-	if is_on_floor():
-		debug_imm.clear()
-		debug_imm.begin(Mesh.PRIMITIVE_LINES)
-		debug_imm.add_vertex(Vector3(0,0,0))
-		debug_imm.add_vertex(global_transform.xform_inv(global_transform.origin + get_floor_normal()))
-		debug_imm.end()
+	
+	#if is_on_floor():
+	#	debug_imm.clear()
+	#	debug_imm.begin(Mesh.PRIMITIVE_LINES)
+	#	debug_imm.add_vertex(Vector3(0,0,0))
+	#	debug_imm.add_vertex(global_transform.xform_inv(global_transform.origin + get_floor_normal()))
+	#	debug_imm.end()
 
 func _physics_process(delta):
 	if up.length_squared() < 0.7:
@@ -282,7 +283,7 @@ func _physics_process(delta):
 	var oldSpeed = anim["parameters/Ground/Walk/blend_position"]
 	speed = lerp(oldSpeed, speed, .1)
 	anim["parameters/Ground/Walk/blend_position"] = speed
-	anim["parameters/Ground/Speed/scale"] = (1 + speed)/2
+	anim["parameters/Ground/Speed/scale"] = min(1+speed/1.5, 8+speed/4)
 
 	$debugUI/status/State.text = State.keys()[state]
 
