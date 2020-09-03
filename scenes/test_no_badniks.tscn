@@ -5,15 +5,18 @@
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=3]
 
 [sub_resource type="ProceduralSky" id=1]
-sky_top_color = Color( 0.141176, 0.0823529, 0.0823529, 1 )
-sky_horizon_color = Color( 0.105882, 0.211765, 0.294118, 1 )
+sky_top_color = Color( 0.878431, 0.941176, 0.968627, 1 )
+sky_horizon_color = Color( 1, 1, 1, 1 )
 ground_bottom_color = Color( 0, 0, 0, 1 )
 ground_horizon_color = Color( 0.0823529, 0.14902, 0.196078, 1 )
+sun_color = Color( 1, 1, 0.878431, 1 )
 sun_latitude = 39.24
 sun_longitude = 127.83
 sun_angle_max = 5.0
+sun_energy = 5.57
 
 [sub_resource type="Environment" id=2]
+resource_local_to_scene = true
 background_mode = 2
 background_sky = SubResource( 1 )
 
@@ -50,8 +53,8 @@ environment = SubResource( 2 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="Environment"]
 transform = Transform( 0.707107, -0.353553, 0.612373, -0.183013, 0.74501, 0.641456, -0.683013, -0.56565, 0.462097, 0, 1, 1 )
-light_color = Color( 0.886275, 0.984314, 1, 1 )
-light_energy = 0.2
+light_color = Color( 1, 0.996078, 0.886275, 1 )
+light_cull_mask = 2147483647
 shadow_enabled = true
 shadow_color = Color( 0.239216, 0.25098, 0.364706, 1 )
 
@@ -154,7 +157,7 @@ material/0 = null
 shape = SubResource( 6 )
 
 [node name="BigWall2" type="MeshInstance" parent="Environment/Ground"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 139.462, 33.1787, -52.0757 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 139.462, 33.1787, -49.8868 )
 mesh = SubResource( 5 )
 material/0 = null
 
