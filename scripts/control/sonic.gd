@@ -323,10 +323,16 @@ func process_ground(delta, accel_move, accel_start):
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 	
 	var steer_speed = 60/(velocity.length()*1.5 + 1)
-	var vp = velocity.slide(up)
-	var steer = vp.angle_to(input)
-	var axis = vp.cross(input).normalized()
+	var steer = movement.angle_to(input)
+	var axis = movement.cross(input).normalized()
 	if steer != 0 and axis.is_normalized():
+		if abs(steer) < PI/2:
+			var vp = velocity.slide(up)
+			var steer2 = vp.angle_to(input)
+			var axis2 = vp.cross(input).normalized()
+			if steer2 != 0 and axis2.is_normalized():
+				steer = steer2
+				axis = axis2
 		var angle = sign(steer)*min(abs(steer), steer_speed*delta)
 		var factor = (1 - (angle*angle)/(4*PI*PI))
 		velocity = velocity.rotated(axis, angle)*factor
