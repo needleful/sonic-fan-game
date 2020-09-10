@@ -286,7 +286,7 @@ width = 3.13518
 depth = 6.0
 
 [node name="Loop3" type="CSGBox" parent="Environment"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -14.7285, 4, 69.2517 )
+transform = Transform( 0.658203, 0, 0.75284, 0, 1, 0, -0.75284, 0, 0.658203, -14.7285, 4, 69.2517 )
 use_collision = true
 width = 5.7808
 height = 23.9375
@@ -313,7 +313,7 @@ depth = 10.6305
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.298691, -3.33769, -11.2024 )
 
 [node name="Loop2" type="CSGBox" parent="Environment"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 15.359, 4, 69.2517 )
+transform = Transform( -0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, 15.359, 4, 90.4419 )
 use_collision = true
 width = 5.7808
 height = 9.72786
@@ -332,6 +332,30 @@ width = 3.36579
 depth = 5.46038
 
 [node name="CSGBox2" type="CSGBox" parent="Environment/Loop2/CSGCylinder"]
+transform = Transform( 0.999684, 0, 0.0250777, 0, 0.999999, 0, -0.0250774, 0, 0.999685, -2.81851, -2.07274, 3.04877 )
+width = 3.13518
+depth = 6.0
+
+[node name="Loop4" type="CSGBox" parent="Environment"]
+transform = Transform( 0, 0, 1, 0, 1, 0, -1, 0, 0, 15.359, 4, 106.746 )
+use_collision = true
+width = 5.7808
+height = 9.72786
+depth = 10.5957
+
+[node name="CSGCylinder" type="CSGCylinder" parent="Environment/Loop4"]
+transform = Transform( 0, -1, 0, 1, 0, 0, 0, 0, 1, 0, 0.280672, 0 )
+operation = 2
+radius = 4.3146
+height = 8.0
+sides = 64
+
+[node name="CSGBox" type="CSGBox" parent="Environment/Loop4/CSGCylinder"]
+transform = Transform( 0.999727, 0, -0.0233153, 0, 0.999999, 0, 0.0233151, 0, 0.999728, -2.85356, 2, -2.84524 )
+width = 3.36579
+depth = 5.46038
+
+[node name="CSGBox2" type="CSGBox" parent="Environment/Loop4/CSGCylinder"]
 transform = Transform( 0.999684, 0, 0.0250777, 0, 0.999999, 0, -0.0250774, 0, 0.999685, -2.81851, -2.07274, 3.04877 )
 width = 3.13518
 depth = 6.0
