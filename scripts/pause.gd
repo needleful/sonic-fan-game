@@ -2,8 +2,7 @@ extends Control
 
 func _input(event):
 	if event.is_action_pressed("gm_pause"):
-		get_tree().paused = !get_tree().paused
-		pause(get_tree().paused)
+		pause(!get_tree().paused)
 	elif event.is_action_pressed("dev_reset"):
 		var _x = get_tree().reload_current_scene()
 
@@ -11,6 +10,7 @@ func _ready():
 	pause(get_tree().paused)
 
 func pause(paused:bool):
+	get_tree().paused = paused
 	visible = paused
 	if paused:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -19,7 +19,6 @@ func pause(paused:bool):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _on_resume_pressed():
-	get_tree().paused = false
 	pause(false)
 
 func _on_Restart_pressed():
