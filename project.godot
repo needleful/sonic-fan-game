@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/control/badnik_ground.gd"
 }, {
+"base": "Object",
+"class": "GraphicsOptions",
+"language": "GDScript",
+"path": "res://addons/fast_options/default_options/graphics.gd"
+}, {
 "base": "Reference",
 "class": "MoveMath",
 "language": "GDScript",
@@ -26,6 +31,7 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "BadnikGround": "",
+"GraphicsOptions": "",
 "MoveMath": "",
 "Sonic": ""
 }
@@ -35,6 +41,10 @@ _global_script_class_icons={
 config/name="Finding Amy Rose"
 run/main_scene="res://scenes/test.tscn"
 config/icon="res://icon.png"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "fast-options", "fast_options" )
 
 [input]
 

@@ -1,0 +1,78 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://ui/game_theme.tres" type="Theme" id=1]
+[ext_resource path="res://scripts/pause.gd" type="Script" id=2]
+[ext_resource path="res://addons/fast_options/scripts/options_menu.gd" type="Script" id=3]
+[ext_resource path="res://addons/fast_options/default_options/graphics.gd" type="Script" id=4]
+[ext_resource path="res://addons/fast_options/default_options/display.gd" type="Script" id=5]
+
+[node name="pause" type="Control"]
+pause_mode = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MainMenu" type="VBoxContainer" parent="."]
+anchor_left = 0.02
+anchor_top = 0.99
+anchor_right = 0.02
+anchor_bottom = 1.0
+margin_top = -160.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="MainMenu"]
+margin_right = 140.0
+margin_bottom = 25.0
+text = "PAUSED"
+
+[node name="Resume" type="Button" parent="MainMenu"]
+margin_top = 29.0
+margin_right = 140.0
+margin_bottom = 57.0
+text = "RESUME"
+align = 0
+
+[node name="Options" type="Button" parent="MainMenu"]
+margin_top = 61.0
+margin_right = 140.0
+margin_bottom = 89.0
+text = "OPTIONS"
+align = 0
+
+[node name="Restart" type="Button" parent="MainMenu"]
+margin_top = 93.0
+margin_right = 140.0
+margin_bottom = 121.0
+text = "RESTART LEVEL"
+align = 0
+
+[node name="Quit" type="Button" parent="MainMenu"]
+margin_top = 125.0
+margin_right = 140.0
+margin_bottom = 153.0
+text = "QUIT"
+align = 0
+
+[node name="FastOptionsMenu" type="Panel" parent="."]
+anchor_left = 0.02
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.99
+margin_right = -106.6
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+option_scripts = [ ExtResource( 4 ), ExtResource( 5 ) ]
+[connection signal="pressed" from="MainMenu/Resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="MainMenu/Options" to="." method="_on_Options_pressed"]
+[connection signal="pressed" from="MainMenu/Restart" to="." method="_on_Restart_pressed"]
+[connection signal="pressed" from="MainMenu/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="apply" from="FastOptionsMenu" to="." method="_on_FastOptionsMenu_apply"]
+[connection signal="cancel" from="FastOptionsMenu" to="." method="_on_FastOptionsMenu_cancel"]
