@@ -49,6 +49,7 @@ const WALL_DOT = 0.7
 const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
+const MIN_ANGLE_WALL_HEADON = deg2rad(20)
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -167,8 +168,8 @@ func _physics_process(delta):
 					new_state = State.Air
 			else:
 				timer_coyote = 0
-				if up.dot(true_up) < WALL_DOT and velocity.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
-					new_state = State.Slip
+				if up.dot(true_up) < WALL_DOT:
+					new_state = State.WallRun
 		State.Jumping:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
@@ -413,7 +414,18 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 		print("ERROR: ZERO used for reorient_wall")
 		print_stack()
 		return
-	var interp = min(delta, 1)
+	
+	var min_roll = MIN_ROLL_WALLRUN
+	var min_pitch = MIN_PITCH_WALLRUN
+	var rotation_speed = 1
+	var f = camYaw.global_transform.basis.z
+	var l = camYaw.global_transform.basis.x
+	if abs(f.dot(desiredUp)) > abs(l.dot(desiredUp)):
+		# Running at the wall head on
+		rotation_speed = 3
+		min_roll = 2*PI
+		min_pitch = 2*PI
+	var interp = min(delta*rotation_speed, 1)
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
 	var left = camYaw.global_transform.basis.x
@@ -424,7 +436,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	
 	var angle = upCurrent.angle_to(upTarget)
 	var rollAxis = upCurrent.cross(upTarget).normalized()
-	var min_angle = max(0, (abs(angle) - MIN_ROLL_WALLRUN))
+	var min_angle = max(0, (abs(angle) - min_roll))
 	
 	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if rollAxis.length_squared() > 0.9:
@@ -440,7 +452,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	# Pitch upright
 	var pitchAxis = forward.cross(df).normalized()
 	angle = forward.angle_to(df)
-	min_angle = max(0, (abs(angle) - MIN_PITCH_WALLRUN))
+	min_angle = max(0, (abs(angle) - min_pitch))
 	rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if pitchAxis.length_squared() > 0.9:
 		var t = up.rotated(pitchAxis, rotation)
@@ -467,8 +479,7 @@ func set_state(new_state):
 	if state == new_state:
 		return
 	print(State.keys()[state], State.keys()[new_state])
-	state = new_state
-	match state:
+	match new_state:
 		State.Ground:
 			$Ball.visible = false
 			timer_coyote = 0
@@ -482,9 +493,16 @@ func set_state(new_state):
 			$Ball.visible = true
 			statePlayback.travel("Jump")
 			timer_air = 0
-			velocity += up*VEL_JUMP
+			if state == State.Slip:
+				velocity += wall*VEL_JUMP
+			else:
+				velocity += up*VEL_JUMP
 			sneaking = false
 		State.WallRun:
+			if wall == Vector3.ZERO:
+				var nw = find_good_wall()
+				if nw == Vector3.ZERO:
+					wall = up
 			print(wall)
 			$Ball.visible = false
 			timer_coyote = 0
@@ -494,6 +512,7 @@ func set_state(new_state):
 			$Ball.visible = false
 			recover = false
 			timer_air = 0
+	state = new_state
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
