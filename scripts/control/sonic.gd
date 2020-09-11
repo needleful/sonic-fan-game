@@ -150,6 +150,16 @@ func _process(delta):
 	speed = lerp(oldSpeed, speed, .1)
 	anim["parameters/Ground/Walk/blend_position"] = speed
 	anim["parameters/Ground/Speed/scale"] = min(0.75+speed/1.5, 2+speed/3)
+	
+	var left = mesh.global_transform.basis.x
+	var forward = mesh.global_transform.basis.z
+	var frontAngle = true_up.dot(forward)*2
+	var sideAngle = true_up.dot(left)*2
+	var lean:Vector2 = Vector2(
+		clamp(sideAngle, -1, 1),
+		clamp(frontAngle, -1, 1)
+	)
+	anim["parameters/Ground/Walk/2/blend_position"] = lean
 
 	$debugUI/status/State.text = State.keys()[state]
 
