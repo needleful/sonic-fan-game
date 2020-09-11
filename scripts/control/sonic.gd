@@ -23,7 +23,7 @@ enum State {
 const VEL_JUMP = 10
 const ACCEL_START = 60
 const ACCEL_RUN = 16
-const ACCEL_WALLRUN = 8
+const ACCEL_WALLRUN = 4
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 8
 const MAX_RUN = 90
@@ -32,7 +32,7 @@ const SPEED_RUN = 10
 const SPEED_STOPPING = 4
 const SPEED_STOPPED = 1
 
-const ACCEL_SNEAK = 18
+const ACCEL_SNEAK = 38
 const MAX_SNEAK = 8
 
 const DRAG_STOPPING = 1.2
@@ -40,16 +40,15 @@ const DRAG_GROUND = 0.2
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = 5
+const MIN_GROUNDED_ON_WALL = 2
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 20
+const WALL_RUN_MAGNETISM = 10
 const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
 const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
-const MIN_ANGLE_WALL_HEADON = deg2rad(20)
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -143,11 +142,11 @@ func _process(delta):
 	# Animation Logic
 	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
 		rotate_by_speed(delta)
-		
+	
 	var speed: float = velocity.length()/MAX_SNEAK
+	if speed <= 0.05:
+		speed = 0
 
-	var oldSpeed = anim["parameters/Ground/Walk/blend_position"]
-	speed = lerp(oldSpeed, speed, .1)
 	anim["parameters/Ground/Walk/blend_position"] = speed
 	anim["parameters/Ground/Speed/scale"] = min(0.75+speed/1.5, 2+speed/3)
 	
@@ -499,6 +498,8 @@ func set_state(new_state):
 			last_wall_jump = Vector3.ZERO
 		State.Air:
 			timer_air = 0
+			if state != State.Jumping:
+				statePlayback.travel("Fall")
 		State.Jumping:
 			$Ball.visible = true
 			statePlayback.travel("Jump")
@@ -519,6 +520,7 @@ func set_state(new_state):
 			camFollow.global_transform.basis = camYaw.global_transform.basis
 			statePlayback.travel("Ground")
 		State.Slip:
+			statePlayback.travel("Fall")
 			$Ball.visible = false
 			recover = false
 			timer_air = 0

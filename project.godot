@@ -42,9 +42,13 @@ config/name="Finding Amy Rose"
 run/main_scene="res://scenes/test.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Pause="*res://ui/pause.tscn"
+
 [editor_plugins]
 
-enabled=PoolStringArray( "fast-options", "fast_options" )
+enabled=PoolStringArray( "fast_options" )
 
 [input]
 

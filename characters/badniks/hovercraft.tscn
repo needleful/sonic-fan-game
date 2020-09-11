@@ -390,24 +390,24 @@ enabled = true
 cast_to = Vector3( 0, -4, 0 )
 
 [node name="RayCast5" type="RayCast" parent="Avoidance" index="4"]
-transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, -0.79895, 0.217209 )
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, -0.373554, 0.0936053 )
 enabled = true
-cast_to = Vector3( 0, -3, 0 )
+cast_to = Vector3( 0, -2, 0 )
 
 [node name="RayCast6" type="RayCast" parent="Avoidance" index="5"]
-transform = Transform( 0.353553, -0.707107, -0.612372, 0.866025, -3.78552e-08, 0.5, -0.353553, -0.707107, 0.612372, 1.4892, 0.0727062, 0.175838 )
+transform = Transform( 0, -1, 0, 0.866025, -3.78552e-08, 0.5, -0.499999, 0, 0.866025, 1.4892, 0.0727062, 0.175838 )
 enabled = true
 cast_to = Vector3( 0, -3, 0 )
 
 [node name="RayCast7" type="RayCast" parent="Avoidance" index="6"]
-transform = Transform( -0.353553, -0.707107, 0.612372, 0.866025, -3.78552e-08, 0.5, -0.353553, 0.707107, 0.612373, -1.489, 0.0727303, 0.175346 )
+transform = Transform( 0, -1, -7.15256e-07, 0.866025, -3.78552e-08, 0.5, -0.499999, 0, 0.866025, -1.489, 0.0727303, 0.175346 )
 enabled = true
 cast_to = Vector3( 0, 3, 0 )
 
 [node name="RayCast8" type="RayCast" parent="Avoidance" index="7"]
-transform = Transform( 1, 0, 0, 0, -0.642788, 0.766044, 0, -0.766044, -0.642788, 0, 0.673293, -0.632791 )
+transform = Transform( 1, 0, 0, 0, -0.642788, 0.766044, 0, -0.766044, -0.642788, 0, 0.417535, 0.0841146 )
 enabled = true
-cast_to = Vector3( 0, -3, 0 )
+cast_to = Vector3( 0, -2, 0 )
 
 [node name="AttackAudio" type="AudioStreamPlayer3D" parent="." index="5"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.446992 )
