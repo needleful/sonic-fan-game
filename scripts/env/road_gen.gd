@@ -1,9 +1,10 @@
 tool
 extends Path
+class_name AutoRoad
 
 # Stay vertical or follow up vectors of the curve
 export(bool) var stay_vertical : bool = true setget set_vertical
-export(float) var minimum_angle_per_segment: float = 4
+export(float) var angle_tolerance: float = 4 setget set_tolerance
 export(ArrayMesh) var template_mesh : ArrayMesh setget set_template
 export(Transform) var template_transform : Transform setget set_template_transform
 
@@ -15,6 +16,10 @@ func _ready():
 	if Engine.editor_hint:
 		connect("curve_changed", self, "regenerate")
 		regenerate()
+
+func set_tolerance(tol):
+	angle_tolerance = tol
+	regenerate()
 
 func set_template(t):
 	template_mesh = t
@@ -80,16 +85,19 @@ func regenerate():
 	var surface: SurfaceTool = SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
-	for point_index in range(curve.get_point_count()):
-		var start = curve.get_point_position(point_index)
+	var points = curve.tessellate(5, angle_tolerance)
+	
+	for point_index in range(points.size()):
+		var start = points[point_index]
 		var end: Vector3
-		if point_index < curve.get_point_count() - 1:
-			end = curve.get_point_position(point_index + 1)
+		if point_index < points.size() - 1:
+			end = points[point_index + 1]
 		else:
-			var diff = start - curve.get_point_position(point_index - 1)
+			var diff = start - points[point_index - 1]
 			end = start + diff
 		
-		var up = Vector3.UP
+		var interp = curve.get_closest_offset(start)
+		var up = Vector3.UP if stay_vertical else curve.interpolate_baked_up_vector(interp)
 		var f = (end-start).normalized()
 		var l = up.cross(f).normalized()
 		var point_b:Transform = Transform(Basis(l, up, f), start)
@@ -111,6 +119,7 @@ func regenerate():
 				var lr = verts[startRight] - verts[startLeft]
 				var se = verts[endLeft] - verts[startLeft]
 				
+				# TODO: proper face orientation
 				if lr.cross(se).dot(up) > 0:
 					surface.add_index(endLeft)
 					surface.add_index(startRight)
@@ -133,6 +142,7 @@ func regenerate():
 	#debug
 	surface.generate_normals()
 	mesh.mesh = surface.commit()
+	collider.shape = mesh.mesh.create_trimesh_shape()
 
 func has_edge(edges: PoolIntArray, to_find_0: int, to_find_1: int) -> bool:
 	for i in range(0, edges.size() - 1, 2):

@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Path",
+"class": "AutoRoad",
+"language": "GDScript",
+"path": "res://scripts/env/road_gen.gd"
+}, {
 "base": "KinematicBody",
 "class": "BadnikGround",
 "language": "GDScript",
@@ -30,6 +35,7 @@ _global_script_classes=[ {
 "path": "res://scripts/control/sonic.gd"
 } ]
 _global_script_class_icons={
+"AutoRoad": "",
 "BadnikGround": "",
 "GraphicsOptions": "",
 "MoveMath": "",
