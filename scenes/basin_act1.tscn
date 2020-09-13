@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=1]
+[ext_resource path="res://assets/models-export/env/Plane.mesh" type="ArrayMesh" id=2]
+
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( 30.5238, -26.2025, 110.18, -30.5238, 26.2025, -110.18, -2.03244, 1.00116, 1.08159, -199.779, -36.1994, -30.2909, 199.779, 36.1994, 30.2909, -33.963, 111.109, -497.987, 0, 0, 0, 0, 0, 0, 42.7611, 308.528, -985.657 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[node name="Path" type="Path"]
+curve = SubResource( 1 )
+script = ExtResource( 1 )
+template_mesh = ExtResource( 2 )
