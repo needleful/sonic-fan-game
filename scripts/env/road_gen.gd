@@ -65,11 +65,50 @@ func regenerate():
 	var added_indeces: Array = []
 	
 	for edge_index in range(data.get_edge_count()):
-		if data.get_edge_faces(edge_index).size() == 1:
-			var e0 = data.get_edge_vertex(edge_index, 0)
-			var e1 = data.get_edge_vertex(edge_index, 1)
-			outer_edges.append(e0)
-			outer_edges.append(e1)
+		var faces = data.get_edge_faces(edge_index)
+		if faces.size() == 1:
+			var face = faces[0]
+			
+			var v0 = data.get_face_vertex(face, 0)
+			var v1 = data.get_face_vertex(face, 1)
+			var v2 = data.get_face_vertex(face, 2)
+			
+			var e0: int = data.get_edge_vertex(edge_index, 0)
+			var e1: int = data.get_edge_vertex(edge_index, 1)
+			var e2: int
+			
+			if e0 == v0:
+				if e1 == v1:
+					e2 = v2
+				else:
+					e2 = v1
+			elif e0 == v1:
+				if e1 == v0:
+					e0 = v0
+					e1 = v1
+					e2 = v2
+				else:
+					e2 = v0
+			elif e0 == v2:
+				if e1 == v0:
+					e0 = v0
+					e1 = v2
+					e2 = v1
+				else:
+					e0 = v1
+					e1 = v2
+					e2 = v0
+			
+			var v_0 = data.get_vertex(e0)
+			var v_1 = data.get_vertex(e1)
+			var v_2 = data.get_vertex(e2)
+			var n = (v_1 - v_0).cross(v_2 - v_0)
+			if n.z <= 0:
+				outer_edges.append(e1)
+				outer_edges.append(e0)
+			else:
+				outer_edges.append(e0)
+				outer_edges.append(e1)
 	
 	# Get the vertices, convert outer_edges from the source mesh to the target mesh
 	for e in range(outer_edges.size()):
@@ -120,7 +159,7 @@ func regenerate():
 				var se = verts[endLeft] - verts[startLeft]
 				
 				# TODO: proper face orientation
-				if lr.cross(se).dot(up) > 0:
+				if true:
 					surface.add_index(endLeft)
 					surface.add_index(startRight)
 					surface.add_index(startLeft)

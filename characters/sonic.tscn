@@ -84,7 +84,7 @@ nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 17 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
+node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
 
 [sub_resource type="AnimationNodeAnimation" id=19]
 animation = "Ball-loop"

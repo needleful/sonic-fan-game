@@ -43,12 +43,13 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = 2
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 10
+const WALL_RUN_MAGNETISM = 5
 const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
 const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
+const VEL_DIFF_FULL_FRICTION = 4
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -173,8 +174,13 @@ func _physics_process(delta):
 				new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
-				if timer_coyote >= TIME_COYOTE and $FloorArea.get_overlapping_bodies().size() == 0:
-					new_state = State.Air
+				if timer_coyote >= TIME_COYOTE:
+					var new_wall = find_good_wall()
+					if new_wall == Vector3.ZERO:
+						new_state = State.Air
+					else:
+						wall = new_wall
+						new_state = State.WallRun
 			else:
 				timer_coyote = 0
 				if up.dot(true_up) < WALL_DOT:
@@ -248,8 +254,10 @@ func _physics_process(delta):
 		State.Jumping:
 			process_jump(delta)
 		State.WallRun:
+			var friction = clamp(-vel_difference.dot(wall)/VEL_DIFF_FULL_FRICTION, 0, 1)
+			var wall_accel = lerp(ACCEL_WALLRUN, ACCEL_RUN, friction)
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
-			process_ground(delta, ACCEL_WALLRUN, ACCEL_WALLRUN)
+			process_ground(delta, wall_accel, wall_accel)
 		State.Slip:
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_air(delta)

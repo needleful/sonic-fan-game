@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/models-export/env/Circle.tres" type="ArrayMesh" id=2]
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=4]
 [ext_resource path="res://assets/models-export/env/road-template-basin1.mesh" type="ArrayMesh" id=5]
@@ -27,6 +28,12 @@ data = PoolVector3Array( -15, 1, 5, 15, 1, 5, -15, -1, 5, 15, 1, 5, 15, -1, 5, -
 _data = {
 "points": PoolVector3Array( -101.175, 11.973, -6.82122, 101.175, -11.973, 6.82122, -12.2999, -5.29284, -30.1748, -192.613, -49.2172, -57.4295, 192.613, 49.2172, 57.4295, 344.191, 9.53839, 110.829, 16.0867, 5.86674, 131.372, -16.0867, -5.86674, -131.372, 655.656, 109.194, 25.7046, 458.735, 30.3299, -17.0133, -458.735, -30.3299, 17.0133, 174.165, 217.314, -283.51, -101.175, 11.973, -6.82122, 101.175, -11.973, 6.82122, -11.6007, -5.36794, -30.0242 ),
 "tilts": PoolRealArray( 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=8]
+_data = {
+"points": PoolVector3Array( 25.7573, -2.55094, -8.95891, -25.7573, 2.55094, 8.95891, 2.7421, 1.77996, -2.21764, 13.3489, 10.9712, 86.03, -13.3489, -10.9712, -86.03, -115.193, 30.4436, -48.415 ),
+"tilts": PoolRealArray( 0, 0 )
 }
 
 [node name="Spatial" type="Spatial"]
@@ -400,3 +407,9 @@ curve = SubResource( 7 )
 script = ExtResource( 4 )
 template_mesh = ExtResource( 5 )
 template_transform = Transform( 0.5, 0, 0, 0, 0.75, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Tunnel" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -43.3421, 2.72004, 137.018 )
+curve = SubResource( 8 )
+script = ExtResource( 4 )
+template_mesh = ExtResource( 2 )
