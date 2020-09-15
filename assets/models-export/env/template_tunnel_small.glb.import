@@ -2,12 +2,12 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/template_tunnel_large.glb-3cd7992aedd5231456c66a3d68c53cb1.scn"
+path="res://.import/template_tunnel_small.glb-b290c42a0dd19a7635f0b3f17f090fc0.scn"
 
 [deps]
 
-source_file="res://assets/models-export/env/template_tunnel_large.glb"
-dest_files=[ "res://.import/template_tunnel_large.glb-3cd7992aedd5231456c66a3d68c53cb1.scn" ]
+source_file="res://assets/models-export/env/template_tunnel_small.glb"
+dest_files=[ "res://.import/template_tunnel_small.glb-b290c42a0dd19a7635f0b3f17f090fc0.scn" ]
 
 [params]
 

@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
-[ext_resource path="res://assets/models-export/env/Circle.tres" type="ArrayMesh" id=2]
+[ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=2]
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=3]
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=4]
 [ext_resource path="res://assets/models-export/env/road-template-basin1.mesh" type="ArrayMesh" id=5]
