@@ -40,7 +40,7 @@ const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = 2
+const MIN_GROUNDED_ON_WALL = 0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 5
@@ -99,7 +99,6 @@ func _ready():
 	set_rings(rings)
 	cam.current = true
 	oldFollow = Transform(camFollow.global_transform)
-	statePlayback.start("Ground")
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -454,13 +453,8 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if rollAxis.length_squared() > 0.9:
 		var t = up.rotated(rollAxis, rotation)
-		if t.dot(desiredUp) < 0:
-			print("Bad rotation: from %s to %s (result: %s)" 
-				% [up, desiredUp, t]
-			)
-		else:
-			global_rotate(rollAxis, rotation)
-			up = up.rotated(rollAxis, rotation)
+		global_rotate(rollAxis, rotation)
+		up = up.rotated(rollAxis, rotation)
 	
 	# Pitch upright
 	var pitchAxis = forward.cross(df).normalized()
@@ -469,22 +463,19 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if pitchAxis.length_squared() > 0.9:
 		var t = up.rotated(pitchAxis, rotation)
-		if t.dot(desiredUp) < 0:
-			print("Bad rotation: from %s to %s (result: %s)" 
-				% [up, desiredUp, t]
-			)
-		else:
-			global_rotate(pitchAxis, rotation)
-			up = up.rotated(pitchAxis, rotation)
+		global_rotate(pitchAxis, rotation)
+		up = up.rotated(pitchAxis, rotation)
 
 func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var desiredUp = Vector3.ZERO
 	var v = velocity + vel_difference
 	for i in range(0, get_slide_count()):
-		var n = get_slide_collision(i).normal
-		var f = v.dot(n)
-		if f <= -MIN_GROUNDED_ON_WALL and f < v.dot(desiredUp):
-			desiredUp = n.normalized()
+		var col = get_slide_collision(i)
+		if $WallRunArea.overlaps_body(col.collider):
+			var n = col.normal
+			var f = v.dot(n)
+			if f <= -min_grounded and f < v.dot(desiredUp):
+				desiredUp = n.normalized()
 	
 	return desiredUp
 
@@ -541,14 +532,6 @@ func rotate_by_speed(delta):
 	
 	if axis.is_normalized():
 		mesh.global_rotate(axis, angle)
-	
-	#var diff = velocity.project(mesh.global_transform.basis.x)
-	#var new_up = up+diff
-	#var l = up.angle_to(new_up)
-	#var lean = sign(l)*min(l, 1.2)
-	#var leanAxis = up.cross(new_up).normalized()
-	#if leanAxis.is_normalized():
-	#	mesh.global_rotate(leanAxis, lean)
 
 func get_movement()->Vector3:
 	var input = Vector2(

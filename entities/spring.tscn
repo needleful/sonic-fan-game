@@ -12,10 +12,10 @@ albedo_color = Color( 1, 0, 0, 1 )
 metallic = 0.61
 roughness = 0.28
 
-[sub_resource type="SphereShape" id=4]
+[sub_resource type="SphereShape" id=3]
 radius = 0.5
 
-[sub_resource type="CylinderShape" id=3]
+[sub_resource type="CylinderShape" id=4]
 radius = 0.5
 height = 0.3
 
@@ -31,8 +31,8 @@ material/0 = SubResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Area"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0 )
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )

@@ -1,18 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene format=2]
 
-[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=1]
-[ext_resource path="res://assets/models-export/env/road-template-basin1.mesh" type="ArrayMesh" id=2]
+[node name="canals_act1" type="Spatial"]
 
-[sub_resource type="Curve3D" id=1]
-_data = {
-"points": PoolVector3Array( 30.5238, -26.2025, 110.18, -30.5238, 26.2025, -110.18, -0.713356, 0.437151, 1.72897, -266.134, -48.8602, 71.9799, 266.134, 48.8602, -71.9799, -33.963, 111.109, -497.987, 0, 0, 0, 0, 0, 0, 233.603, 154.358, -62.7214 ),
-"tilts": PoolRealArray( 0, 0, 0 )
-}
-
-[node name="Path" type="Path"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.463779, 0, 0 )
-curve = SubResource( 1 )
-script = ExtResource( 1 )
-stay_vertical = false
-angle_tolerance = 5.0
-template_mesh = ExtResource( 2 )
+[node name="CSGBox" type="CSGBox" parent="."]
+width = 100.0
+height = 100.0
+depth = 100.0
