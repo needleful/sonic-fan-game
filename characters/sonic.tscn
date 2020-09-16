@@ -84,7 +84,7 @@ nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 17 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
+node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
 [sub_resource type="AnimationNodeAnimation" id=19]
 animation = "Ball-loop"
@@ -190,11 +190,12 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="debugUI" type="PanelContainer" parent="." index="0"]
-visible = false
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = -201.0
 margin_top = -155.0
-margin_right = 201.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -29,6 +29,9 @@ __meta__ = {
 [node name="Label" type="Label" parent="MainMenu"]
 margin_right = 140.0
 margin_bottom = 25.0
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -2
+custom_constants/shadow_offset_y = 2
 text = "PAUSED"
 
 [node name="Resume" type="Button" parent="MainMenu"]

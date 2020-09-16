@@ -36,7 +36,7 @@ const ACCEL_SNEAK = 38
 const MAX_SNEAK = 8
 
 const DRAG_STOPPING = 1.2
-const DRAG_GROUND = 0.2
+const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
@@ -132,14 +132,7 @@ func _process(delta):
 	$debugUI/status/Up.text = MoveMath.pr(up)
 	$debugUI/status/Velocity.text = str(velocity.length())
 	$debugUI/status/Position.text = MoveMath.pr(global_transform.origin)
-	
-	#if is_on_floor():
-	#	debug_imm.clear()
-	#	debug_imm.begin(Mesh.PRIMITIVE_LINES)
-	#	debug_imm.add_vertex(Vector3(0,0,0))
-	#	debug_imm.add_vertex(global_transform.xform_inv(global_transform.origin + get_floor_normal()))
-	#	debug_imm.end()
-	
+
 	# Animation Logic
 	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
 		rotate_by_speed(delta)
@@ -175,12 +168,15 @@ func _physics_process(delta):
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE:
-					var new_wall = find_good_wall()
-					if new_wall == Vector3.ZERO:
+					if $FloorArea.get_overlapping_bodies().size() == 0:
 						new_state = State.Air
 					else:
-						wall = new_wall
-						new_state = State.WallRun
+						var new_wall = find_good_wall(0)
+						if new_wall == Vector3.ZERO:
+							new_state = State.Air
+						else:
+							wall = new_wall
+							new_state = State.WallRun
 			else:
 				timer_coyote = 0
 				if up.dot(true_up) < WALL_DOT:
@@ -481,7 +477,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 			global_rotate(pitchAxis, rotation)
 			up = up.rotated(pitchAxis, rotation)
 
-func find_good_wall() -> Vector3:
+func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var desiredUp = Vector3.ZERO
 	var v = velocity + vel_difference
 	for i in range(0, get_slide_count()):
