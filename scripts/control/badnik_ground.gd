@@ -10,10 +10,14 @@ var velocity: Vector3 = Vector3(0,0,0)
 export(NodePath) var sonicNode: NodePath
 onready var sonic: Sonic = get_node(sonicNode)
 
+export(NodePath) var pathNode: NodePath
+onready var path: Path = get_node(pathNode)
+
 export(float) var accel_move:float = 30
 export(float) var accel_pivot: float = 20
 export(float) var accel_air: float = 9
 export(float) var drag_move: float = 0.25
+export(float) var drag_patrol: float = 0.75
 export(float) var speed_rotation:float = 3*PI
 
 export(float) var time_to_chase:float = 0.25
@@ -47,6 +51,9 @@ var coyote_timer = 0
 
 var vision_timer = 0
 var player_in_cone = false
+
+const DIST_PATROL_POINT = 4
+var patrol_point: int = 0
 
 func _ready():
 	var _x = $AttackArea.connect("body_entered", self, "onAttack")
@@ -97,11 +104,18 @@ func _physics_process(delta):
 			else:
 				vision_timer -= delta*0.5
 	
+	var drag_factor
 	match state:
 		AIState.Chase:
 			dir = get_chase_dir()
-		_:
-			dir = Vector3(0,0,0)
+			drag_factor = drag_move
+		AIState.Patrol:
+			drag_factor = drag_patrol
+			if path:
+				dir = get_patrol_point()
+			else:
+				dir = Vector3(0,0,0)
+
 	var move:Vector3 = MoveMath.reject(dir, up).normalized()
 	var drag:Vector3
 	if mstate == MoveState.Air:
@@ -111,7 +125,7 @@ func _physics_process(delta):
 		move *= accel_move
 		var correction = move.normalized() - velocity.normalized()
 		move += correction*accel_pivot
-		drag = -drag_move*velocity
+		drag = -drag_factor*velocity
 	
 	velocity += (gravity + move + drag)*delta
 	velocity = move_and_slide(velocity, up)
@@ -131,6 +145,21 @@ func _physics_process(delta):
 		attack_timer += delta
 		if attack_timer > ATTACK_TIME:
 			doneAttacking()
+
+func get_patrol_point() -> Vector3:
+	var origin = weapon.global_transform.origin
+	var pxform = path.global_transform
+	var p_pos = pxform.xform(path.curve.get_point_position(patrol_point))
+	var dir = p_pos - origin
+
+	if dir.length() >= DIST_PATROL_POINT:
+		return dir
+	else:
+		patrol_point += 1
+		if patrol_point >= path.curve.get_point_count():
+			patrol_point = 0
+		p_pos = pxform.xform(path.curve.get_point_position(patrol_point))
+		return p_pos - origin
 
 func get_chase_dir() -> Vector3:
 	return sonic.global_transform.origin - weapon.global_transform.origin

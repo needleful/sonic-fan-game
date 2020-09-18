@@ -35,7 +35,7 @@ const SPEED_STOPPED = 1
 const ACCEL_SNEAK = 38
 const MAX_SNEAK = 8
 
-const DRAG_STOPPING = 1.2
+const DRAG_STOPPING = 2
 const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
@@ -43,7 +43,7 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = 0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 5
+const WALL_RUN_MAGNETISM = 10
 const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
 const MIN_DOT_WALLJUMP = 0.8
@@ -94,6 +94,8 @@ onready var debug_imm : ImmediateGeometry = $debug_imm
 var stop = false
 var dead = false
 
+var camRot: Vector2 = Vector2(0,0)
+
 func _ready():
 	set_score(score)
 	set_rings(rings)
@@ -115,7 +117,11 @@ func _input(event):
 			Engine.time_scale = 1
 
 func _process(delta):
-	var c = get_camera_rot()
+	var newCamRot = camRot + get_camera_rot()
+	newCamRot.y = clamp(newCamRot.y, -PI/2 + 0.5, PI/2)
+	var c = newCamRot - camRot
+	camRot = newCamRot
+	
 	camYaw.rotate_y(-c.x)
 	if cam_reverse.current:
 		$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
@@ -156,6 +162,9 @@ func _process(delta):
 	$debugUI/status/State.text = State.keys()[state]
 
 func _physics_process(delta):
+	if is_nan(velocity.length()):
+		print_debug("Velocity is Nan!")
+		get_tree().paused = true
 	if up.length_squared() < 0.7:
 		up = true_up
 	oldFollow.basis = camFollow.global_transform.basis
@@ -297,11 +306,21 @@ func process_ground(delta, accel_move, accel_start):
 	var running = velocity.length_squared() > SPEED_RUN*SPEED_RUN
 	
 	var input: Vector3 = get_movement()
-	var movement:Vector3
-	if sneaking:
+	var movement:Vector3 
+	if velocity == Vector3.ZERO:
 		movement = input
 	else:
 		movement = input.project(velocity)
+	
+	if is_nan(movement.length()):
+		print_debug("ded")
+		print("Velocity:", velocity)
+		print("Movement:", movement)
+		print("Input:",input)
+		print("Up:", up)
+		print("Wall:", wall)
+		get_tree().paused = true
+		return
 	
 	if sneaking:
 		movement *= min(ACCEL_SNEAK, accel_move)
@@ -335,7 +354,7 @@ func process_ground(delta, accel_move, accel_start):
 		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 	
-	var steer_speed = 60/(velocity.length()*1.5 + 1)
+	var steer_speed = 180/(velocity.length()*4 + 3)
 	var steer = movement.angle_to(input)
 	var axis = movement.cross(input).normalized()
 	if steer != 0 and axis.is_normalized():
@@ -351,7 +370,18 @@ func process_ground(delta, accel_move, accel_start):
 		velocity = velocity.rotated(axis, angle)*factor
 	
 	vel_difference = velocity
-	velocity = move_and_slide(velocity, up)
+	if is_nan(velocity.length()):
+		print_debug("ded")
+		print("Velocity:", velocity)
+		print("Steer:", steer)
+		print("Axis:", axis)
+		print("Movement:", movement)
+		print("Input:",input)
+		print("Up:", up)
+		print("Wall:", wall)
+		get_tree().paused = true
+		return
+	velocity = move_and_slide_with_snap(velocity, -up*0.1, up)
 	vel_difference -= velocity
 	
 	if is_on_floor():
@@ -427,6 +457,10 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 		print_stack()
 		return
 	
+	if desiredUp.dot(up) <= -0.9:
+		print_debug("Bad!", up, "->", desiredUp)
+		return
+	
 	var min_roll = MIN_ROLL_WALLRUN
 	var min_pitch = MIN_PITCH_WALLRUN
 	var rotation_speed = 1
@@ -452,7 +486,6 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	
 	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if rollAxis.length_squared() > 0.9:
-		var t = up.rotated(rollAxis, rotation)
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
 	
@@ -462,7 +495,6 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	min_angle = max(0, (abs(angle) - min_pitch))
 	rotation = sign(angle)*max(abs(angle*interp), min_angle)
 	if pitchAxis.length_squared() > 0.9:
-		var t = up.rotated(pitchAxis, rotation)
 		global_rotate(pitchAxis, rotation)
 		up = up.rotated(pitchAxis, rotation)
 

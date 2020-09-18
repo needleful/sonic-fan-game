@@ -1,6 +1,7 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
+[ext_resource path="res://entities/spikes.tscn" type="PackedScene" id=2]
 [ext_resource path="res://characters/badniks/motorbike.tscn" type="PackedScene" id=3]
 [ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=4]
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=5]
@@ -36,7 +37,16 @@ size = Vector3( 30, 2, 10 )
 [sub_resource type="ConcavePolygonShape" id=8]
 data = PoolVector3Array( -15, 1, 5, 15, 1, 5, -15, -1, 5, 15, 1, 5, 15, -1, 5, -15, -1, 5, 15, 1, -5, -15, 1, -5, 15, -1, -5, -15, 1, -5, -15, -1, -5, 15, -1, -5, 15, 1, 5, 15, 1, -5, 15, -1, 5, 15, 1, -5, 15, -1, -5, 15, -1, 5, -15, 1, -5, -15, 1, 5, -15, -1, -5, -15, 1, 5, -15, -1, 5, -15, -1, -5, 15, 1, 5, -15, 1, 5, 15, 1, -5, -15, 1, 5, -15, 1, -5, 15, 1, -5, -15, -1, 5, 15, -1, 5, -15, -1, -5, 15, -1, 5, 15, -1, -5, -15, -1, -5 )
 
+[sub_resource type="Curve3D" id=9]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 27.7603, 0.415039, 8.16888, 0, 0, 0, 0, 0, 0, 27.8845, 0.458703, 90.8654, 0, 0, 0, 0, 0, 0, 28.1751, 18.6161, 173.628, 0, 0, 0, 0, 0, 0, -16.2121, 6.45436, 159.695, 0, 0, 0, 0, 0, 0, -24.5243, 0.506633, 12.1775, 0, 0, 0, 0, 0, 0, -18.6523, 12.619, -164.142, 0, 0, 0, 0, 0, 0, 6.50254, 6.3202, -156.143, 0, 0, 0, 0, 0, 0, 27.7504, 0.28249, 8.06203 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0 )
+}
+
 [node name="Spatial" type="Spatial"]
+
+[node name="spikes" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 0.963582, 74.5926 )
 
 [node name="hovercraft" parent="." instance=ExtResource( 4 )]
 transform = Transform( 0.957561, 0, -0.28823, 0, 1, 0, 0.28823, 0, 0.957561, 1.50351, 1.64561, -4.43503 )
@@ -45,6 +55,7 @@ sonicNode = NodePath("../sonic")
 [node name="motorbike" parent="." instance=ExtResource( 3 )]
 transform = Transform( -0.965926, 0, -0.258819, 0, 1, 0, 0.258819, 0, -0.965926, 5.62635, 0.118056, 53.8779 )
 sonicNode = NodePath("../sonic")
+pathNode = NodePath("../patrolPath1")
 
 [node name="sonic" parent="." instance=ExtResource( 1 )]
 
@@ -414,3 +425,7 @@ sides = 18
 
 [node name="spring" parent="." instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 38.8298, -0.0406636, -40.1576 )
+
+[node name="patrolPath1" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 38.7214 )
+curve = SubResource( 9 )
