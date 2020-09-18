@@ -23,8 +23,8 @@ _data = {
 
 [sub_resource type="Curve3D" id=5]
 _data = {
-"points": PoolVector3Array( -136.399, 2.03214, 2.71541, 136.399, -2.03214, -2.71541, -18.5668, -1.7056, -2.09368, -242.452, -0.787292, 22.6177, 242.452, 0.787292, -22.6177, 304.135, -148.692, -18.9842, 0, 0, 0, 0, 0, 0, 659.592, -137.685, -50.5204 ),
-"tilts": PoolRealArray( 0, 0, 0 )
+"points": PoolVector3Array( -136.399, 2.03214, 2.71541, 136.399, -2.03214, -2.71541, -18.5668, -1.7056, -2.09368, -242.452, -0.787292, 22.6177, 242.452, 0.787292, -22.6177, 304.135, -148.692, -18.9842, -161.256, -36.5939, -15.1588, 161.256, 36.5939, 15.1588, 772.812, -150.119, -50.0352, 55.6266, -69.2141, -109.594, -55.6266, 69.2141, 109.594, 991.129, -26.0458, 167.958, 0, 0, 0, 0, 0, 0, 383.181, 237.865, 540.929 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0 )
 }
 
 [sub_resource type="CylinderMesh" id=6]
@@ -120,6 +120,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 90, 0 )
 curve = SubResource( 4 )
 script = ExtResource( 2 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 3 )
 template_transform = Transform( 1.25, 0, 0, 0, 1.25, 0, 0, 0, 1, 0, 0, 0 )
 
@@ -128,7 +129,9 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18.1174, -8.48868, 0 )
 curve = SubResource( 5 )
 script = ExtResource( 2 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 4 )
+template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="CrowsNest" type="MeshInstance" parent="Env"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -49.0497, 0 )

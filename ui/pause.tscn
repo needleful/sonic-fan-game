@@ -21,44 +21,44 @@ anchor_left = 0.02
 anchor_top = 0.99
 anchor_right = 0.02
 anchor_bottom = 1.0
-margin_top = -160.0
+margin_top = -202.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="MainMenu"]
-margin_right = 140.0
-margin_bottom = 25.0
+margin_right = 182.0
+margin_bottom = 33.0
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -2
 custom_constants/shadow_offset_y = 2
 text = "PAUSED"
 
 [node name="Resume" type="Button" parent="MainMenu"]
-margin_top = 29.0
-margin_right = 140.0
-margin_bottom = 57.0
+margin_top = 37.0
+margin_right = 182.0
+margin_bottom = 73.0
 text = "RESUME"
 align = 0
 
 [node name="Options" type="Button" parent="MainMenu"]
-margin_top = 61.0
-margin_right = 140.0
-margin_bottom = 89.0
+margin_top = 77.0
+margin_right = 182.0
+margin_bottom = 113.0
 text = "OPTIONS"
 align = 0
 
 [node name="Restart" type="Button" parent="MainMenu"]
-margin_top = 93.0
-margin_right = 140.0
-margin_bottom = 121.0
+margin_top = 117.0
+margin_right = 182.0
+margin_bottom = 153.0
 text = "RESTART LEVEL"
 align = 0
 
 [node name="Quit" type="Button" parent="MainMenu"]
-margin_top = 125.0
-margin_right = 140.0
-margin_bottom = 153.0
+margin_top = 157.0
+margin_right = 182.0
+margin_bottom = 193.0
 text = "QUIT"
 align = 0
 

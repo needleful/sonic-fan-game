@@ -374,7 +374,6 @@ func process_ground(delta, accel_move, accel_start):
 		var factor = (1 - (angle*angle)/(4*PI*PI))
 		velocity = velocity.rotated(axis, angle)*factor
 		local_steer = -steer*up.dot(axis)
-		print(local_steer)
 	
 	vel_difference = velocity
 	if is_nan(velocity.length()):

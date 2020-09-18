@@ -19,7 +19,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 22.0226, 0 )
 environment = SubResource( 2 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="." index="2"]
-transform = Transform( 0.920471, 0.390811, 2.23595e-07, -0.225572, 0.531285, 0.816611, 0.319141, -0.751667, 0.577188, 0, 7.05124, 0 )
+transform = Transform( 0.920471, 0.390811, 2.04439e-07, -0.196138, 0.46196, 0.864941, 0.338029, -0.796153, 0.501873, 0, 23.0813, 0 )
+shadow_enabled = true
 
 [node name="object_00117B1C" parent="." index="6"]
 transform = Transform( 0.0263901, 0.114015, 0.000399914, 0.00160294, 3.94396e-05, -0.117019, -0.114004, 0.0263931, -0.00155275, -133.441, 23.288, 73.6168 )

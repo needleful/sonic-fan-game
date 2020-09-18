@@ -52,6 +52,10 @@ config/icon="res://icon.png"
 
 Pause="*res://ui/pause.tscn"
 
+[display]
+
+window/dpi/allow_hidpi=true
+
 [editor_plugins]
 
 enabled=PoolStringArray( "fast_options" )

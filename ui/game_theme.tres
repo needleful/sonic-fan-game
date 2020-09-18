@@ -8,7 +8,7 @@ bg_color = Color( 1, 1, 1, 0.831373 )
 expand_margin_left = 5.0
 
 [sub_resource type="DynamicFont" id=2]
-size = 18
+size = 24
 font_data = ExtResource( 1 )
 
 [resource]
