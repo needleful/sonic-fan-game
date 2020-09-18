@@ -120,7 +120,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 90, 0 )
 curve = SubResource( 4 )
 script = ExtResource( 2 )
 stay_vertical = false
-angle_tolerance = 4.0
 template_mesh = ExtResource( 3 )
 template_transform = Transform( 1.25, 0, 0, 0, 1.25, 0, 0, 0, 1, 0, 0, 0 )
 
@@ -129,9 +128,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18.1174, -8.48868, 0 )
 curve = SubResource( 5 )
 script = ExtResource( 2 )
 stay_vertical = false
-angle_tolerance = 4.0
 template_mesh = ExtResource( 4 )
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="CrowsNest" type="MeshInstance" parent="Env"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -49.0497, 0 )

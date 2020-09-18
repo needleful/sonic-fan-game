@@ -93,6 +93,7 @@ onready var debug_imm : ImmediateGeometry = $debug_imm
 
 var stop = false
 var dead = false
+var local_steer: float = 0
 
 var camRot: Vector2 = Vector2(0,0)
 
@@ -146,7 +147,8 @@ func _process(delta):
 	if speed <= 0.05:
 		speed = 0
 
-	anim["parameters/Ground/Walk/blend_position"] = speed
+	var old_speed = anim["parameters/Ground/Walk/blend_position"]
+	anim["parameters/Ground/Walk/blend_position"] = lerp(old_speed, speed, 0.5)
 	anim["parameters/Ground/Speed/scale"] = min(0.75+speed/1.5, 2+speed/3)
 	
 	var left = mesh.global_transform.basis.x
@@ -157,7 +159,10 @@ func _process(delta):
 		clamp(sideAngle, -1, 1),
 		clamp(frontAngle, -1, 1)
 	)
-	anim["parameters/Ground/Walk/2/blend_position"] = lean
+	anim["parameters/Ground/Walk/1/blend_position"] = lean
+	
+	var old_steer = anim["parameters/Ground/Walk/2/blend_position"]
+	anim["parameters/Ground/Walk/2/blend_position"] = lerp(old_steer, local_steer/(PI/3), 0.05)
 
 	$debugUI/status/State.text = State.keys()[state]
 
@@ -368,6 +373,8 @@ func process_ground(delta, accel_move, accel_start):
 		var angle = sign(steer)*min(abs(steer), steer_speed*delta)
 		var factor = (1 - (angle*angle)/(4*PI*PI))
 		velocity = velocity.rotated(axis, angle)*factor
+		local_steer = -steer*up.dot(axis)
+		print(local_steer)
 	
 	vel_difference = velocity
 	if is_nan(velocity.length()):

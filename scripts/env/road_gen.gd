@@ -149,32 +149,20 @@ func regenerate():
 				var endLeft = outer_edges[e] + start_index
 				var endRight = outer_edges[e+1] + start_index
 				
-				var lr = verts[startRight] - verts[startLeft]
-				var se = verts[endLeft] - verts[startLeft]
+				surface.add_index(endLeft)
+				surface.add_index(startRight)
+				surface.add_index(startLeft)
 				
-				# TODO: proper face orientation
-				if true:
-					surface.add_index(endLeft)
-					surface.add_index(startRight)
-					surface.add_index(startLeft)
-					
-					surface.add_index(startRight)
-					surface.add_index(endLeft)
-					surface.add_index(endRight)
-				else:
-					surface.add_index(startRight)
-					surface.add_index(endLeft)
-					surface.add_index(startLeft)
-					
-					surface.add_index(endLeft)
-					surface.add_index(startRight)
-					surface.add_index(endRight)
+				surface.add_index(startRight)
+				surface.add_index(endLeft)
+				surface.add_index(endRight)
 	
 	for v in verts:
 		surface.add_vertex(v)
-	#debug
+
 	surface.generate_normals()
 	mesh.mesh = surface.commit()
+	# TODO: do really large collision shapes break?
 	collider.shape = mesh.mesh.create_trimesh_shape()
 
 func has_edge(edges: PoolIntArray, to_find_0: int, to_find_1: int) -> bool:

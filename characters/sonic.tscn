@@ -98,7 +98,7 @@ nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 20 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
+node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
 [sub_resource type="AnimationNodeAnimation" id=22]
 animation = "Ball-loop"
@@ -392,9 +392,9 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/playback = SubResource( 29 )
 parameters/Ground/Speed/scale = 1.0
-parameters/Ground/Walk/blend_position = 2.98494
+parameters/Ground/Walk/blend_position = 2.99498
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
-parameters/Ground/Walk/2/blend_position = -0.00418413
+parameters/Ground/Walk/2/blend_position = -0.000836849
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="10"]
 anims/Die = SubResource( 30 )
