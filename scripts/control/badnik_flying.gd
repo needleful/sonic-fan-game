@@ -5,7 +5,7 @@ export(NodePath) var weaponNode: NodePath = NodePath("Eye")
 
 export(float) var player_outer_radius = 8
 export(float) var player_inner_radius = 3
-export(float) var acceleration = 28
+export(float) var acceleration = 34
 export(float) var pivot_acceleration = 25
 export(float) var torque_to_player = 10
 export(float) var torque_to_reorient = 10

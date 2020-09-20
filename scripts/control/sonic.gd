@@ -23,7 +23,7 @@ enum State {
 const VEL_JUMP = 10
 const ACCEL_START = 60
 const ACCEL_RUN = 16
-const ACCEL_WALLRUN = 4
+const ACCEL_WALLRUN = 3.5
 const ACCEL_JUMPING = 80
 const ACCEL_AIR = 8
 const MAX_RUN = 90
@@ -43,13 +43,15 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = 0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 10
+const WALL_RUN_MAGNETISM = 5
 const WALL_RUN_REORIENT_SPEED = 1
 const WALL_DOT = 0.7
 const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
 const VEL_DIFF_FULL_FRICTION = 4
+
+const REORIENT_AIR = 1.5
 
 const FLOOR_SNAP_DISTANCE = 0.5
 
@@ -73,11 +75,16 @@ const TIME_WALL_RUN = 0.06
 var timer_wall_run = 0
 
 # Radians per second
-const SPEED_REORIENT_MIN = 0.2
+const CAM_REORIENT_MIN = 0.2
 # 1/x seconds to reorient
-const SPEED_REORIENT = 1.5
+const CAM_REORIENT = 0.25
+const CAM_REORIENT_MAX = 20
 
-const TIME_COYOTE = 0.1
+# tolerances in radians
+const CAM_ROLL_TOLERANCE = 1.5
+const CAM_PITCH_TOLERANCE = 2
+
+const TIME_COYOTE = 0.05
 var timer_coyote = 0
 
 const SPEED_ROTATE_MESH = 24
@@ -131,15 +138,13 @@ func _input(event):
 
 func _process(delta):
 	var newCamRot = camRot + get_camera_rot()
-	newCamRot.y = clamp(newCamRot.y, -PI/2 + 0.5, PI/2)
+	newCamRot.y = clamp(newCamRot.y, -PI/2 + 0.5, PI/2 - 0.01)
 	var c = newCamRot - camRot
-	camRot = newCamRot
 	
 	camYaw.rotate_y(-c.x)
-	if cam_reverse.current:
-		$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
-	else:
-		camSpring.rotate_x(c.y)
+	camSpring.rotate_x(c.y)
+	$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
+	camRot = newCamRot
 	
 	time_limit -= delta
 	if time_limit <= 0:
@@ -275,7 +280,7 @@ func _physics_process(delta):
 		State.Jumping:
 			process_jump(delta)
 		State.WallRun:
-			var friction = clamp(-vel_difference.dot(wall)/VEL_DIFF_FULL_FRICTION, 0, 1)
+			var friction = clamp(wall.dot(true_up), 0, 1)
 			var wall_accel = lerp(ACCEL_WALLRUN, ACCEL_RUN, friction)
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_ground(delta, wall_accel, wall_accel)
@@ -284,44 +289,51 @@ func _physics_process(delta):
 			process_air(delta)
 	
 	#Camera movement
-	var min_allowed_drift = 2*PI
-	var yawup = camYaw.global_transform.basis.y
-	var followup = oldFollow.basis.y
-	var upAngle = followup.angle_to(yawup)
+	var camz = oldFollow.basis.z
+	var yawup = MoveMath.reject(camYaw.global_transform.basis.y, camz).normalized()
+	var followup = MoveMath.reject(oldFollow.basis.y, camz).normalized()
+	var rollAngle = followup.angle_to(yawup)
+	var q = clamp(abs(rollAngle)/CAM_ROLL_TOLERANCE, 0, 1)
+	var rollSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
 	
-	var yawZ = camYaw.global_transform.basis.z
-	var followZ = camFollow.global_transform.basis.z
-	var fAngle:float = followZ.angle_to(yawZ)
+	if abs(rollAngle) > 0.01:
+		var roll = clamp(
+			abs(rollAngle)*rollSpeed*delta,
+			CAM_REORIENT_MIN*delta,
+			abs(rollAngle)
+		)
+		var rollAxis = followup.cross(yawup).normalized()
+		oldFollow = oldFollow.rotated(rollAxis, sign(rollAngle)*roll)
 	
-	if abs(upAngle) > 0.05:
-		var min_rot = max(0, abs(upAngle) - min_allowed_drift)
-		var rot = max(min_rot, abs(upAngle)*SPEED_REORIENT*delta)
-		
-		var upAxis = followup.cross(yawup).normalized()
-		camFollow.global_transform.basis = oldFollow.rotated(
-			upAxis, 
-			sign(upAngle) * min (
-				abs(upAngle), 
-				max( rot, SPEED_REORIENT_MIN*delta )
-			)
-		).basis
-		oldFollow = camFollow.global_transform
-	if abs(fAngle) >= 0.01:
-		var min_rot = max(0, abs(fAngle) - min_allowed_drift)
-		var rot = max(min_rot, abs(fAngle)*SPEED_REORIENT*delta)
-		
-		var fAxis:Vector3 = followZ.cross(yawZ).normalized()
-		camFollow.global_transform.basis = oldFollow.rotated(
-			fAxis, 
-			sign(fAngle) * min (
-				abs(fAngle), 
-				max( rot, SPEED_REORIENT_MIN*delta )
-			)
-		).basis
-		
+	var camx = oldFollow.basis.x
+	var yawZ = MoveMath.reject(camYaw.global_transform.basis.z, camx).normalized()
+	var followZ = MoveMath.reject(oldFollow.basis.z, camx).normalized()
+	var pitchAngle:float = followZ.angle_to(yawZ)
+	q = clamp(abs(pitchAngle)/CAM_PITCH_TOLERANCE, 0, 1)
+	var pitchSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
+	
+	if abs(pitchAngle) >= 0.01:
+		var pitch = clamp(
+			abs(pitchAngle)*pitchSpeed*delta,
+			CAM_REORIENT_MIN*delta,
+			abs(pitchAngle))
+		var pitchAxis:Vector3 = followZ.cross(yawZ).normalized()
+		oldFollow = oldFollow.rotated(pitchAxis, sign(pitchAngle)*pitch)
+	
+	# Instantly rotate in yaw
+	var camy = oldFollow.basis.y
+	followZ = MoveMath.reject(oldFollow.basis.z, camy).normalized()
+	yawZ = MoveMath.reject(camYaw.global_transform.basis.z, camy).normalized()
+	var yaw = followZ.angle_to(yawZ)
+	if abs(yaw) >= 0.00001:
+		var yawAxis = followZ.cross(yawZ).normalized()
+		oldFollow = oldFollow.rotated(yawAxis, yaw)
+	
+	camFollow.global_transform.basis = oldFollow.basis
+	
 	# Other camera logic
 	var speed = velocity.length()/MAX_SNEAK
-	var camUp = camYaw.global_transform.basis.y
+	var camUp = camFollow.global_transform.basis.y
 	cam.global_transform = cam.global_transform.looking_at(
 		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
 		camUp)
@@ -444,7 +456,7 @@ func process_air(delta):
 	timer_air += delta
 	if timer_air >= TIME_REORIENT:
 		var desiredUp = true_up
-		reorient_air(desiredUp, delta)
+		reorient_air(desiredUp, delta*REORIENT_AIR)
 
 func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
 	if !new_up.is_normalized():
@@ -479,7 +491,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	if pitchAxis.length_squared() > 0.9:
 		global_rotate(pitchAxis, angle*interp)
 		up = up.rotated(pitchAxis, angle*interp)
-		#camSpring.rotate_x(-angle*interp)
 
 func reorient_wall(desiredUp:Vector3, delta:float):
 	if desiredUp == Vector3.ZERO:

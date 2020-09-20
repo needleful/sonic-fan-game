@@ -13,7 +13,7 @@ onready var sonic: Sonic = get_node(sonicNode)
 export(NodePath) var pathNode: NodePath
 onready var path: Path = get_node(pathNode)
 
-export(float) var accel_move:float = 30
+export(float) var accel_move:float = 35
 export(float) var accel_pivot: float = 20
 export(float) var accel_air: float = 9
 export(float) var drag_move: float = 0.25
