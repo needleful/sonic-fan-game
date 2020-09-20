@@ -51,6 +51,8 @@ const MIN_ROLL_WALLRUN = 1.2
 const MIN_PITCH_WALLRUN = 3
 const VEL_DIFF_FULL_FRICTION = 4
 
+const FLOOR_SNAP_DISTANCE = 0.5
+
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
 var vel_difference: Vector3 = Vector3(0,0,0)
@@ -67,10 +69,13 @@ const TIME_JUMP = 0.1
 const TIME_REORIENT = 0
 var timer_air = 0
 
+const TIME_WALL_RUN = 0.06
+var timer_wall_run = 0
+
 # Radians per second
-const SPEED_REORIENT_MIN = deg2rad(80)
+const SPEED_REORIENT_MIN = 0.2
 # 1/x seconds to reorient
-const SPEED_REORIENT = 1.2
+const SPEED_REORIENT = 1.5
 
 const TIME_COYOTE = 0.1
 var timer_coyote = 0
@@ -82,7 +87,7 @@ var cameraRot: Vector2 = Vector2(0,0)
 onready var camYaw = $CamYaw
 onready var camFollow: Spatial = $CamYaw/CamFollow
 var oldFollow: Transform
-onready var camSpring: Spatial = $CamYaw/CamFollow/SpringArm
+onready var camSpring: SpringArm = $CamYaw/CamFollow/SpringArm
 onready var mesh: Spatial = $Armature/Skeleton/Sonic
 onready var cam : Camera = $CamYaw/CamFollow/SpringArm/Camera
 onready var cam_reverse : Camera = $CamYaw/CamFollow/Reverse/Camera
@@ -96,6 +101,13 @@ var dead = false
 var local_steer: float = 0
 
 var camRot: Vector2 = Vector2(0,0)
+
+const SPRING_LEN_BASE = 2
+const SPRING_LEN_ADD = 0.4
+const SPRING_LEN_MIN = 3
+const SPRING_LEN_MAX = 10
+
+const CAM_TILT = 0.5
 
 func _ready():
 	set_score(score)
@@ -271,7 +283,8 @@ func _physics_process(delta):
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_air(delta)
 	
-	var min_allowed_drift = 0.4 #radians
+	#Camera movement
+	var min_allowed_drift = 2*PI
 	var yawup = camYaw.global_transform.basis.y
 	var followup = oldFollow.basis.y
 	var upAngle = followup.angle_to(yawup)
@@ -293,7 +306,7 @@ func _physics_process(delta):
 			)
 		).basis
 		oldFollow = camFollow.global_transform
-	if abs(fAngle) >= 0.05:
+	if abs(fAngle) >= 0.01:
 		var min_rot = max(0, abs(fAngle) - min_allowed_drift)
 		var rot = max(min_rot, abs(fAngle)*SPEED_REORIENT*delta)
 		
@@ -305,6 +318,17 @@ func _physics_process(delta):
 				max( rot, SPEED_REORIENT_MIN*delta )
 			)
 		).basis
+		
+	# Other camera logic
+	var speed = velocity.length()/MAX_SNEAK
+	var camUp = camYaw.global_transform.basis.y
+	cam.global_transform = cam.global_transform.looking_at(
+		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
+		camUp)
+	camSpring.spring_length = clamp(
+		speed*SPRING_LEN_ADD+SPRING_LEN_BASE,
+		SPRING_LEN_MIN,
+		SPRING_LEN_MAX)
 
 func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
@@ -387,13 +411,13 @@ func process_ground(delta, accel_move, accel_start):
 		print("Wall:", wall)
 		get_tree().paused = true
 		return
-	velocity = move_and_slide_with_snap(velocity, -up*0.1, up)
+	velocity = move_and_slide_with_snap(velocity, -up*FLOOR_SNAP_DISTANCE, up)
 	vel_difference -= velocity
 	
 	if is_on_floor():
-		reorient_ground(get_floor_normal(), 0.9, 12, delta)
+		reorient_ground(get_floor_normal(), 0.9, 15, delta)
 	elif state == State.Ground:
-		reorient_ground(true_up, 0.2, 2, delta)
+		reorient_ground(true_up, 0.2, 5, delta)
 	elif state == State.WallRun:
 		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
@@ -423,7 +447,7 @@ func process_air(delta):
 		reorient_air(desiredUp, delta)
 
 func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
-	if new_up.length_squared() <= 0.9:
+	if !new_up.is_normalized():
 		new_up = true_up
 	if abs(new_up.dot(up)) >= 0.99999:
 		return
@@ -520,23 +544,23 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 func set_state(new_state):
 	if state == new_state:
 		return
-	print(State.keys()[state], State.keys()[new_state])
+	#print(State.keys()[state], State.keys()[new_state])
+	timer_wall_run = 0
+	timer_coyote = 0
+	timer_air = 0
 	match new_state:
 		State.Ground:
 			$Ball.visible = false
-			timer_coyote = 0
 			camFollow.global_transform.basis = camYaw.global_transform.basis
 			statePlayback.travel("Ground")
 			recover = true
 			last_wall_jump = Vector3.ZERO
 		State.Air:
-			timer_air = 0
 			if state != State.Jumping:
 				statePlayback.travel("Fall")
 		State.Jumping:
 			$Ball.visible = true
 			statePlayback.travel("Jump")
-			timer_air = 0
 			if state == State.Slip:
 				velocity += wall*VEL_JUMP
 			else:
@@ -549,14 +573,12 @@ func set_state(new_state):
 					wall = up
 			print(wall)
 			$Ball.visible = false
-			timer_coyote = 0
 			camFollow.global_transform.basis = camYaw.global_transform.basis
 			statePlayback.travel("Ground")
 		State.Slip:
 			statePlayback.travel("Fall")
 			$Ball.visible = false
 			recover = false
-			timer_air = 0
 	state = new_state
 
 func rotate_by_speed(delta):
