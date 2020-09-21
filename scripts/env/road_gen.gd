@@ -14,7 +14,7 @@ var collider: CollisionShape = CollisionShape.new()
 
 func _ready():
 	if Engine.editor_hint:
-		connect("curve_changed", self, "regenerate")
+		var _x = connect("curve_changed", self, "regenerate")
 		regenerate()
 
 func set_tolerance(tol):
