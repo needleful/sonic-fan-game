@@ -31,6 +31,7 @@ const MIN_SLIDE_ACCEL = 3
 const SPEED_RUN = 10
 const SPEED_STOPPING = 4
 const SPEED_STOPPED = 1
+const ANGLE_FLOOR = PI/2
 
 const ACCEL_SNEAK = 38
 const MAX_SNEAK = 8
@@ -90,6 +91,7 @@ const CAM_ROTATE_FOLLOW = 0.3
 const CAM_MAX_ROTATE_FOLLOW = PI
 
 const TIME_COYOTE = 0.25
+const TIME_COYOTE_WALLRUN = 0.1
 var timer_coyote = 0
 
 const SPEED_ROTATE_MESH = 24
@@ -246,7 +248,7 @@ func _physics_process(delta):
 					new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
-				if timer_coyote >= TIME_COYOTE:
+				if timer_coyote >= TIME_COYOTE_WALLRUN:
 					var new_wall = find_good_wall()
 					if new_wall != Vector3.ZERO:
 						set_wall(new_wall)
@@ -320,7 +322,7 @@ func _physics_process(delta):
 	var pitchSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
 	var pitchAxis:Vector3 = followZ.cross(yawZ).normalized()
 	
-	if pitchAxis.is_normalized() and abs(pitchAngle) > 0.05:
+	if pitchAxis.is_normalized():
 		var pitch = clamp(
 			abs(pitchAngle)*pitchSpeed*delta,
 			CAM_REORIENT_MIN*delta,
@@ -333,7 +335,7 @@ func _physics_process(delta):
 	yawZ = MoveMath.reject(camYaw.global_transform.basis.z, camy).normalized()
 	var yaw = followZ.angle_to(yawZ)
 	var yawAxis = followZ.cross(yawZ).normalized()
-	if yawAxis.is_normalized() and abs(yaw) > 0.05:
+	if yawAxis.is_normalized():
 		oldFollow = oldFollow.rotated(yawAxis, yaw)
 	
 	camFollow.global_transform.basis = oldFollow.basis
@@ -358,7 +360,7 @@ func _physics_process(delta):
 		var f = (abs(angle) + 0.3)/(PI*2)
 		var cam_speed = f*min(CAM_MAX_ROTATE_FOLLOW, CAM_ROTATE_FOLLOW*v2.length())
 		var yaw2 = sign(angle)*min(abs(angle), cam_speed*delta)
-		if axis.is_normalized() and yaw2 != 0:
+		if axis.is_normalized():
 			camYaw.global_rotate(axis, yaw2)
 	
 	$debugUI/status/Up.text = MoveMath.pr(up)
@@ -371,7 +373,7 @@ func process_ground(delta, accel_move, accel_start):
 	
 	var input: Vector3 = get_movement()
 	var movement:Vector3 
-	if MoveMath.reject(velocity, up) == Vector3.ZERO:
+	if MoveMath.reject(velocity, up).length_squared() < SPEED_STOPPED*SPEED_STOPPED:
 		movement = input
 	else:
 		movement = input.project(velocity)
@@ -400,9 +402,10 @@ func process_ground(delta, accel_move, accel_start):
 	if input.length_squared() == 0:
 		drag = -DRAG_STOPPING*v
 		velocity += (gravity + drag + centrifugal_force) * delta
-		if velocity.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
+		var vp = MoveMath.reject(velocity, up)
+		if vp.length_squared() <= SPEED_STOPPED*SPEED_STOPPED:
 			velocity = (velocity + vel_difference).project(up)
-		elif velocity.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
+		elif vp.length_squared() <= SPEED_STOPPING*SPEED_STOPPING:
 			var stop_force
 			if delta*accel_start >= 1:
 				stop_force = velocity
@@ -448,7 +451,7 @@ func process_ground(delta, accel_move, accel_start):
 		return
 	if !up.is_normalized():
 		print("up is bad")
-	velocity = move_and_slide(velocity, up, false, 4, PI/2 - 0.05)
+	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
 	
 	if is_on_floor():
@@ -468,7 +471,7 @@ func process_jump(delta):
 	velocity += (movement + gravity + drag) * delta
 	
 	vel_difference = velocity
-	velocity = move_and_slide(velocity, up)
+	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
 
 func process_air(delta):
@@ -476,7 +479,7 @@ func process_air(delta):
 	var drag = -DRAG_AIR*velocity*velocity*velocity
 	velocity += (movement + gravity + drag) * delta
 	vel_difference = velocity
-	velocity = move_and_slide(velocity, up)
+	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
 	
 	timer_air += delta
@@ -493,7 +496,8 @@ func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
 	var angle = up.angle_to(new_up)
 	var up_axis = up.cross(new_up).normalized()
 	up = up.rotated(up_axis, min(angle*interp, mr*delta))
-	global_rotate(up_axis, min(angle*interp, mr*delta))
+	if up_axis.is_normalized():
+		global_rotate(up_axis, min(angle*interp, mr*delta))
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta, 1)
@@ -507,14 +511,14 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	var angle = upCurrent.angle_to(upTarget)
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	
-	if rollAxis.length_squared() > 0.9:
+	if rollAxis.is_normalized():
 		global_rotate(rollAxis, angle*interp)
 		up = up.rotated(rollAxis, angle*interp)
 	
 	# Pitch upright
 	angle = forward.angle_to(df)
 	var pitchAxis = forward.cross(df).normalized()
-	if pitchAxis.length_squared() > 0.9:
+	if pitchAxis.is_normalized():
 		global_rotate(pitchAxis, angle*interp)
 		up = up.rotated(pitchAxis, angle*interp)
 
@@ -550,7 +554,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var min_angle = max(0, (abs(angle) - min_roll))
 	
 	var rotation = sign(angle)*max(abs(angle*interpRoll), min_angle)
-	if rollAxis.length_squared() > 0.9:
+	if rollAxis.is_normalized():
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
 	
@@ -559,7 +563,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	angle = forward.angle_to(df)
 	min_angle = max(0, (abs(angle) - min_pitch))
 	rotation = sign(angle)*max(abs(angle*interpPitch), min_angle)
-	if pitchAxis.length_squared() > 0.9:
+	if pitchAxis.is_normalized():
 		global_rotate(pitchAxis, rotation)
 		up = up.rotated(pitchAxis, rotation)
 
