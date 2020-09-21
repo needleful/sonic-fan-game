@@ -44,7 +44,8 @@ const MIN_GROUNDED_ON_WALL = 0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 10
-const WALL_RUN_REORIENT_SPEED = 1
+const WALL_RUN_ROLL_SPEED = 1.2
+const WALL_RUN_PITCH_SPEED = 15
 const WALL_DOT = 0.5
 const MIN_DOT_WALLJUMP = 0.8
 const MIN_ROLL_WALLRUN = 1.2
@@ -53,7 +54,7 @@ const VEL_DIFF_FULL_FRICTION = 4
 
 const REORIENT_AIR = 1.5
 
-const FLOOR_SNAP_DISTANCE = 0.15
+const FLOOR_SNAP_FORCE = 10
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -61,6 +62,7 @@ var vel_difference: Vector3 = Vector3(0,0,0)
 var gravity: Vector3 = Vector3(0, -9.8, 0) setget set_gravity
 var true_up:Vector3 = -gravity.normalized()
 var up: Vector3 = true_up
+var target_up: Vector3 = true_up
 var sneaking: bool = false
 
 var recover = true
@@ -278,7 +280,7 @@ func _physics_process(delta):
 	set_state(new_state)
 	match state:
 		State.Ground:
-			velocity -= up*FLOOR_SNAP_DISTANCE*delta
+			velocity -= up*FLOOR_SNAP_FORCE*delta
 			process_ground(delta, ACCEL_RUN, ACCEL_START)
 		State.Air:
 			process_air(delta)
@@ -446,20 +448,19 @@ func process_ground(delta, accel_move, accel_start):
 		return
 	if !up.is_normalized():
 		print("up is bad")
-	var snap = -up*FLOOR_SNAP_DISTANCE
-	velocity = move_and_slide_with_snap(velocity, snap, up)
-	$debugUI/status/Extra.text = "Snap: %s" % str(snap)
+	velocity = move_and_slide(velocity, up, false, 4, PI/2 - 0.05)
 	vel_difference -= velocity
 	
 	if is_on_floor():
-		reorient_ground(get_floor_normal(), 0.9, 15, delta)
-	elif state == State.Ground:
-		reorient_ground(true_up, 0.2, 5, delta)
-	elif state == State.WallRun:
+		target_up = get_floor_normal()
+
+	if state == State.WallRun:
 		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
 			set_wall(new_wall)
-		reorient_wall(wall, delta*WALL_RUN_REORIENT_SPEED)
+		reorient_wall(wall, delta)
+	else:
+		reorient_ground(target_up, 0.99, 30, delta)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -528,15 +529,14 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	
 	var min_roll = MIN_ROLL_WALLRUN
 	var min_pitch = MIN_PITCH_WALLRUN
-	var rotation_speed = 1
 	var f = camYaw.global_transform.basis.z
 	var l = camYaw.global_transform.basis.x
 	if abs(f.dot(desiredUp)) > abs(l.dot(desiredUp)):
 		# Running at the wall head on
-		rotation_speed = 3
 		min_roll = 2*PI
 		min_pitch = 2*PI
-	var interp = min(delta*rotation_speed, 1)
+	var interpRoll = min(delta*WALL_RUN_ROLL_SPEED, 1)
+	var interpPitch = min(delta*WALL_RUN_PITCH_SPEED, 1)
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
 	var left = camYaw.global_transform.basis.x
@@ -549,7 +549,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	var min_angle = max(0, (abs(angle) - min_roll))
 	
-	var rotation = sign(angle)*max(abs(angle*interp), min_angle)
+	var rotation = sign(angle)*max(abs(angle*interpRoll), min_angle)
 	if rollAxis.length_squared() > 0.9:
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
@@ -558,7 +558,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var pitchAxis = forward.cross(df).normalized()
 	angle = forward.angle_to(df)
 	min_angle = max(0, (abs(angle) - min_pitch))
-	rotation = sign(angle)*max(abs(angle*interp), min_angle)
+	rotation = sign(angle)*max(abs(angle*interpPitch), min_angle)
 	if pitchAxis.length_squared() > 0.9:
 		global_rotate(pitchAxis, rotation)
 		up = up.rotated(pitchAxis, rotation)
