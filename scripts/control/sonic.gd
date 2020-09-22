@@ -31,7 +31,7 @@ const MIN_SLIDE_ACCEL = 3
 const SPEED_RUN = 10
 const SPEED_STOPPING = 4
 const SPEED_STOPPED = 1
-const ANGLE_FLOOR = PI/2
+const ANGLE_FLOOR = PI/2 - 0.05
 
 const ACCEL_SNEAK = 38
 const MAX_SNEAK = 8
@@ -44,7 +44,7 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = 0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 10
+const WALL_RUN_MAGNETISM = 5
 const WALL_RUN_ROLL_SPEED = 1.2
 const WALL_RUN_PITCH_SPEED = 15
 const WALL_DOT = 0.5
@@ -55,7 +55,9 @@ const VEL_DIFF_FULL_FRICTION = 4
 
 const REORIENT_AIR = 1.5
 
-const FLOOR_SNAP_FORCE = 10
+const FLOOR_SNAP_FORCE = 0
+const FLOOR_SNAP_LENGTH = 0.2
+const MIN_FLOOR_ANGLE = 0.02
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -206,15 +208,15 @@ func _physics_process(delta):
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE:
 					if $FloorArea.get_overlapping_bodies().size() == 0:
-						new_state = State.Air
-					else:
 						var new_wall = find_good_wall(0)
 						if new_wall == Vector3.ZERO:
 							new_state = State.Air
 						else:
-							wall = new_wall
+							set_wall(new_wall)
 							if wall.dot(true_up) <= WALL_DOT:
 								new_state = State.WallRun
+							else:
+								target_up = wall
 			else:
 				timer_coyote = 0
 				if up.dot(true_up) < WALL_DOT:
@@ -255,10 +257,11 @@ func _physics_process(delta):
 					elif $FloorArea.get_overlapping_bodies().size() == 0:
 						new_state = State.Air
 			else:
+				var vp = MoveMath.reject(velocity, wall)
 				timer_coyote = 0
 				if up.dot(true_up) >= WALL_DOT:
 					new_state = State.Ground
-				elif !recover or velocity.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
+				elif !recover or vp.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
 					new_state = State.Slip
 		State.Slip:
 			if velocity.length_squared() >= SPEED_WALL_RUN_RECOVERY*SPEED_WALL_RUN_RECOVERY:
@@ -298,8 +301,10 @@ func _physics_process(delta):
 			process_air(delta)
 	
 	#Camera movement
+	var camTarget: Transform = camYaw.global_transform
+	
 	var camz = oldFollow.basis.z
-	var yawup = MoveMath.reject(camYaw.global_transform.basis.y, camz).normalized()
+	var yawup = MoveMath.reject(camTarget.basis.y, camz).normalized()
 	var followup = MoveMath.reject(oldFollow.basis.y, camz).normalized()
 	var rollAngle = followup.angle_to(yawup)
 	var q = clamp(abs(rollAngle)/CAM_ROLL_TOLERANCE, 0, 1)
@@ -313,9 +318,9 @@ func _physics_process(delta):
 			abs(rollAngle)
 		)
 		oldFollow = oldFollow.rotated(rollAxis, sign(rollAngle)*roll)
-	
+		
 	var camx = oldFollow.basis.x
-	var yawZ = MoveMath.reject(camYaw.global_transform.basis.z, camx).normalized()
+	var yawZ = MoveMath.reject(camTarget.basis.z, camx).normalized()
 	var followZ = MoveMath.reject(oldFollow.basis.z, camx).normalized()
 	var pitchAngle:float = followZ.angle_to(yawZ)
 	q = clamp(abs(pitchAngle)/CAM_PITCH_TOLERANCE, 0, 1)
@@ -332,7 +337,7 @@ func _physics_process(delta):
 	# Instantly rotate in yaw
 	var camy = oldFollow.basis.y
 	followZ = MoveMath.reject(oldFollow.basis.z, camy).normalized()
-	yawZ = MoveMath.reject(camYaw.global_transform.basis.z, camy).normalized()
+	yawZ = MoveMath.reject(camTarget.basis.z, camy).normalized()
 	var yaw = followZ.angle_to(yawZ)
 	var yawAxis = followZ.cross(yawZ).normalized()
 	if yawAxis.is_normalized():
@@ -352,12 +357,12 @@ func _physics_process(delta):
 		SPRING_LEN_MAX)
 	
 	#Yaw to match velocity
-	if velocity != Vector3.ZERO:
+	var cz = camTarget.basis.z
+	if velocity.dot(cz) > 0:
 		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
-		var cz = camYaw.global_transform.basis.z
 		var angle = cz.angle_to(v2)
 		var axis = cz.cross(v2).normalized()
-		var f = (abs(angle) + 0.3)/(PI*2)
+		var f = (abs(angle) + 0.3)/(PI)
 		var cam_speed = f*min(CAM_MAX_ROTATE_FOLLOW, CAM_ROTATE_FOLLOW*v2.length())
 		var yaw2 = sign(angle)*min(abs(angle), cam_speed*delta)
 		if axis.is_normalized():
@@ -371,7 +376,7 @@ func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
 	var running = velocity.length_squared() > SPEED_RUN*SPEED_RUN
 	
-	var input: Vector3 = get_movement()
+	var input: Vector3 = get_movement(target_up)
 	var movement:Vector3 
 	if MoveMath.reject(velocity, up).length_squared() < SPEED_STOPPED*SPEED_STOPPED:
 		movement = input
@@ -462,8 +467,17 @@ func process_ground(delta, accel_move, accel_start):
 		if new_wall != Vector3.ZERO:
 			set_wall(new_wall)
 		reorient_wall(wall, delta)
+		target_up = up
 	else:
+		#var speed = clamp(velocity.length_squared()/(SPEED_RUN*SPEED_RUN), 0, 1)
+		#var view_up = lerp(true_up, target_up, speed).normalized()
 		reorient_ground(target_up, 0.99, 30, delta)
+		# Snap to floor
+		var dstate = get_world().direct_space_state
+		var pos = global_transform.origin
+		var res = dstate.intersect_ray(pos, pos-up*FLOOR_SNAP_LENGTH, [self])
+		if "position" in res:
+			move_and_collide(res["position"] - pos)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -490,14 +504,18 @@ func process_air(delta):
 func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
 	if !new_up.is_normalized():
 		new_up = true_up
-	if abs(new_up.dot(up)) >= 0.99999:
-		return
-	var mr = max_radians
+
 	var angle = up.angle_to(new_up)
+	var rotate = min(abs(angle), max_radians*delta)
+	if rotate < MIN_FLOOR_ANGLE:
+		rotate = angle
+	else:
+		rotate = sign(angle)*rotate
+		
 	var up_axis = up.cross(new_up).normalized()
-	up = up.rotated(up_axis, min(angle*interp, mr*delta))
 	if up_axis.is_normalized():
-		global_rotate(up_axis, min(angle*interp, mr*delta))
+		up = up.rotated(up_axis, rotate)
+		global_rotate(up_axis, rotate)
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta, 1)
@@ -509,18 +527,22 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	var upCurrent = MoveMath.reject(up, forward).normalized()
 	
 	var angle = upCurrent.angle_to(upTarget)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interp
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	
 	if rollAxis.is_normalized():
-		global_rotate(rollAxis, angle*interp)
-		up = up.rotated(rollAxis, angle*interp)
+		global_rotate(rollAxis, angle)
+		up = up.rotated(rollAxis, angle)
 	
 	# Pitch upright
 	angle = forward.angle_to(df)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interp
 	var pitchAxis = forward.cross(df).normalized()
 	if pitchAxis.is_normalized():
-		global_rotate(pitchAxis, angle*interp)
-		up = up.rotated(pitchAxis, angle*interp)
+		global_rotate(pitchAxis, angle)
+		up = up.rotated(pitchAxis, angle)
 
 func reorient_wall(desiredUp:Vector3, delta:float):
 	if desiredUp == Vector3.ZERO:
@@ -553,7 +575,10 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	var min_angle = max(0, (abs(angle) - min_roll))
 	
-	var rotation = sign(angle)*max(abs(angle*interpRoll), min_angle)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interpRoll
+	
+	var rotation = sign(angle)*max(abs(angle), min_angle)
 	if rollAxis.is_normalized():
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
@@ -561,8 +586,10 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	# Pitch upright
 	var pitchAxis = forward.cross(df).normalized()
 	angle = forward.angle_to(df)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interpPitch
 	min_angle = max(0, (abs(angle) - min_pitch))
-	rotation = sign(angle)*max(abs(angle*interpPitch), min_angle)
+	rotation = sign(angle)*max(abs(angle), min_angle)
 	if pitchAxis.is_normalized():
 		global_rotate(pitchAxis, rotation)
 		up = up.rotated(pitchAxis, rotation)
@@ -632,17 +659,19 @@ func rotate_by_speed(delta):
 	if axis.is_normalized():
 		mesh.global_rotate(axis, angle)
 
-func get_movement()->Vector3:
+func get_movement(movement_up: Vector3 = up)->Vector3:
 	var input = Vector2(
 		Input.get_action_strength("mv_left") - Input.get_action_strength("mv_right"),
 		Input.get_action_strength("mv_forward") - Input.get_action_strength("mv_back"))
 	
 	if input.length_squared() > 1:
 		input = input.normalized()
-		
+
+	var x = MoveMath.reject(camYaw.global_transform.basis.x, movement_up).normalized()
+	var z = MoveMath.reject(camYaw.global_transform.basis.z, movement_up).normalized() 
 	return (
-		camYaw.global_transform.basis.x * input.x
-		+ camYaw.global_transform.basis.z * input.y)
+		x*input.x
+		+ z*input.y)
 
 func get_camera_rot()->Vector2:
 	var ret = cameraRot*SNS_CAM_MOUSE
