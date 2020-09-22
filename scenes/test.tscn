@@ -432,6 +432,8 @@ sides = 18
 transform = Transform( -0.99975, -0.0223732, 0, 0.0223732, -0.99975, 0, 0, 0, 1, 762.676, 55.5662, -5.3242 )
 curve = SubResource( 9 )
 script = ExtResource( 7 )
+stay_vertical = true
+angle_tolerance = 4.0
 template_mesh = ExtResource( 6 )
 template_transform = Transform( 0, 0.2, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0 )
 

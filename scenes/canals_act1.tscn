@@ -1,175 +1,31 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=2]
-[ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=3]
 [ext_resource path="res://assets/models-export/env/road-template-basin1.mesh" type="ArrayMesh" id=4]
-[ext_resource path="res://entities/spring.tscn" type="PackedScene" id=5]
 
-[sub_resource type="CubeMesh" id=1]
-size = Vector3( 5, 5, 2 )
-
-[sub_resource type="SpatialMaterial" id=2]
-albedo_color = Color( 1, 0.431373, 0.431373, 1 )
-
-[sub_resource type="ConvexPolygonShape" id=3]
-points = PoolVector3Array( -2.5, 2.5, 1, 2.5, 2.5, -1, 2.5, 2.5, 1, -2.5, 2.5, -1, -2.5, -2.5, 1, 2.5, -2.5, -1, 2.5, -2.5, 1, -2.5, -2.5, -1, 2.5, 2.5, 1, -2.5, 2.5, -1, 2.5, 2.5, -1, -2.5, 2.5, 1, 2.5, -2.5, 1, -2.5, -2.5, -1, 2.5, -2.5, -1, -2.5, -2.5, 1, 2.5, 2.5, 1, -2.5, -2.5, 1, -2.5, 2.5, 1, 2.5, -2.5, 1, 2.5, 2.5, -1, -2.5, -2.5, -1, -2.5, 2.5, -1, 2.5, -2.5, -1 )
-
-[sub_resource type="Curve3D" id=4]
+[sub_resource type="Curve3D" id=1]
 _data = {
-"points": PoolVector3Array( -7.71949, 0.0695419, -0.511733, 7.71949, -0.0695419, 0.511733, -0.628799, 0.00237274, 0.0366926, 0, 0, 0, 0, 0, 0, 13.0879, -1.38776, 0.0212243 ),
-"tilts": PoolRealArray( 0, 0 )
+"points": PoolVector3Array( -0.233823, -98.6493, -16.819, 0, 0, 0, -0.0999756, -304.239, -66.5065, 0, 0.00792694, -40.0979, 0, -0.00792694, 40.0979, 0, -1, -0.2, 3.2124, -62.2375, -39.543, -3.2124, 62.2375, 39.543, 0.199951, 6.76735, 339.961, 37.6989, -24.6033, 53.4974, -37.6989, 24.6033, -53.4974, -26.2501, 140.596, 307 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
 }
-
-[sub_resource type="Curve3D" id=5]
-_data = {
-"points": PoolVector3Array( -136.399, 2.03214, 2.71541, 136.399, -2.03214, -2.71541, -18.5668, -1.7056, -2.09368, -242.452, -0.787292, 22.6177, 242.452, 0.787292, -22.6177, 304.135, -148.692, -18.9842, -161.256, -36.5939, -15.1588, 161.256, 36.5939, 15.1588, 772.812, -150.119, -50.0352, 55.6266, -69.2141, -109.594, -55.6266, 69.2141, 109.594, 991.129, -26.0458, 167.958, 0, 0, 0, 0, 0, 0, 383.181, 237.865, 540.929 ),
-"tilts": PoolRealArray( 0, 0, 0, 0, 0 )
-}
-
-[sub_resource type="CylinderMesh" id=6]
-top_radius = 8.0
-bottom_radius = 8.0
-height = 6.0
-radial_segments = 12
-
-[sub_resource type="CylinderShape" id=7]
-radius = 8.0
-height = 6.0
-
-[sub_resource type="CylinderMesh" id=8]
-height = 30.0
-radial_segments = 8
-
-[sub_resource type="CylinderMesh" id=9]
-height = 60.0
-radial_segments = 8
-
-[sub_resource type="CylinderMesh" id=10]
-height = 80.0
-radial_segments = 8
 
 [node name="canals_act1" type="Spatial"]
 
-[node name="spring" parent="." instance=ExtResource( 5 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7.23879, -99.5987, -47.7465 )
-
 [node name="sonic" parent="." instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.027, -99.4632, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.027, 0, 0 )
 
-[node name="Env" type="Spatial" parent="."]
+[node name="env" type="Spatial" parent="."]
 
-[node name="CSGCylinder2" type="CSGCylinder" parent="Env"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.44269, 0 )
-use_collision = true
-radius = 50.0
-sides = 64
-
-[node name="CSGCylinder3" type="CSGCylinder" parent="Env/CSGCylinder2"]
-use_collision = true
-radius = 50.0
-sides = 64
-
-[node name="CSGCylinder" type="CSGCylinder" parent="Env/CSGCylinder2"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 33.2, 0 )
-operation = 2
-radius = 45.0
-height = 71.3911
-sides = 64
-
-[node name="CSGBox" type="CSGBox" parent="Env/CSGCylinder2"]
-transform = Transform( 0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 9.93309, 0, 34.969 )
-operation = 2
-width = 55.2583
-height = 7.68402
-depth = 29.7226
-
-[node name="CSGBox" type="CSGBox" parent="Env"]
-use_collision = true
-width = 100.0
-height = 200.0
-depth = 100.0
-
-[node name="CSGCylinder" type="CSGCylinder" parent="Env/CSGBox"]
-operation = 2
-radius = 49.0
-height = 199.0
-sides = 64
-
-[node name="CSGCylinder" type="CSGCylinder" parent="Env/CSGBox/CSGCylinder"]
-transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 49, 90, 0 )
-radius = 5.0
-height = 10.0
-sides = 12
-
-[node name="MeshInstance" type="MeshInstance" parent="Env"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.405163, -74.0716, -48.6024 )
-mesh = SubResource( 1 )
-material/0 = SubResource( 2 )
-__meta__ = {
-"_edit_group_": true
-}
-
-[node name="StaticBody" type="StaticBody" parent="Env/MeshInstance"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Env/MeshInstance/StaticBody"]
-shape = SubResource( 3 )
-
-[node name="OutPipe" type="Path" parent="Env"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 90, 0 )
-curve = SubResource( 4 )
+[node name="AutoRoad" type="Path" parent="env"]
+curve = SubResource( 1 )
 script = ExtResource( 2 )
 stay_vertical = false
-template_mesh = ExtResource( 3 )
-template_transform = Transform( 1.25, 0, 0, 0, 1.25, 0, 0, 0, 1, 0, 0, 0 )
-
-[node name="AutoRoad" type="Path" parent="Env/OutPipe"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18.1174, -8.48868, 0 )
-curve = SubResource( 5 )
-script = ExtResource( 2 )
-stay_vertical = false
+angle_tolerance = 2.0
 template_mesh = ExtResource( 4 )
+template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
-[node name="CrowsNest" type="MeshInstance" parent="Env"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -49.0497, 0 )
-mesh = SubResource( 6 )
-material/0 = null
-
-[node name="StaticBody" type="StaticBody" parent="Env/CrowsNest"]
-
-[node name="CollisionShape" type="CollisionShape" parent="Env/CrowsNest/StaticBody"]
-shape = SubResource( 7 )
-
-[node name="Bars" type="MeshInstance" parent="Env/CrowsNest"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.4406, 0 )
-mesh = SubResource( 8 )
-material/0 = null
-
-[node name="MeshInstance" type="MeshInstance" parent="Env/CrowsNest/Bars"]
-transform = Transform( 0.731128, 0.43818, -0.522925, 0, 0.766482, 0.642266, 0.682241, -0.469578, 0.560396, 11.1383, 29.7215, -14.4447 )
-mesh = SubResource( 9 )
-material/0 = null
-
-[node name="MeshInstance3" type="MeshInstance" parent="Env/CrowsNest/Bars"]
-transform = Transform( 0.633709, -0.612011, 0.473133, 0.0845049, 0.66273, 0.744075, -0.768942, -0.431545, 0.471696, 16.4796, 113.321, 11.5722 )
-mesh = SubResource( 9 )
-material/0 = null
-
-[node name="MeshInstance2" type="MeshInstance" parent="Env/CrowsNest/Bars"]
-transform = Transform( 0.591196, 0.181653, -0.785805, -0.646962, 0.688581, -0.32756, 0.481588, 0.702039, 0.524609, 28.4721, 75.3307, 1.91996 )
-mesh = SubResource( 10 )
-material/0 = null
-
-[node name="CSGBox2" type="CSGBox" parent="Env"]
-transform = Transform( 0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, 15.1045, -94.2108, 42.7502 )
-use_collision = true
-width = 14.0
-height = 11.0
-depth = 14.0
-
-[node name="CSGCylinder" type="CSGCylinder" parent="Env/CSGBox2"]
-transform = Transform( -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 5, -7 )
-operation = 2
-radius = 10.6724
-height = 15.3889
-sides = 28
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.422618, 0.906308, 0, -0.906308, -0.422618, 0, 6.55378, 0 )
+light_energy = 0.5
+shadow_enabled = true
