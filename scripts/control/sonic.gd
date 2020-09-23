@@ -89,7 +89,7 @@ const CAM_REORIENT_MAX = 20
 const CAM_ROLL_TOLERANCE = 1.5
 const CAM_PITCH_TOLERANCE = 2
 
-const CAM_ROTATE_FOLLOW = 0.3
+const CAM_ROTATE_FOLLOW = 0.15
 const CAM_MAX_ROTATE_FOLLOW = PI
 
 const TIME_COYOTE = 0.25
@@ -285,7 +285,6 @@ func _physics_process(delta):
 	set_state(new_state)
 	match state:
 		State.Ground:
-			velocity -= up*FLOOR_SNAP_FORCE*delta
 			process_ground(delta, ACCEL_RUN, ACCEL_START)
 		State.Air:
 			process_air(delta)
@@ -303,38 +302,39 @@ func _physics_process(delta):
 	#Camera movement
 	var camTarget: Transform = camYaw.global_transform
 	
-	var camz = oldFollow.basis.z
-	var yawup = MoveMath.reject(camTarget.basis.y, camz).normalized()
-	var followup = MoveMath.reject(oldFollow.basis.y, camz).normalized()
-	var rollAngle = followup.angle_to(yawup)
-	var q = clamp(abs(rollAngle)/CAM_ROLL_TOLERANCE, 0, 1)
-	var rollSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
-	var rollAxis = followup.cross(yawup).normalized()
-	
-	if rollAxis.is_normalized():
-		var roll = clamp(
-			abs(rollAngle)*rollSpeed*delta,
-			CAM_REORIENT_MIN*delta,
-			abs(rollAngle)
-		)
-		oldFollow = oldFollow.rotated(rollAxis, sign(rollAngle)*roll)
-		
+	# Pitch
 	var camx = oldFollow.basis.x
 	var yawZ = MoveMath.reject(camTarget.basis.z, camx).normalized()
 	var followZ = MoveMath.reject(oldFollow.basis.z, camx).normalized()
 	var pitchAngle:float = followZ.angle_to(yawZ)
-	q = clamp(abs(pitchAngle)/CAM_PITCH_TOLERANCE, 0, 1)
+	var q = clamp(abs(pitchAngle)/CAM_PITCH_TOLERANCE, 0, 1)
 	var pitchSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
 	var pitchAxis:Vector3 = followZ.cross(yawZ).normalized()
 	
 	if pitchAxis.is_normalized():
-		var pitch = clamp(
+		var pitch = min(abs(pitchAngle), max(
 			abs(pitchAngle)*pitchSpeed*delta,
-			CAM_REORIENT_MIN*delta,
-			abs(pitchAngle))
+			CAM_REORIENT_MIN*delta
+			))
 		oldFollow = oldFollow.rotated(pitchAxis, sign(pitchAngle)*pitch)
 	
-	# Instantly rotate in yaw
+	# Roll
+	var camz = oldFollow.basis.z
+	var yawup = MoveMath.reject(camTarget.basis.y, camz).normalized()
+	var followup = MoveMath.reject(oldFollow.basis.y, camz).normalized()
+	var rollAngle = followup.angle_to(yawup)
+	q = clamp(abs(rollAngle)/CAM_ROLL_TOLERANCE, 0, 1)
+	var rollSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
+	var rollAxis = followup.cross(yawup).normalized()
+	
+	if rollAxis.is_normalized():
+		var roll = min( abs(rollAngle), max(
+			abs(rollAngle)*rollSpeed*delta,
+			CAM_REORIENT_MIN*delta
+		))
+		oldFollow = oldFollow.rotated(rollAxis, sign(rollAngle)*roll)
+	
+	# Yaw
 	var camy = oldFollow.basis.y
 	followZ = MoveMath.reject(oldFollow.basis.z, camy).normalized()
 	yawZ = MoveMath.reject(camTarget.basis.z, camy).normalized()
@@ -362,8 +362,8 @@ func _physics_process(delta):
 		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
 		var angle = cz.angle_to(v2)
 		var axis = cz.cross(v2).normalized()
-		var f = (abs(angle) + 0.3)/(PI)
-		var cam_speed = f*min(CAM_MAX_ROTATE_FOLLOW, CAM_ROTATE_FOLLOW*v2.length())
+		var f = sqrt(v2.length())*(abs(angle) + 0.3)/PI
+		var cam_speed = min(CAM_MAX_ROTATE_FOLLOW, f*CAM_ROTATE_FOLLOW)
 		var yaw2 = sign(angle)*min(abs(angle), cam_speed*delta)
 		if axis.is_normalized():
 			camYaw.global_rotate(axis, yaw2)
@@ -506,12 +506,7 @@ func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
 		new_up = true_up
 
 	var angle = up.angle_to(new_up)
-	var rotate = min(abs(angle), max_radians*delta)
-	if rotate < MIN_FLOOR_ANGLE:
-		rotate = angle
-	else:
-		rotate = sign(angle)*rotate
-		
+	var rotate: float = sign(angle)*min(abs(angle), max_radians*delta)
 	var up_axis = up.cross(new_up).normalized()
 	if up_axis.is_normalized():
 		up = up.rotated(up_axis, rotate)
@@ -617,7 +612,8 @@ func set_state(new_state):
 	match new_state:
 		State.Ground:
 			$Ball.visible = false
-			camFollow.global_transform.basis = camYaw.global_transform.basis
+			if state == State.Air:
+				reset_cam_follow()
 			statePlayback.travel("Ground")
 			recover = true
 			last_wall_jump = Vector3.ZERO
@@ -625,7 +621,6 @@ func set_state(new_state):
 			if state != State.Jumping:
 				statePlayback.travel("Fall")
 		State.Jumping:
-			camFollow.global_transform.basis = camYaw.global_transform.basis
 			$Ball.visible = true
 			statePlayback.travel("Jump")
 			if state == State.Slip:
@@ -639,13 +634,16 @@ func set_state(new_state):
 				if nw == Vector3.ZERO:
 					wall = up
 			$Ball.visible = false
-			camFollow.global_transform.basis = camYaw.global_transform.basis
 			statePlayback.travel("Ground")
 		State.Slip:
 			statePlayback.travel("Fall")
 			$Ball.visible = false
 			recover = false
 	state = new_state
+
+func reset_cam_follow():
+	camFollow.transform.basis = Basis()
+	oldFollow = camFollow.global_transform
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
