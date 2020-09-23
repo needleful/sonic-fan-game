@@ -89,7 +89,7 @@ const CAM_REORIENT_MAX = 20
 const CAM_ROLL_TOLERANCE = 1.5
 const CAM_PITCH_TOLERANCE = 2
 
-const CAM_ROTATE_FOLLOW = 0.15
+const CAM_ROTATE_FOLLOW = 0.3
 const CAM_MAX_ROTATE_FOLLOW = PI
 
 const TIME_COYOTE = 0.25
@@ -612,8 +612,6 @@ func set_state(new_state):
 	match new_state:
 		State.Ground:
 			$Ball.visible = false
-			if state == State.Air:
-				reset_cam_follow()
 			statePlayback.travel("Ground")
 			recover = true
 			last_wall_jump = Vector3.ZERO
