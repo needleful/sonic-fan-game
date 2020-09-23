@@ -514,14 +514,23 @@ func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta, 1)
-	# Roll upright
+	
 	var forward = camYaw.global_transform.basis.z
 	var df = Vector3(forward.x, 0, forward.z).normalized()
 	
+	# Pitch upright
+	var angle = forward.angle_to(df)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interp
+	var pitchAxis = forward.cross(df).normalized()
+	if pitchAxis.is_normalized():
+		global_rotate(pitchAxis, angle)
+		up = up.rotated(pitchAxis, angle)
+
+	# Roll upright
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
 	var upCurrent = MoveMath.reject(up, forward).normalized()
-	
-	var angle = upCurrent.angle_to(upTarget)
+	angle = upCurrent.angle_to(upTarget)
 	if abs(angle) > MIN_FLOOR_ANGLE:
 		angle *= interp
 	var rollAxis = upCurrent.cross(upTarget).normalized()
@@ -530,14 +539,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		global_rotate(rollAxis, angle)
 		up = up.rotated(rollAxis, angle)
 	
-	# Pitch upright
-	angle = forward.angle_to(df)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interp
-	var pitchAxis = forward.cross(df).normalized()
-	if pitchAxis.is_normalized():
-		global_rotate(pitchAxis, angle)
-		up = up.rotated(pitchAxis, angle)
 
 func reorient_wall(desiredUp:Vector3, delta:float):
 	if desiredUp == Vector3.ZERO:
@@ -558,36 +559,37 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 		min_pitch = 2*PI
 	var interpRoll = min(delta*WALL_RUN_ROLL_SPEED, 1)
 	var interpPitch = min(delta*WALL_RUN_PITCH_SPEED, 1)
-	# Roll upright
+	
 	var forward = camYaw.global_transform.basis.z
 	var left = camYaw.global_transform.basis.x
 	var df = left.cross(desiredUp).normalized()
 	
+	# Pitch upright
+	var pitchAxis = forward.cross(df).normalized()
+	var angle = forward.angle_to(df)
+	if abs(angle) > MIN_FLOOR_ANGLE:
+		angle *= interpPitch
+	var min_angle = max(0, (abs(angle) - min_pitch))
+	var rotation = sign(angle)*max(abs(angle), min_angle)
+	if pitchAxis.is_normalized():
+		global_rotate(pitchAxis, rotation)
+		up = up.rotated(pitchAxis, rotation)
+		
+	# Roll upright
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
 	var upCurrent = MoveMath.reject(up, forward).normalized()
 	
-	var angle = upCurrent.angle_to(upTarget)
+	angle = upCurrent.angle_to(upTarget)
 	var rollAxis = upCurrent.cross(upTarget).normalized()
-	var min_angle = max(0, (abs(angle) - min_roll))
+	min_angle = max(0, (abs(angle) - min_roll))
 	
 	if abs(angle) > MIN_FLOOR_ANGLE:
 		angle *= interpRoll
 	
-	var rotation = sign(angle)*max(abs(angle), min_angle)
+	rotation = sign(angle)*max(abs(angle), min_angle)
 	if rollAxis.is_normalized():
 		global_rotate(rollAxis, rotation)
 		up = up.rotated(rollAxis, rotation)
-	
-	# Pitch upright
-	var pitchAxis = forward.cross(df).normalized()
-	angle = forward.angle_to(df)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interpPitch
-	min_angle = max(0, (abs(angle) - min_pitch))
-	rotation = sign(angle)*max(abs(angle), min_angle)
-	if pitchAxis.is_normalized():
-		global_rotate(pitchAxis, rotation)
-		up = up.rotated(pitchAxis, rotation)
 
 func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var desiredUp = Vector3.ZERO
@@ -631,6 +633,8 @@ func set_state(new_state):
 				var nw = find_good_wall()
 				if nw == Vector3.ZERO:
 					wall = up
+				else:
+					wall = nw
 			$Ball.visible = false
 			statePlayback.travel("Ground")
 		State.Slip:
