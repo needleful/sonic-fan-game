@@ -471,13 +471,13 @@ func process_ground(delta, accel_move, accel_start):
 	else:
 		#var speed = clamp(velocity.length_squared()/(SPEED_RUN*SPEED_RUN), 0, 1)
 		#var view_up = lerp(true_up, target_up, speed).normalized()
-		reorient_ground(target_up, 0.99, 30, delta)
+		reorient_ground(target_up, 30, delta)
 		# Snap to floor
 		var dstate = get_world().direct_space_state
 		var pos = global_transform.origin
 		var res = dstate.intersect_ray(pos, pos-up*FLOOR_SNAP_LENGTH, [self])
 		if "position" in res:
-			move_and_collide(res["position"] - pos)
+			var _x = move_and_collide(res["position"] - pos)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
@@ -501,7 +501,7 @@ func process_air(delta):
 		var desiredUp = true_up
 		reorient_air(desiredUp, delta*REORIENT_AIR)
 
-func reorient_ground(new_up:Vector3, interp:float, max_radians, delta):
+func reorient_ground(new_up:Vector3, max_radians, delta):
 	if !new_up.is_normalized():
 		new_up = true_up
 

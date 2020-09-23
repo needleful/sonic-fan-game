@@ -6,6 +6,8 @@ class_name AutoRoad
 export(bool) var stay_vertical : bool = true setget set_vertical
 export(float) var angle_tolerance: float = 4 setget set_tolerance
 export(ArrayMesh) var template_mesh : ArrayMesh setget set_template
+export(Material) var material : Material setget set_material
+export(float) var uv_scale: float = 25
 export(Transform) var template_transform : Transform setget set_template_transform
 
 var mesh: MeshInstance = MeshInstance.new()
@@ -33,6 +35,10 @@ func set_vertical(v):
 	stay_vertical = v
 	regenerate()
 
+func set_material(m):
+	material = m
+	mesh.material_override = material
+
 func regenerate():
 	if template_mesh == null:
 		return
@@ -54,11 +60,13 @@ func regenerate():
 	
 	# Get outer edge of mesh
 	var data : MeshDataTool = MeshDataTool.new()
+	data.set_material(template_mesh.surface_get_material(0))
 	var err = data.create_from_surface(template_mesh, 0)
 	if err != OK:
 		print_debug("ERROR! Failed to create a mesh from a surface: "+ str(err))
 	
 	var outer_vertices : PoolVector3Array = PoolVector3Array()
+	var outer_uv_x : PoolRealArray = PoolRealArray()
 	# 2 ints per edge
 	var outer_edges : PoolIntArray = PoolIntArray()
 	# indeces of the vertices in the source mesh
@@ -112,14 +120,16 @@ func regenerate():
 			v = outer_vertices.size()
 			added_indeces.append(source_index)
 			outer_vertices.append(template_transform.xform(data.get_vertex(source_index)))
+			outer_uv_x.append(data.get_vertex_uv(source_index).x)
 		outer_edges[e] = v
-
+	
+	var uvs : PoolVector2Array = PoolVector2Array()
 	var verts : PoolVector3Array = PoolVector3Array()
 	var surface: SurfaceTool = SurfaceTool.new()
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	
 	var points = curve.tessellate(5, angle_tolerance)
-	
+	var distance_covered: float = 0
 	for point_index in range(points.size()):
 		var start = points[point_index]
 		var end: Vector3
@@ -129,15 +139,21 @@ func regenerate():
 			var diff = start - points[point_index - 1]
 			end = start + diff
 		
+		var point_change = (start - end).length()
+		
 		var interp = curve.get_closest_offset(start)
 		var up = Vector3.UP if stay_vertical else curve.interpolate_baked_up_vector(interp)
 		var f = (end-start).normalized()
 		var l = up.cross(f).normalized()
 		var point_b:Transform = Transform(Basis(l, up, f), start)
 		
-		for vert in outer_vertices:
+		for i in range(outer_vertices.size()):
+			var vert = outer_vertices[i]
+			var uvx = outer_uv_x[i]
 			var p = point_b.xform(vert)
 			verts.push_back(p)
+			var uv = Vector2(uvx, distance_covered/uv_scale)
+			uvs.push_back(uv)
 		
 		if point_index > 0:
 			var v = outer_vertices.size()
@@ -156,8 +172,11 @@ func regenerate():
 				surface.add_index(startRight)
 				surface.add_index(endLeft)
 				surface.add_index(endRight)
-	
-	for v in verts:
+		distance_covered += point_change
+	for i in range(verts.size()):
+		var uv = uvs[i]
+		var v = verts[i]
+		surface.add_uv(uv)
 		surface.add_vertex(v)
 
 	surface.generate_normals()
