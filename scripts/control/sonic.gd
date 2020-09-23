@@ -56,7 +56,7 @@ const VEL_DIFF_FULL_FRICTION = 4
 const REORIENT_AIR = 1.5
 
 const FLOOR_SNAP_FORCE = 0
-const FLOOR_SNAP_LENGTH = 0.2
+const FLOOR_SNAP_LENGTH = 0.6
 const MIN_FLOOR_ANGLE = 0.02
 
 var state = State.Ground
@@ -99,15 +99,15 @@ const SPEED_ROTATE_MESH = 24
 const SNS_CAM_MOUSE = 0.001
 const SNS_CAM_CONTROLLER = 0.02
 var cameraRot: Vector2 = Vector2(0,0)
-onready var camYaw = $CamYaw
-onready var camSpring: SpringArm = $CamYaw/SpringArm
-onready var mesh: Spatial = $Armature/Skeleton/Sonic
-onready var cam : Camera = $CamYaw/SpringArm/Camera
-onready var cam_reverse : Camera = $CamYaw/Reverse/Camera
+onready var camFollow = $Cam
+onready var camYaw = $Cam/Yaw
+onready var camSpring: SpringArm = $Cam/Yaw/SpringArm
+onready var mesh: Spatial = $Armature
+onready var cam : Camera = $Cam/Yaw/SpringArm/Camera
+onready var cam_reverse : Camera = $Cam/Yaw/Reverse/Camera
 
 onready var anim: AnimationTree = $AnimationTree
 onready var statePlayback: AnimationNodeStateMachinePlayback = anim["parameters/playback"]
-onready var debug_imm : ImmediateGeometry = $debug_imm
 
 var stop = false
 var dead = false
@@ -148,7 +148,7 @@ func _process(delta):
 	
 	camYaw.rotate_y(-c.x)
 	camSpring.rotate_x(c.y)
-	$CamYaw/Reverse.rotate_x(-c.y)
+	$Cam/Yaw/Reverse.rotate_x(-c.y)
 	camRot = newCamRot
 	
 	time_limit -= delta
@@ -292,25 +292,30 @@ func _physics_process(delta):
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_air(delta)
 
+	var speed = velocity.length()/MAX_SNEAK
 	# Reorient upward
-	var camy = camYaw.global_transform.basis.y
-	var angle = camy.angle_to(up)
-	var axis = camy.cross(up).normalized()
+	var view_up: Vector3 = up
+	if state == State.Ground:
+		view_up = lerp(true_up, up, clamp(speed/2, 0, 1)).normalized()
+	var camy = camFollow.global_transform.basis.y
+	var angle = camy.angle_to(view_up)
+	var axis = camy.cross(view_up).normalized()
 	var f = clamp(abs(angle)/CAM_ROLL_TOLERANCE, 0, 1)
 	var rotSpeed = lerp(CAM_REORIENT_MIN, CAM_REORIENT_MAX, f)
 	if axis.is_normalized():
-		camYaw.global_rotate(axis, min(angle, rotSpeed*delta))
+		camFollow.global_rotate(axis, sign(angle)*min(abs(angle), rotSpeed*delta))
 	
 	# Pull out camera based on speed
-	var speed = velocity.length()/MAX_SNEAK
-	var camUp = camYaw.global_transform.basis.y
-	cam.global_transform = cam.global_transform.looking_at(
-		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
-		camUp)
 	camSpring.spring_length = clamp(
 		speed*SPRING_LEN_ADD+SPRING_LEN_BASE,
 		SPRING_LEN_MIN,
 		SPRING_LEN_MAX)
+
+	# Look ahead of the player
+	var camUp = camYaw.global_transform.basis.y
+	cam.global_transform = cam.global_transform.looking_at(
+		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
+		camUp)
 	
 	#Yaw based on velocity
 	var cz = camYaw.global_transform.basis.z
@@ -425,8 +430,6 @@ func process_ground(delta, accel_move, accel_start):
 		reorient_wall(wall, delta)
 		target_up = up
 	else:
-		#var speed = clamp(velocity.length_squared()/(SPEED_RUN*SPEED_RUN), 0, 1)
-		#var view_up = lerp(true_up, target_up, speed).normalized()
 		reorient_ground(target_up, 30, delta)
 		# Snap to floor
 		var dstate = get_world().direct_space_state
@@ -594,7 +597,7 @@ func set_state(new_state):
 
 func rotate_up(axis: Vector3, angle:float):
 	up = up.rotated(axis, angle)
-	$debug_up.global_rotate(axis, angle)
+	mesh.global_rotate(axis, angle)
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
