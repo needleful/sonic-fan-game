@@ -41,7 +41,7 @@ const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = 0
+const MIN_GROUNDED_ON_WALL = 0.0
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 5
@@ -80,10 +80,8 @@ const TIME_WALL_RUN = 0.06
 var timer_wall_run = 0
 
 # Radians per second
-const CAM_REORIENT_MIN = 0.2
-# 1/x seconds to reorient
-const CAM_REORIENT = 0.25
-const CAM_REORIENT_MAX = 20
+const CAM_REORIENT_MIN = 0.5
+const CAM_REORIENT_MAX = 10
 
 # tolerances in radians
 const CAM_ROLL_TOLERANCE = 1.5
@@ -102,12 +100,10 @@ const SNS_CAM_MOUSE = 0.001
 const SNS_CAM_CONTROLLER = 0.02
 var cameraRot: Vector2 = Vector2(0,0)
 onready var camYaw = $CamYaw
-onready var camFollow: Spatial = $CamYaw/CamFollow
-var oldFollow: Transform
-onready var camSpring: SpringArm = $CamYaw/CamFollow/SpringArm
+onready var camSpring: SpringArm = $CamYaw/SpringArm
 onready var mesh: Spatial = $Armature/Skeleton/Sonic
-onready var cam : Camera = $CamYaw/CamFollow/SpringArm/Camera
-onready var cam_reverse : Camera = $CamYaw/CamFollow/Reverse/Camera
+onready var cam : Camera = $CamYaw/SpringArm/Camera
+onready var cam_reverse : Camera = $CamYaw/Reverse/Camera
 
 onready var anim: AnimationTree = $AnimationTree
 onready var statePlayback: AnimationNodeStateMachinePlayback = anim["parameters/playback"]
@@ -130,7 +126,6 @@ func _ready():
 	set_score(score)
 	set_rings(rings)
 	cam.current = true
-	oldFollow = Transform(camFollow.global_transform)
 
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -153,7 +148,7 @@ func _process(delta):
 	
 	camYaw.rotate_y(-c.x)
 	camSpring.rotate_x(c.y)
-	$CamYaw/CamFollow/Reverse.rotate_x(-c.y)
+	$CamYaw/Reverse.rotate_x(-c.y)
 	camRot = newCamRot
 	
 	time_limit -= delta
@@ -198,7 +193,6 @@ func _physics_process(delta):
 		velocity = Vector3.ZERO
 	if up.length_squared() < 0.7:
 		up = true_up
-	oldFollow.basis = camFollow.global_transform.basis
 	var new_state = state
 	match state:
 		State.Ground:
@@ -207,16 +201,15 @@ func _physics_process(delta):
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE:
-					if $FloorArea.get_overlapping_bodies().size() == 0:
-						var new_wall = find_good_wall(0)
-						if new_wall == Vector3.ZERO:
-							new_state = State.Air
+					var new_wall = find_good_wall(0)
+					if new_wall == Vector3.ZERO:
+						new_state = State.Air
+					else:
+						set_wall(new_wall)
+						if wall.dot(true_up) <= WALL_DOT:
+							new_state = State.WallRun
 						else:
-							set_wall(new_wall)
-							if wall.dot(true_up) <= WALL_DOT:
-								new_state = State.WallRun
-							else:
-								target_up = wall
+							target_up = wall
 			else:
 				timer_coyote = 0
 				if up.dot(true_up) < WALL_DOT:
@@ -254,7 +247,7 @@ func _physics_process(delta):
 					var new_wall = find_good_wall()
 					if new_wall != Vector3.ZERO:
 						set_wall(new_wall)
-					elif $FloorArea.get_overlapping_bodies().size() == 0:
+					else:
 						new_state = State.Air
 			else:
 				var vp = MoveMath.reject(velocity, wall)
@@ -298,56 +291,19 @@ func _physics_process(delta):
 		State.Slip:
 			velocity -= wall*WALL_RUN_MAGNETISM*delta
 			process_air(delta)
+
+	# Reorient upward
+	var camy = camYaw.global_transform.basis.y
+	var angle = camy.angle_to(up)
+	var axis = camy.cross(up).normalized()
+	var f = clamp(abs(angle)/CAM_ROLL_TOLERANCE, 0, 1)
+	var rotSpeed = lerp(CAM_REORIENT_MIN, CAM_REORIENT_MAX, f)
+	if axis.is_normalized():
+		camYaw.global_rotate(axis, min(angle, rotSpeed*delta))
 	
-	#Camera movement
-	var camTarget: Transform = camYaw.global_transform
-	
-	# Pitch
-	var camx = oldFollow.basis.x
-	var yawZ = MoveMath.reject(camTarget.basis.z, camx).normalized()
-	var followZ = MoveMath.reject(oldFollow.basis.z, camx).normalized()
-	var pitchAngle:float = followZ.angle_to(yawZ)
-	var q = clamp(abs(pitchAngle)/CAM_PITCH_TOLERANCE, 0, 1)
-	var pitchSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
-	var pitchAxis:Vector3 = followZ.cross(yawZ).normalized()
-	
-	if pitchAxis.is_normalized():
-		var pitch = min(abs(pitchAngle), max(
-			abs(pitchAngle)*pitchSpeed*delta,
-			CAM_REORIENT_MIN*delta
-			))
-		oldFollow = oldFollow.rotated(pitchAxis, sign(pitchAngle)*pitch)
-	
-	# Roll
-	var camz = oldFollow.basis.z
-	var yawup = MoveMath.reject(camTarget.basis.y, camz).normalized()
-	var followup = MoveMath.reject(oldFollow.basis.y, camz).normalized()
-	var rollAngle = followup.angle_to(yawup)
-	q = clamp(abs(rollAngle)/CAM_ROLL_TOLERANCE, 0, 1)
-	var rollSpeed = lerp(CAM_REORIENT, CAM_REORIENT_MAX, q)
-	var rollAxis = followup.cross(yawup).normalized()
-	
-	if rollAxis.is_normalized():
-		var roll = min( abs(rollAngle), max(
-			abs(rollAngle)*rollSpeed*delta,
-			CAM_REORIENT_MIN*delta
-		))
-		oldFollow = oldFollow.rotated(rollAxis, sign(rollAngle)*roll)
-	
-	# Yaw
-	var camy = oldFollow.basis.y
-	followZ = MoveMath.reject(oldFollow.basis.z, camy).normalized()
-	yawZ = MoveMath.reject(camTarget.basis.z, camy).normalized()
-	var yaw = followZ.angle_to(yawZ)
-	var yawAxis = followZ.cross(yawZ).normalized()
-	if yawAxis.is_normalized():
-		oldFollow = oldFollow.rotated(yawAxis, yaw)
-	
-	camFollow.global_transform.basis = oldFollow.basis
-	
-	# Other camera logic
+	# Pull out camera based on speed
 	var speed = velocity.length()/MAX_SNEAK
-	var camUp = camFollow.global_transform.basis.y
+	var camUp = camYaw.global_transform.basis.y
 	cam.global_transform = cam.global_transform.looking_at(
 		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
 		camUp)
@@ -356,17 +312,17 @@ func _physics_process(delta):
 		SPRING_LEN_MIN,
 		SPRING_LEN_MAX)
 	
-	#Yaw to match velocity
-	var cz = camTarget.basis.z
+	#Yaw based on velocity
+	var cz = camYaw.global_transform.basis.z
 	if velocity.dot(cz) > 0:
 		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
-		var angle = cz.angle_to(v2)
-		var axis = cz.cross(v2).normalized()
-		var f = sqrt(v2.length())*(abs(angle) + 0.3)/PI
-		var cam_speed = min(CAM_MAX_ROTATE_FOLLOW, f*CAM_ROTATE_FOLLOW)
-		var yaw2 = sign(angle)*min(abs(angle), cam_speed*delta)
-		if axis.is_normalized():
-			camYaw.global_rotate(axis, yaw2)
+		var yaw = cz.angle_to(v2)
+		var yawZxis = cz.cross(v2).normalized()
+		var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
+		var cam_speed = min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
+		var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
+		if yawZxis.is_normalized():
+			camYaw.global_rotate(yawZxis, yaw2)
 	
 	$debugUI/status/Up.text = MoveMath.pr(up)
 	$debugUI/status/Velocity.text = MoveMath.pr(velocity)
@@ -509,8 +465,7 @@ func reorient_ground(new_up:Vector3, max_radians, delta):
 	var rotate: float = sign(angle)*min(abs(angle), max_radians*delta)
 	var up_axis = up.cross(new_up).normalized()
 	if up_axis.is_normalized():
-		up = up.rotated(up_axis, rotate)
-		global_rotate(up_axis, rotate)
+		rotate_up(up_axis, angle)
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta, 1)
@@ -524,8 +479,7 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		angle *= interp
 	var pitchAxis = forward.cross(df).normalized()
 	if pitchAxis.is_normalized():
-		global_rotate(pitchAxis, angle)
-		up = up.rotated(pitchAxis, angle)
+		rotate_up(pitchAxis, angle)
 
 	# Roll upright
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
@@ -536,9 +490,7 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	var rollAxis = upCurrent.cross(upTarget).normalized()
 	
 	if rollAxis.is_normalized():
-		global_rotate(rollAxis, angle)
-		up = up.rotated(rollAxis, angle)
-	
+		rotate_up(rollAxis, angle)
 
 func reorient_wall(desiredUp:Vector3, delta:float):
 	if desiredUp == Vector3.ZERO:
@@ -572,8 +524,7 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	var min_angle = max(0, (abs(angle) - min_pitch))
 	var rotation = sign(angle)*max(abs(angle), min_angle)
 	if pitchAxis.is_normalized():
-		global_rotate(pitchAxis, rotation)
-		up = up.rotated(pitchAxis, rotation)
+		rotate_up(pitchAxis, rotation)
 		
 	# Roll upright
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
@@ -588,19 +539,17 @@ func reorient_wall(desiredUp:Vector3, delta:float):
 	
 	rotation = sign(angle)*max(abs(angle), min_angle)
 	if rollAxis.is_normalized():
-		global_rotate(rollAxis, rotation)
-		up = up.rotated(rollAxis, rotation)
+		rotate_up(rollAxis, rotation)
 
 func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var desiredUp = Vector3.ZERO
 	var v = velocity + vel_difference
 	for i in range(0, get_slide_count()):
 		var col = get_slide_collision(i)
-		if $WallRunArea.overlaps_body(col.collider):
-			var n = col.normal
-			var f = v.dot(n)
-			if f <= -min_grounded and f < v.dot(desiredUp):
-				desiredUp = n.normalized()
+		var n = col.normal
+		var f = v.dot(n)
+		if f <= min_grounded and f < v.dot(desiredUp):
+			desiredUp = n.normalized()
 	
 	return desiredUp
 
@@ -643,9 +592,9 @@ func set_state(new_state):
 			recover = false
 	state = new_state
 
-func reset_cam_follow():
-	camFollow.transform.basis = Basis()
-	oldFollow = camFollow.global_transform
+func rotate_up(axis: Vector3, angle:float):
+	up = up.rotated(axis, angle)
+	$debug_up.global_rotate(axis, angle)
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
