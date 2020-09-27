@@ -7,7 +7,7 @@ export(bool) var stay_vertical : bool = true setget set_vertical
 export(float) var angle_tolerance: float = 4 setget set_tolerance
 export(ArrayMesh) var template_mesh : ArrayMesh setget set_template
 export(Material) var material : Material setget set_material
-export(float) var uv_scale: float = 25
+export(float) var uv_scale: float = 5
 export(Transform) var template_transform : Transform setget set_template_transform
 
 var mesh: MeshInstance = MeshInstance.new()
@@ -15,31 +15,35 @@ var body: StaticBody = StaticBody.new()
 var collider: CollisionShape = CollisionShape.new()
 
 func _ready():
-	if Engine.editor_hint:
-		var _x = connect("curve_changed", self, "regenerate")
-		regenerate()
+	var _x = connect("curve_changed", self, "regenerate")
+	regenerate()
 
 func set_tolerance(tol):
 	angle_tolerance = tol
-	regenerate()
+	if Engine.editor_hint:
+		regenerate()
 
 func set_template(t):
 	template_mesh = t
-	regenerate()
+	if Engine.editor_hint:
+		regenerate()
 
 func set_template_transform(tr):
 	template_transform = tr
-	regenerate()
+	if Engine.editor_hint:
+		regenerate()
 
 func set_vertical(v):
 	stay_vertical = v
-	regenerate()
+	if Engine.editor_hint:
+		regenerate()
 
 func set_material(m):
 	material = m
 	mesh.material_override = material
 
 func regenerate():
+	print("Regenerating autoroad...")
 	if template_mesh == null:
 		return
 		
