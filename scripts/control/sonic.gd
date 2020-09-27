@@ -80,11 +80,11 @@ var timer_wall_run = 0
 
 # Radians per second
 const CAM_REORIENT_MIN = 0.5
-const CAM_REORIENT_MAX = 10
+const CAM_REORIENT_MAX = 15
 
 # tolerances in radians
-const CAM_ROLL_TOLERANCE = 1.5
-const CAM_PITCH_TOLERANCE = 2
+const CAM_ROLL_TOLERANCE = 0.5
+const CAM_PITCH_TOLERANCE = 1
 
 const CAM_ROTATE_FOLLOW = 0.3
 const CAM_MAX_ROTATE_FOLLOW = PI
@@ -455,9 +455,9 @@ func process_ground(delta, accel_move, accel_start):
 		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
 			set_wall(new_wall)
-		reorient_wall(target_up, delta)
+		reorient(target_up, 25, 50, delta)
 	else:
-		reorient_ground(target_up, 30, delta)
+		reorient(target_up, 40, 60, delta)
 		# Snap to floor
 		var dstate = get_world().direct_space_state
 		var pos = global_transform.origin
@@ -484,92 +484,19 @@ func process_air(delta):
 	
 	timer_air += delta
 	if timer_air >= TIME_REORIENT:
-		reorient_air(true_up, delta*REORIENT_AIR)
+		reorient(true_up, REORIENT_AIR, REORIENT_AIR, delta)
 	target_up = up
 
-func reorient_ground(new_up:Vector3, rotate_speed:float, delta:float):
+func reorient(new_up:Vector3, rotate_speed: float, min_rotate_speed:float, delta:float):
 	if !new_up.is_normalized():
 		new_up = true_up
 
 	var angle = up.angle_to(new_up)
+	var speed = max(min_rotate_speed, abs(angle)*rotate_speed)
 	var rotate: float = sign(angle)*min(abs(angle), rotate_speed*delta)
 	var up_axis = up.cross(new_up).normalized()
 	if up_axis.is_normalized():
 		rotate_up(up_axis, rotate)
-
-func reorient_air(desiredUp:Vector3, delta:float):
-	var interp = min(delta, 1)
-	
-	var forward = camYaw.global_transform.basis.z
-	var df = Vector3(forward.x, 0, forward.z).normalized()
-	
-	# Pitch upright
-	var angle = forward.angle_to(df)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interp
-	var pitchAxis = forward.cross(df).normalized()
-	if pitchAxis.is_normalized():
-		rotate_up(pitchAxis, angle)
-
-	# Roll upright
-	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
-	var upCurrent = MoveMath.reject(up, forward).normalized()
-	angle = upCurrent.angle_to(upTarget)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interp
-	var rollAxis = upCurrent.cross(upTarget).normalized()
-	
-	if rollAxis.is_normalized():
-		rotate_up(rollAxis, angle)
-
-func reorient_wall(desiredUp:Vector3, delta:float):
-	if desiredUp == Vector3.ZERO:
-		print("ERROR: ZERO used for reorient_wall")
-		return
-	
-	if desiredUp.dot(up) <= -0.9:
-		print_debug("Bad!", up, "->", desiredUp)
-		return
-	
-	var min_roll = MIN_ROLL_WALLRUN
-	var min_pitch = MIN_PITCH_WALLRUN
-	var f = camYaw.global_transform.basis.z
-	var l = camYaw.global_transform.basis.x
-	if abs(f.dot(desiredUp)) > abs(l.dot(desiredUp)):
-		# Running at the wall head on
-		min_roll = 2*PI
-		min_pitch = 2*PI
-	var interpRoll = min(delta*WALL_RUN_ROLL_SPEED, 1)
-	var interpPitch = min(delta*WALL_RUN_PITCH_SPEED, 1)
-	
-	var forward = camYaw.global_transform.basis.z
-	var left = camYaw.global_transform.basis.x
-	var df = left.cross(desiredUp).normalized()
-	
-	# Pitch upright
-	var pitchAxis = forward.cross(df).normalized()
-	var angle = forward.angle_to(df)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interpPitch
-	var min_angle = max(0, (abs(angle) - min_pitch))
-	var rotation = sign(angle)*max(abs(angle), min_angle)
-	if pitchAxis.is_normalized():
-		rotate_up(pitchAxis, rotation)
-		
-	# Roll upright
-	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
-	var upCurrent = MoveMath.reject(up, forward).normalized()
-	
-	angle = upCurrent.angle_to(upTarget)
-	var rollAxis = upCurrent.cross(upTarget).normalized()
-	min_angle = max(0, (abs(angle) - min_roll))
-	
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interpRoll
-	
-	rotation = sign(angle)*max(abs(angle), min_angle)
-	if rollAxis.is_normalized():
-		rotate_up(rollAxis, rotation)
 
 func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var desiredUp = Vector3.ZERO
