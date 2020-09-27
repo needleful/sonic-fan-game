@@ -1,7 +1,6 @@
 extends RigidBody
 
 export(NodePath) var sonicNode: NodePath
-export(NodePath) var weaponNode: NodePath = NodePath("Eye")
 
 export(float) var player_outer_radius = 8
 export(float) var player_inner_radius = 3
@@ -16,7 +15,7 @@ export(float) var weapon_rotation_speed: float = deg2rad(40)
 
 const DRAG_AIR = 0.00005
 onready var sonic: Sonic = get_node(sonicNode)
-onready var weapon: Spatial = get_node(weaponNode)
+onready var weapon: Spatial = $Eye
 onready var anim: AnimationPlayer = $AttackAnimations
 onready var attackArea = $Eye/AttackMesh/AttackArea
 
@@ -28,12 +27,20 @@ enum WeaponState {
 	Cancelling
 }
 
+enum AIState {
+	Inactive,
+	Active
+}
+
+var state = AIState.Inactive
 var weapState = WeaponState.Idle
 
 const TIME_TO_CANCEL = .85
 var cancel_timer = 0
 
 func _physics_process(delta):
+	if state == AIState.Inactive:
+		return
 	match weapState:
 		WeaponState.Idle:
 			if attackArea.get_overlapping_bodies().has(sonic):
@@ -110,11 +117,11 @@ func _physics_process(delta):
 	if axis.length_squared() >= 0.999:
 		weapon.global_rotate(axis, sign(angle)*min(abs(angle), weapon_rotation_speed*delta))
 
-func set_state(state):
-	if weapState == state:
+func set_state(s):
+	if weapState == s:
 		return
 	cancel_timer = 0
-	weapState = state
+	weapState = s
 	match weapState:
 		WeaponState.Charging:
 			anim.play("Attack")
@@ -136,3 +143,8 @@ func cancel_end():
 func die():
 	sonic.give_points(100)
 	queue_free()
+
+func _on_Activation_body_entered(body):
+	if body is Sonic:
+		sonic = body
+		state = AIState.Active

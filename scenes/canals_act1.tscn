@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=2]
+[gd_scene load_steps=32 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://entities/spikes.tscn" type="PackedScene" id=9]
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=10]
 [ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=11]
+[ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=12]
 
 [sub_resource type="SphereShape" id=7]
 radius = 22.2796
@@ -44,18 +45,48 @@ _data = {
 
 [sub_resource type="Curve3D" id=12]
 _data = {
-"points": PoolVector3Array( 79.7646, -17.4191, -25.3301, -79.7646, 17.4191, 25.3301, 10.2163, 0.0840149, -3.39398, -19.0007, 2.33633, 28.5928, 19.0007, -2.33633, -28.5928, -2.51855, 75.51, -2.25104, 35.4414, 31.9407, -45.6602, -35.4414, -31.9407, 45.6602, -35.8176, 4.05908, -38.6946, -54.2715, -1.95233, -195.579, 54.2715, 1.95233, 195.579, 11.1643, -32.1042, 297.313 ),
+"points": PoolVector3Array( 62.4758, -28.8055, -18.8993, -62.4758, 28.8055, 18.8993, 12.6594, 1.8183, -6.5885, -26.1348, 4.52859, 29.8912, 26.1348, -4.52859, -29.8912, 1.0957, 77.1728, -11.2672, 48.4836, 47.0128, -38.0546, -48.4836, -47.0128, 38.0546, -9.94727, -19.4981, -24.8855, -87.6531, -36.7659, -200.403, 87.6531, 36.7659, 200.403, 8.04102, -36.0667, 301.882 ),
 "tilts": PoolRealArray( 0, 0, 0, 0 )
 }
 
 [sub_resource type="Curve3D" id=8]
 _data = {
-"points": PoolVector3Array( 458.248, -8.54382, 295.498, -458.248, 8.54382, -295.498, -1.461, 1.26537, 0.948708, 367.355, 32.7943, -343.054, -367.355, -32.7943, 343.054, -1110.4, 40.5832, 177.406, 0, 0, 0, 0, 0, 0, -1973.18, 5.43301, 896.375 ),
+"points": PoolVector3Array( 458.248, -8.54382, 295.498, -458.248, 8.54382, -295.498, -1.461, 1.26537, 0.948708, 183.661, 43.0155, -214.726, -183.661, -43.0155, 214.726, -1110.4, 40.5832, 177.406, -3.33667, -63.2671, -3.5509, 3.33667, 63.2671, 3.5509, -1480.27, 42.8761, 521.888 ),
 "tilts": PoolRealArray( 0, 0, 0 )
 }
 
 [sub_resource type="SphereShape" id=9]
 radius = 16.9287
+
+[sub_resource type="Curve3D" id=13]
+_data = {
+"points": PoolVector3Array( 41.4252, 9.3779, -135.249, -41.4252, -9.3779, 135.249, 122.27, -2.66649, -28.0153, 124.328, -22.468, -102.986, -124.328, 22.468, 102.986, -82.9995, 1.1389, 325.331, 123.355, 17.2657, -51.739, -123.355, -17.2657, 51.739, -331.527, -5.26021, 476.951, 48.4395, -1.00027, -4.73572, -48.4395, 1.00027, 4.73572, -701.435, 4.35004, 564.795, 45.6704, 3.74765, 5.84045, -45.6704, -3.74765, -5.84045, -937.309, -290.786, 669.42, 0, 0, 0, 0, 0, 0, -1171.23, -306.926, 639.073 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="CubeMesh" id=15]
+size = Vector3( 40, 40, 2 )
+
+[sub_resource type="BoxShape" id=16]
+extents = Vector3( 20, 20, 1 )
+
+[sub_resource type="Curve3D" id=14]
+_data = {
+"points": PoolVector3Array( 13.3867, -28.6322, -17.9319, -13.3867, 28.6322, 17.9319, 161.696, -48.0793, -70.217, -0.408081, -12.0006, -50.4388, 0.408081, 12.0006, 50.4388, 108.013, -70.9249, 37.5667, 0, 0, 0, 0, 0, 0, 14.7532, -56.467, 140.344 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=17]
+_data = {
+"points": PoolVector3Array( 24.4132, 3.51411, -103.415, -24.4132, -3.51411, 103.415, 4.55164, -0.445938, 4.34827, 115.926, -21.5684, -91.0037, -115.926, 21.5684, 91.0037, -124.547, -60.6145, 289.232, 76.3352, -2.6528, -363.054, -76.3352, 2.6528, 363.054, -486.333, -122.522, 996.978 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[sub_resource type="CubeMesh" id=18]
+size = Vector3( 12, 35, 2 )
+
+[sub_resource type="BoxShape" id=19]
+extents = Vector3( 6, 17.5, 1 )
 
 [sub_resource type="Curve3D" id=11]
 _data = {
@@ -189,7 +220,7 @@ material = ExtResource( 6 )
 uv_scale = 25.0
 
 [node name="Checkpoint" type="Area" parent="env/AutoRoad2"]
-transform = Transform( -0.509027, 0, -0.860751, 0, 1, 0, 0.860751, 0, -0.509027, -67.7854, 5.52204, -38.6457 )
+transform = Transform( -0.384811, 0, -0.922995, 0, 1, 0, 0.922995, 0, -0.384811, -75.1266, 7.27742, -41.459 )
 script = ExtResource( 5 )
 
 [node name="CollisionShape" type="CollisionShape" parent="env/AutoRoad2/Checkpoint"]
@@ -197,29 +228,29 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.46662, 0 )
 shape = SubResource( 9 )
 
 [node name="spring" parent="env/AutoRoad2" instance=ExtResource( 10 )]
-transform = Transform( -0.0625802, 0.915777, -0.396782, -0.997675, -0.0466511, 0.0496814, 0.0269868, 0.398969, 0.916568, -231.624, 11.9963, -123.823 )
+transform = Transform( -0.0625802, 0.915777, -0.396782, -0.997675, -0.0466511, 0.0496814, 0.0269868, 0.398969, 0.916568, -236.753, 12.3305, -112.01 )
 reflection = 1.5
 
 [node name="spikes" parent="env/AutoRoad2" instance=ExtResource( 9 )]
 transform = Transform( -3.81175e-08, 0.872027, 0.489459, -1, -4.37114e-08, 0, 2.13949e-08, -0.489459, 0.872027, -796.255, 51.3504, -73.9209 )
 
 [node name="spikes2" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -3.82291e-08, 0.831004, 0.556267, -1, -4.37114e-08, -3.42423e-09, 2.14696e-08, -0.556267, 0.831004, -872.751, 52.5675, -12.4096 )
+transform = Transform( -0.0501065, 0.831004, 0.554005, -0.995935, -4.35337e-08, -0.0900764, -0.0748538, -0.556267, 0.827626, -870.985, 55.2277, -9.77259 )
 
 [node name="spikes3" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -0.0381934, 0.789395, 0.612696, -0.998063, -4.36267e-08, -0.0622157, -0.0491127, -0.613886, 0.787865, -931.842, 52.8131, 17.7424 )
+transform = Transform( -0.0381933, 0.884048, 0.465833, -0.998063, -0.0108368, -0.0612646, -0.0491127, -0.467271, 0.882749, -931.389, 56.9341, 15.444 )
 
 [node name="spikes4" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -0.0535593, 0.76473, 0.642121, -0.996539, -4.35601e-08, -0.0831213, -0.0635653, -0.644351, 0.762084, -966.664, 51.3847, 59.4168 )
+transform = Transform( -0.0535593, 0.824518, 0.563295, -0.996539, -0.00822536, -0.0827133, -0.0635653, -0.565776, 0.822105, -967.606, 56.3222, 54.8764 )
 
 [node name="spikes5" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -0.0481606, 0.735317, 0.67601, -0.997472, -4.36009e-08, -0.0710622, -0.0522532, -0.677723, 0.733458, -993.69, 51.4896, 66.217 )
+transform = Transform( -0.0481606, 0.735317, 0.67601, -0.997472, -4.36009e-08, -0.0710622, -0.0522532, -0.677723, 0.733458, -993.533, 56.6196, 57.2211 )
 
 [node name="spikes6" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -0.0218553, 0.735317, 0.677371, -0.99948, -4.36887e-08, -0.0322481, -0.0237125, -0.677723, 0.734935, -1000.97, 50.0665, 86.6157 )
+transform = Transform( -0.0218553, 0.735317, 0.677371, -0.99948, -4.36887e-08, -0.0322481, -0.0237125, -0.677723, 0.734935, -1000.81, 55.1965, 77.6198 )
 
 [node name="spikes7" parent="env/AutoRoad2" instance=ExtResource( 9 )]
-transform = Transform( -0.0043293, 0.764723, 0.644345, -0.99718, 0.0449775, -0.0600803, -0.0749258, -0.642788, 0.762371, -1018.46, 50.3859, 85.9355 )
+transform = Transform( -0.0043293, 0.764723, 0.644345, -0.99718, 0.0449775, -0.0600803, -0.0749258, -0.642788, 0.762371, -1022.29, 55.8897, 81.7739 )
 
 [node name="spikes8" parent="env/AutoRoad2/spikes7" instance=ExtResource( 9 )]
 transform = Transform( 1, 2.13163e-14, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
@@ -246,6 +277,63 @@ power = 50.0
 [node name="spring3" parent="env/AutoRoad2" instance=ExtResource( 10 )]
 transform = Transform( 0.974017, 0.226363, 0.0071349, 0.00705078, -0.0617975, 0.998064, 0.226365, -0.972081, -0.0617879, -1111.12, 42.2533, 179.897 )
 power = 50.0
+
+[node name="AutoRoad" type="Path" parent="env/AutoRoad2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1634.38, 190.209, 596.857 )
+curve = SubResource( 13 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="env/AutoRoad2/AutoRoad"]
+transform = Transform( 0.989799, 0.0529805, 0.132256, -0.0129336, 0.957868, -0.286919, -0.141885, 0.282281, 0.948781, -667.14, 23.131, 580.351 )
+mesh = SubResource( 15 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="env/AutoRoad2/AutoRoad/MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="env/AutoRoad2/AutoRoad/MeshInstance/StaticBody"]
+shape = SubResource( 16 )
+
+[node name="Pipe2" type="Path" parent="env/AutoRoad2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1634.38, 92.905, 596.857 )
+curve = SubResource( 14 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 11 )
+
+[node name="hovercraft" parent="env/AutoRoad2/Pipe2" instance=ExtResource( 12 )]
+transform = Transform( -0.907345, 0, 0.420387, 0, 1, 0, -0.420387, 0, -0.907345, 128.342, -53.4693, -26.7145 )
+
+[node name="AutoRoad" type="Path" parent="env/AutoRoad2/Pipe2"]
+transform = Transform( 0.808504, 0, -0.588491, 0, 1, 0, 0.588491, 0, 0.808504, 22.3136, -61.2925, 127.248 )
+curve = SubResource( 17 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 4 )
+template_transform = Transform( -1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="env/AutoRoad2/Pipe2/AutoRoad"]
+transform = Transform( 0.700012, 0, -0.71413, 0, 1, 0, 0.71413, 0, 0.700012, -182.575, -43.3493, 328.2 )
+mesh = SubResource( 18 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="env/AutoRoad2/Pipe2/AutoRoad/MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="env/AutoRoad2/Pipe2/AutoRoad/MeshInstance/StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 19 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="env/AutoRoad2/Pipe2/AutoRoad"]
+transform = Transform( 0.95608, 0, -0.293106, 0, 1, 0, 0.293106, 0, 0.95608, -367.713, -84.9988, 651.87 )
+mesh = SubResource( 18 )
+material/0 = null
+
+[node name="StaticBody" type="StaticBody" parent="env/AutoRoad2/Pipe2/AutoRoad/MeshInstance2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="env/AutoRoad2/Pipe2/AutoRoad/MeshInstance2/StaticBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+shape = SubResource( 19 )
 
 [node name="motorbike" parent="." instance=ExtResource( 8 )]
 transform = Transform( 0.103452, 0, -0.994634, 0, 1, 0, 0.994634, 0, 0.103452, -356.022, 122.969, 135.503 )

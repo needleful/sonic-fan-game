@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://assets/models-export/badniks/hovercraft.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/badnik_flying.gd" type="Script" id=2]
@@ -310,6 +310,9 @@ tracks/7/keys = {
 "values": [ 2.0 ]
 }
 
+[sub_resource type="SphereShape" id=9]
+radius = 18.8712
+
 [node name="hovercraft" groups=[
 "badniks",
 ] instance=ExtResource( 1 )]
@@ -420,3 +423,9 @@ stream = ExtResource( 7 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.15372 )
 stream = ExtResource( 8 )
 autoplay = true
+
+[node name="Activation" type="Area" parent="." index="7"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Activation" index="0"]
+shape = SubResource( 9 )
+[connection signal="body_entered" from="Activation" to="." method="_on_Activation_body_entered"]
