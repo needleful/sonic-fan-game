@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 [ext_resource path="res://entities/spikes.tscn" type="PackedScene" id=2]
@@ -30,22 +30,25 @@ data = PoolVector3Array( -40, 1, 40, 40, 1, 40, -40, -1, 40, 40, 1, 40, 40, -1, 
 [sub_resource type="CubeMesh" id=5]
 size = Vector3( 700, 2, 80 )
 
-[sub_resource type="ConcavePolygonShape" id=6]
-data = PoolVector3Array( -350, 1, 40, 350, 1, 40, -350, -1, 40, 350, 1, 40, 350, -1, 40, -350, -1, 40, 350, 1, -40, -350, 1, -40, 350, -1, -40, -350, 1, -40, -350, -1, -40, 350, -1, -40, 350, 1, 40, 350, 1, -40, 350, -1, 40, 350, 1, -40, 350, -1, -40, 350, -1, 40, -350, 1, -40, -350, 1, 40, -350, -1, -40, -350, 1, 40, -350, -1, 40, -350, -1, -40, 350, 1, 40, -350, 1, 40, 350, 1, -40, -350, 1, 40, -350, 1, -40, 350, 1, -40, -350, -1, 40, 350, -1, 40, -350, -1, -40, 350, -1, 40, 350, -1, -40, -350, -1, -40 )
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 350, 1, 40 )
 
-[sub_resource type="CubeMesh" id=7]
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 350, 1, 40 )
+
+[sub_resource type="CubeMesh" id=8]
 size = Vector3( 30, 2, 10 )
 
-[sub_resource type="ConcavePolygonShape" id=8]
+[sub_resource type="ConcavePolygonShape" id=9]
 data = PoolVector3Array( -15, 1, 5, 15, 1, 5, -15, -1, 5, 15, 1, 5, 15, -1, 5, -15, -1, 5, 15, 1, -5, -15, 1, -5, 15, -1, -5, -15, 1, -5, -15, -1, -5, 15, -1, -5, 15, 1, 5, 15, 1, -5, 15, -1, 5, 15, 1, -5, 15, -1, -5, 15, -1, 5, -15, 1, -5, -15, 1, 5, -15, -1, -5, -15, 1, 5, -15, -1, 5, -15, -1, -5, 15, 1, 5, -15, 1, 5, 15, 1, -5, -15, 1, 5, -15, 1, -5, 15, 1, -5, -15, -1, 5, 15, -1, 5, -15, -1, -5, 15, -1, 5, 15, -1, -5, -15, -1, -5 )
 
-[sub_resource type="Curve3D" id=9]
+[sub_resource type="Curve3D" id=10]
 _data = {
 "points": PoolVector3Array( 32.6247, 7.40855, -183.986, -32.6247, -7.40855, 183.986, 0.181335, -0.182686, 0.126264, -127.609, 5.16856, -3.70952, 127.609, -5.16856, 3.70952, 249.59, 36.4555, 210.245, -136.913, 29.4164, 115.472, 136.913, -29.4164, -115.472, 652.441, 20.5152, 223.889, 0, 0, 0, 0, 0, 0, 746.158, -31.149, -29.9417 ),
 "tilts": PoolRealArray( 0, 0, 0, 0 )
 }
 
-[sub_resource type="Curve3D" id=10]
+[sub_resource type="Curve3D" id=11]
 _data = {
 "points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 27.7603, 0.415039, 8.16888, 0, 0, 0, 0, 0, 0, 27.8845, 0.458703, 90.8654, 0, 0, 0, 0, 0, 0, 28.1751, 18.6161, 173.628, 0, 0, 0, 0, 0, 0, -16.2121, 6.45436, 159.695, 0, 0, 0, 0, 0, 0, -24.5243, 0.506633, 12.1775, 0, 0, 0, 0, 0, 0, -18.6523, 12.619, -164.142, 0, 0, 0, 0, 0, 0, 6.50254, 6.3202, -156.143, 0, 0, 0, 0, 0, 0, 27.7504, 0.28249, 8.06203 ),
 "tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0 )
@@ -185,7 +188,7 @@ material/0 = null
 [node name="StaticBody" type="StaticBody" parent="Environment/Ground/BigWall2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/Ground/BigWall2/StaticBody"]
-shape = SubResource( 6 )
+shape = SubResource( 7 )
 
 [node name="MeshInstance3" type="MeshInstance" parent="Environment/Ground"]
 transform = Transform( 1, 0, 0, 0, 0.996937, 0.0782155, 0, -0.0782155, 0.996937, 0, 3.06588, 159.467 )
@@ -239,53 +242,53 @@ shape = SubResource( 4 )
 
 [node name="BigRamp" type="MeshInstance" parent="Environment"]
 transform = Transform( -4.37114e-08, 0, -1, 0.146083, 0.989273, -6.38549e-09, 0.989272, -0.146083, -4.32425e-08, -19.5283, 42.8003, 245.951 )
-mesh = SubResource( 7 )
+mesh = SubResource( 8 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="Environment/BigRamp"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/BigRamp/StaticBody"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="MeshInstance5" type="MeshInstance" parent="Environment/BigRamp"]
 transform = Transform( 0.917755, 0.397148, 3.59505e-09, -0.397148, 0.917754, 1.73598e-08, 3.59504e-09, -1.73599e-08, 1, -16.4478, 4.65235, 0 )
-mesh = SubResource( 7 )
+mesh = SubResource( 8 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="Environment/BigRamp/MeshInstance5"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/BigRamp/MeshInstance5/StaticBody"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="MeshInstance6" type="MeshInstance" parent="Environment/BigRamp"]
 transform = Transform( 0.692005, 0.721894, 1.3463e-08, -0.721893, 0.692005, 3.1555e-08, 1.34629e-08, -3.1555e-08, 1, -39.0848, 20.5534, 3.8147e-06 )
-mesh = SubResource( 7 )
+mesh = SubResource( 8 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="Environment/BigRamp/MeshInstance6"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/BigRamp/MeshInstance6/StaticBody"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="MeshInstance7" type="MeshInstance" parent="Environment/BigRamp"]
 transform = Transform( 0.366891, 0.930264, 2.76741e-08, -0.930264, 0.366891, 4.06631e-08, 2.76741e-08, -4.06632e-08, 1, -53.5851, 42.7687, 3.8147e-06 )
-mesh = SubResource( 7 )
+mesh = SubResource( 8 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="Environment/BigRamp/MeshInstance7"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/BigRamp/MeshInstance7/StaticBody"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="MeshInstance8" type="MeshInstance" parent="Environment/BigRamp"]
 transform = Transform( -0.116272, 0.993218, 4.87938e-08, -0.993217, -0.116272, 4.34149e-08, 4.87938e-08, -4.34149e-08, 1, -57.216, 68.5422, 3.8147e-06 )
-mesh = SubResource( 7 )
+mesh = SubResource( 8 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="Environment/BigRamp/MeshInstance8"]
 
 [node name="CollisionShape" type="CollisionShape" parent="Environment/BigRamp/MeshInstance8/StaticBody"]
-shape = SubResource( 8 )
+shape = SubResource( 9 )
 
 [node name="Wall" type="CSGBox" parent="Environment"]
 transform = Transform( 0.676079, 0, 0.736829, 0, 1, 0, -0.736829, 0, 0.676079, -9.74808, 0.912884, 9.24005 )
@@ -430,13 +433,9 @@ sides = 18
 
 [node name="AutoRoad" type="Path" parent="Environment"]
 transform = Transform( -0.99975, -0.0223732, 0, 0.0223732, -0.99975, 0, 0, 0, 1, 762.676, 55.5662, -5.3242 )
-curve = SubResource( 9 )
+curve = SubResource( 10 )
 script = ExtResource( 7 )
-stay_vertical = true
-angle_tolerance = 4.0
 template_mesh = ExtResource( 6 )
-material = null
-uv_scale = 5.0
 template_transform = Transform( 0, 0.2, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="spring" parent="." instance=ExtResource( 5 )]
@@ -444,4 +443,4 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 38.8298, -0.0406636, -40.1576 
 
 [node name="patrolPath1" type="Path" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 38.7214 )
-curve = SubResource( 10 )
+curve = SubResource( 11 )

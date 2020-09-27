@@ -13,15 +13,15 @@ onready var sonic: Sonic = get_node(sonicNode)
 export(NodePath) var pathNode: NodePath
 onready var path: Path = get_node(pathNode)
 
-export(float) var accel_move:float = 35
-export(float) var accel_pivot: float = 20
+export(float) var accel_move:float = 40
+export(float) var accel_pivot: float = 25
 export(float) var accel_air: float = 9
-export(float) var drag_move: float = 0.25
+export(float) var drag_move: float = 0.15
 export(float) var drag_patrol: float = 0.75
 export(float) var speed_rotation:float = 3*PI
 
-export(float) var time_to_chase:float = 0.25
-export(float) var time_to_forget: float = 10
+export(float) var time_to_chase:float = 0.15
+export(float) var time_to_forget: float = 30
 
 const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
@@ -56,6 +56,9 @@ const DIST_PATROL_POINT = 4
 var patrol_point: int = 0
 
 func _ready():
+	if sonic == null:
+		for s in get_tree().get_nodes_in_group("player"):
+			sonic = s
 	var _x = $AttackArea.connect("body_entered", self, "onAttack")
 	_x = $AttackArea.connect("body_exited", self, "onAttackStop")
 	_x = $AttackArea/Weapon.connect("body_entered", self, "kill")
@@ -147,6 +150,8 @@ func _physics_process(delta):
 			doneAttacking()
 
 func get_patrol_point() -> Vector3:
+	if path == null:
+		return Vector3.ZERO
 	var origin = weapon.global_transform.origin
 	var pxform = path.global_transform
 	var p_pos = pxform.xform(path.curve.get_point_position(patrol_point))
@@ -172,8 +177,9 @@ func reorient(new_up:Vector3, interp:float, max_degrees, delta):
 	var mr = deg2rad(max_degrees)
 	var angle = up.angle_to(new_up)
 	var up_axis = up.cross(new_up).normalized()
-	up = up.rotated(up_axis, min(angle*interp, mr*delta))
-	global_rotate(up_axis, min(angle*interp, mr*delta))
+	if up_axis.is_normalized():
+		up = up.rotated(up_axis, min(angle*interp, mr*delta))
+		global_rotate(up_axis, min(angle*interp, mr*delta))
 
 func rotate_by_speed(delta):
 	var target = MoveMath.reject(velocity, up).normalized()

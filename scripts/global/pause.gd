@@ -4,7 +4,7 @@ func _input(event):
 	if event.is_action_pressed("gm_pause"):
 		pause(!get_tree().paused)
 	elif event.is_action_pressed("dev_reset"):
-		var _x = get_tree().reload_current_scene()
+		$"/root/Respawn".reset_no_respawn()
 
 func _ready():
 	pause(get_tree().paused)
@@ -21,9 +21,13 @@ func pause(paused:bool):
 func _on_resume_pressed():
 	pause(false)
 
+func _on_RestartCheckoint_pressed():
+	pause(false)
+	$"/root/Respawn".reset_level()
+	
 func _on_Restart_pressed():
 	pause(false)
-	var _x = get_tree().reload_current_scene()
+	$"/root/Respawn".reset_no_respawn()
 
 func _on_Quit_pressed():
 	get_tree().quit()
@@ -41,3 +45,4 @@ func _on_FastOptionsMenu_apply():
 
 func _on_FastOptionsMenu_cancel():
 	show_main()
+

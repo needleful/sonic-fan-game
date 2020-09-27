@@ -2,6 +2,7 @@ extends KinematicBody
 
 class_name Sonic
 
+export(float) var kill_plane = -300
 export(float) var time_limit = 600
 export(int) var score = 0 setget set_score
 export(int) var rings = 0 setget set_rings
@@ -41,7 +42,7 @@ const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = 0.0
+const MIN_GROUNDED_ON_WALL = -0.5
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 5
@@ -86,6 +87,7 @@ const CAM_REORIENT_MAX = 15
 const CAM_ROLL_TOLERANCE = 0.5
 const CAM_PITCH_TOLERANCE = 1
 
+const CAMERA_VELOCITY_YAW = 0
 const CAM_ROTATE_FOLLOW = 0.3
 const CAM_MAX_ROTATE_FOLLOW = PI
 
@@ -184,6 +186,8 @@ func _process(delta):
 	$debugUI/status/State.text = State.keys()[state]
 
 func _physics_process(delta):
+	if global_transform.origin.y < kill_plane:
+		die()
 	var s = velocity.length()
 	if is_nan(s):
 		print_debug("Velocity is Nan!")
@@ -239,7 +243,7 @@ func _physics_process(delta):
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE_WALLRUN:
-					var new_wall = find_good_wall()
+					var new_wall = find_good_wall(0)
 					if new_wall != Vector3.ZERO:
 						set_wall(new_wall)
 					elif $WallRunArea.get_overlapping_bodies().size() == 0:
@@ -342,7 +346,7 @@ func _physics_process(delta):
 		var yaw = cz.angle_to(v2)
 		var yawZxis = cz.cross(v2).normalized()
 		var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
-		var cam_speed = min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
+		var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
 		var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
 		if yawZxis.is_normalized():
 			camYaw.global_rotate(yawZxis, yaw2)
@@ -514,18 +518,18 @@ func reorient_air(desiredUp:Vector3, delta:float):
 	if rollAxis.is_normalized():
 		rotate_up(rollAxis, angle)
 	
-func find_good_wall() -> Vector3:
-	var desiredUp = Vector3.ZERO
+func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
+	var new_wall = Vector3.ZERO
 	var v = velocity + vel_difference
 	for i in range(0, get_slide_count()):
 		var col: KinematicCollision = get_slide_collision(i)
 		if $WallRunArea.overlaps_body(col.collider):
 			var n = col.normal
 			var f = v.dot(n)
-			if f < v.dot(desiredUp):
-				desiredUp = n.normalized()
+			if f <= min_grounded and f < v.dot(new_wall):
+				new_wall = n.normalized()
 	
-	return desiredUp
+	return new_wall
 
 func set_state(new_state):
 	if state == new_state:
@@ -625,7 +629,7 @@ func attack_position():
 
 func kill():
 	dead = true
-	var _x = get_tree().reload_current_scene()
+	$"/root/Respawn".reset_level()
 
 func die():
 	$DeathScreen/Label.text = "Game Over"
