@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=1]
+[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=2]
+
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( 249.432, -15.3805, -2.75252, -249.432, 15.3805, 2.75252, 44.3728, -2.52612, 0.688599, 22.4112, 140.143, -115.041, -22.4112, -140.143, 115.041, -209.993, 10.4208, 187.243, 291.584, -72.6462, -172.556, -291.584, 72.6462, 172.556, -960.758, -70.0628, 530.667 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[node name="AutoRoad" type="Path"]
+curve = SubResource( 1 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 1 )
+template_transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0 )

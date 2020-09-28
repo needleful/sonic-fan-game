@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -7,143 +7,139 @@
 [ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=5]
 
 [sub_resource type="DynamicFont" id=1]
-size = 24
-font_data = ExtResource( 5 )
-
-[sub_resource type="DynamicFont" id=2]
 size = 48
 font_data = ExtResource( 5 )
 
-[sub_resource type="SphereShape" id=3]
+[sub_resource type="SphereShape" id=2]
 radius = 0.43
 
-[sub_resource type="SphereShape" id=4]
+[sub_resource type="SphereShape" id=3]
 radius = 0.47
+
+[sub_resource type="SphereShape" id=4]
+radius = 0.2
 
 [sub_resource type="SphereShape" id=5]
 radius = 0.2
 
-[sub_resource type="SphereShape" id=6]
-radius = 0.2
-
-[sub_resource type="PrismMesh" id=7]
+[sub_resource type="PrismMesh" id=6]
 size = Vector3( 0.1, 0.1, 0.1 )
 
-[sub_resource type="SpatialMaterial" id=8]
+[sub_resource type="SpatialMaterial" id=7]
 flags_no_depth_test = true
 albedo_color = Color( 1, 0, 0, 1 )
 
-[sub_resource type="SphereMesh" id=9]
+[sub_resource type="SphereMesh" id=8]
 radius = 0.4
 height = 0.8
 radial_segments = 24
 rings = 12
 
-[sub_resource type="SpatialMaterial" id=10]
+[sub_resource type="SpatialMaterial" id=9]
 albedo_color = Color( 0.317647, 0.32549, 1, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=11]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Fall-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=12]
+[sub_resource type="AnimationNodeTimeScale" id=11]
 
-[sub_resource type="AnimationNodeAnimation" id=13]
+[sub_resource type="AnimationNodeAnimation" id=12]
 animation = "Walk-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=14]
+[sub_resource type="AnimationNodeAnimation" id=13]
 animation = "Idle-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=15]
+[sub_resource type="AnimationNodeAnimation" id=14]
 animation = "IdleLeanRight-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=16]
+[sub_resource type="AnimationNodeAnimation" id=15]
 animation = "IdleLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=17]
+[sub_resource type="AnimationNodeAnimation" id=16]
 animation = "IdleLeanForward-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=18]
+[sub_resource type="AnimationNodeAnimation" id=17]
 animation = "IdleLeanBackward-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=19]
-blend_point_0/node = SubResource( 14 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=18]
+blend_point_0/node = SubResource( 13 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 15 )
+blend_point_1/node = SubResource( 14 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 16 )
+blend_point_2/node = SubResource( 15 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 17 )
+blend_point_3/node = SubResource( 16 )
 blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 18 )
+blend_point_4/node = SubResource( 17 )
 blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeAnimation" id=20]
+[sub_resource type="AnimationNodeAnimation" id=19]
 animation = "RunLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=21]
+[sub_resource type="AnimationNodeAnimation" id=20]
 animation = "Run-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=22]
+[sub_resource type="AnimationNodeAnimation" id=21]
 animation = "RunLeanRight-loop"
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=23]
-blend_point_0/node = SubResource( 20 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=22]
+blend_point_0/node = SubResource( 19 )
 blend_point_0/pos = -1.0
-blend_point_1/node = SubResource( 21 )
+blend_point_1/node = SubResource( 20 )
 blend_point_1/pos = 0.0
-blend_point_2/node = SubResource( 22 )
+blend_point_2/node = SubResource( 21 )
 blend_point_2/pos = 1.0
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=24]
-blend_point_0/node = SubResource( 13 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=23]
+blend_point_0/node = SubResource( 12 )
 blend_point_0/pos = 1.0
-blend_point_1/node = SubResource( 19 )
+blend_point_1/node = SubResource( 18 )
 blend_point_1/pos = 0.0
-blend_point_2/node = SubResource( 23 )
+blend_point_2/node = SubResource( 22 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 3.0
 snap = 0.5
 
-[sub_resource type="AnimationNodeBlendTree" id=25]
+[sub_resource type="AnimationNodeBlendTree" id=24]
 graph_offset = Vector2( -224, 31 )
-nodes/Speed/node = SubResource( 12 )
+nodes/Speed/node = SubResource( 11 )
 nodes/Speed/position = Vector2( 280, 80 )
-nodes/Walk/node = SubResource( 24 )
+nodes/Walk/node = SubResource( 23 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
+node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
-[sub_resource type="AnimationNodeAnimation" id=26]
+[sub_resource type="AnimationNodeAnimation" id=25]
 animation = "Ball-loop"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=26]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=27]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=28]
+xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=29]
-xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=30]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=31]
 xfade_time = 0.2
 
-[sub_resource type="AnimationNodeStateMachine" id=32]
-states/Fall/node = SubResource( 11 )
+[sub_resource type="AnimationNodeStateMachine" id=31]
+states/Fall/node = SubResource( 10 )
 states/Fall/position = Vector2( 514, 132 )
-states/Ground/node = SubResource( 25 )
+states/Ground/node = SubResource( 24 )
 states/Ground/position = Vector2( 391, 49 )
-states/Jump/node = SubResource( 26 )
+states/Jump/node = SubResource( 25 )
 states/Jump/position = Vector2( 643, 49 )
-transitions = [ "Ground", "Jump", SubResource( 27 ), "Jump", "Ground", SubResource( 28 ), "Jump", "Fall", SubResource( 29 ), "Fall", "Ground", SubResource( 30 ), "Ground", "Fall", SubResource( 31 ) ]
+transitions = [ "Ground", "Jump", SubResource( 26 ), "Jump", "Ground", SubResource( 27 ), "Jump", "Fall", SubResource( 28 ), "Fall", "Ground", SubResource( 29 ), "Ground", "Fall", SubResource( 30 ) ]
 start_node = "Ground"
 graph_offset = Vector2( -86, -31 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=33]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=32]
 
-[sub_resource type="Animation" id=34]
+[sub_resource type="Animation" id=33]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("DeathScreen:visible")
@@ -265,7 +261,6 @@ size_flags_horizontal = 3
 [node name="L1" type="Label" parent="UI/Labels" index="0"]
 margin_right = 90.0
 margin_bottom = 33.0
-custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -276,7 +271,6 @@ text = "SCORE"
 margin_top = 37.0
 margin_right = 90.0
 margin_bottom = 70.0
-custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -287,7 +281,6 @@ text = "TIME"
 margin_top = 74.0
 margin_right = 90.0
 margin_bottom = 107.0
-custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -340,7 +333,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="DeathScreen" index="0"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "Game Over"
 align = 1
 valign = 1
@@ -356,14 +349,14 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.43, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="6"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
-shape = SubResource( 3 )
+shape = SubResource( 2 )
 
 [node name="WallRunArea" type="Area" parent="." index="7"]
 collision_layer = 0
 
 [node name="CollisionShape" type="CollisionShape" parent="WallRunArea" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
-shape = SubResource( 4 )
+shape = SubResource( 3 )
 
 [node name="Cam" type="Spatial" parent="." index="8"]
 
@@ -375,7 +368,7 @@ current = true
 
 [node name="SpringArm" type="SpringArm" parent="Cam/Yaw" index="1"]
 transform = Transform( 1, -3.25841e-07, 3.25841e-07, -3.25841e-07, -1, 0, 3.25841e-07, -1.06173e-13, -1, 0, 0.23, 0 )
-shape = SubResource( 5 )
+shape = SubResource( 4 )
 spring_length = 3.0
 
 [node name="Camera" type="Camera" parent="Cam/Yaw/SpringArm" index="0"]
@@ -385,7 +378,7 @@ far = 8192.0
 
 [node name="Reverse" type="SpringArm" parent="Cam/Yaw" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0 )
-shape = SubResource( 6 )
+shape = SubResource( 5 )
 spring_length = 4.5
 
 [node name="Camera" type="Camera" parent="Cam/Yaw/Reverse" index="0"]
@@ -396,26 +389,26 @@ far = 8192.0
 [node name="MeshInstance" type="MeshInstance" parent="Cam/Yaw" index="3"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 visible = false
-mesh = SubResource( 7 )
-material/0 = SubResource( 8 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
 
 [node name="Ball" type="MeshInstance" parent="." index="9"]
 visible = false
-mesh = SubResource( 9 )
-material/0 = SubResource( 10 )
+mesh = SubResource( 8 )
+material/0 = SubResource( 9 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="10"]
-tree_root = SubResource( 32 )
+tree_root = SubResource( 31 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 33 )
+parameters/playback = SubResource( 32 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99498
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = -0.000836849
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="11"]
-anims/Die = SubResource( 34 )
+anims/Die = SubResource( 33 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="12"]
 stream = ExtResource( 3 )

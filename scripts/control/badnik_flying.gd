@@ -109,7 +109,7 @@ func _physics_process(delta):
 	add_torque(rtorq)
 	add_torque(drtorq)
 	
-	var future_sonic = sonic.attack_position() + sonic.velocity*delta
+	var future_sonic = sonic.attack_position() + sonic.velocity*0.25*delta
 	var weapdir = (future_sonic - weapon.global_transform.origin).normalized()
 	var angle = weapon.global_transform.basis.z.angle_to(weapdir)
 	var axis = weapon.global_transform.basis.z.cross(weapdir).normalized()

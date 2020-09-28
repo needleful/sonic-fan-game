@@ -177,6 +177,43 @@ func regenerate():
 				surface.add_index(endLeft)
 				surface.add_index(endRight)
 		distance_covered += point_change
+	# End caps
+	if points.size() >= 2:
+		var start = points[0]
+		var next: Vector3 = points[1]
+		var up = Vector3.UP if stay_vertical else curve.interpolate_baked_up_vector(0)
+		var f = (next-start).normalized()
+		var l = up.cross(f).normalized()
+		var voffset = verts.size()
+		var point_b:Transform = Transform(Basis(l, up, f), start)
+		for v_index in range(data.get_vertex_count()):
+			var v = template_transform.xform(data.get_vertex(v_index))
+			verts.push_back(point_b.xform(v))
+			uvs.push_back(data.get_vertex_uv(v_index))
+			
+		for f_index in range(data.get_face_count()):
+			for v in range(3):
+				var vert_index = data.get_face_vertex(f_index, v) + voffset
+				surface.add_index(vert_index)
+		
+		var end2 = points[points.size() - 1]
+		var beforeEnd = points[points.size() - 2]
+		var offset = curve.get_closest_offset(end2)
+		up = Vector3.UP if stay_vertical else curve.interpolate_baked_up_vector(offset)
+		f = (end2-beforeEnd).normalized()
+		l = up.cross(f).normalized()
+		voffset = verts.size()
+		point_b = Transform(Basis(-l, up, -f), end2)
+		for v_index in range(data.get_vertex_count()):
+			var v = template_transform.xform(data.get_vertex(v_index))
+			verts.push_back(point_b.xform(v))
+			uvs.push_back(data.get_vertex_uv(v_index))
+			
+		for f_index in range(data.get_face_count()):
+			for v in range(3):
+				var vert_index = data.get_face_vertex(f_index, v) + voffset
+				surface.add_index(vert_index)
+		
 	for i in range(verts.size()):
 		var uv = uvs[i]
 		var v = verts[i]
@@ -185,7 +222,6 @@ func regenerate():
 
 	surface.generate_normals()
 	mesh.mesh = surface.commit()
-	# TODO: do really large collision shapes break?
 	collider.shape = mesh.mesh.create_trimesh_shape()
 
 func has_edge(edges: PoolIntArray, to_find_0: int, to_find_1: int) -> bool:

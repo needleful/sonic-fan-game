@@ -613,6 +613,11 @@ func get_camera_rot()->Vector2:
 	)
 	return ret + c*SNS_CAM_CONTROLLER
 
+func fix_camera():
+	camYaw.rotate_y(-cameraRot.x)
+	camSpring.rotate_x(cameraRot.y)
+	$Cam/Yaw/Reverse.rotate_x(-cameraRot.y)
+
 func set_wall(w):
 	if w == Vector3.ZERO:
 		print_debug("Bad Wall")
@@ -629,7 +634,10 @@ func attack_position():
 
 func kill():
 	dead = true
-	$"/root/Respawn".reset_level()
+	if time_limit > 0:
+		$"/root/Respawn".reset_level()
+	else:
+		$"/root/Respawn".reset_no_respawn()
 
 func die():
 	$DeathScreen/Label.text = "Game Over"

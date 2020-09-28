@@ -21,15 +21,16 @@ anchor_left = 0.01
 anchor_top = 0.5
 anchor_right = 0.01
 anchor_bottom = 0.5
+margin_left = -0.24
 margin_top = -118.0
-margin_right = 266.0
+margin_right = 251.76
 margin_bottom = 118.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="MainMenu"]
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 33.0
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -2
@@ -38,49 +39,49 @@ text = "PAUSED"
 
 [node name="Resume" type="Button" parent="MainMenu"]
 margin_top = 37.0
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 73.0
 text = "RESUME"
 align = 0
 
 [node name="Options" type="Button" parent="MainMenu"]
 margin_top = 77.0
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 113.0
 text = "OPTIONS"
 align = 0
 
 [node name="RestartCheckoint" type="Button" parent="MainMenu"]
 margin_top = 117.0
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 153.0
-text = "RESTART CHECKPOINT"
+text = "RELOAD CHECKPOINT"
 align = 0
 
 [node name="Restart" type="Button" parent="MainMenu"]
 margin_top = 157.0
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 193.0
 text = "RESTART LEVEL"
 align = 0
 
 [node name="Quit" type="Button" parent="MainMenu"]
 margin_top = 197.0
-margin_right = 266.0
+margin_right = 252.0
 margin_bottom = 233.0
 text = "QUIT"
 align = 0
 
 [node name="FastOptionsMenu" type="Panel" parent="."]
 visible = false
-anchor_left = 0.01
+anchor_left = 0.5
 anchor_top = 0.5
-anchor_right = 0.01
+anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -0.24
-margin_top = -186.0
-margin_right = 558.76
-margin_bottom = 187.0
+margin_left = -460.0
+margin_top = -259.0
+margin_right = 460.0
+margin_bottom = 259.0
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
