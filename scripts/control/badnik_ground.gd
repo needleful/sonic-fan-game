@@ -8,7 +8,7 @@ var up: Vector3 = Vector3.UP
 var velocity: Vector3 = Vector3(0,0,0)
 
 export(NodePath) var sonicNode: NodePath
-onready var sonic: Sonic = get_node(sonicNode)
+onready var sonic: Sonic
 
 export(NodePath) var pathNode: NodePath
 onready var path: Path = get_node(pathNode)
@@ -56,7 +56,9 @@ const DIST_PATROL_POINT = 4
 var patrol_point: int = 0
 
 func _ready():
-	if sonic == null:
+	if has_node(sonicNode):
+		sonic = get_node(sonicNode)
+	else:
 		for s in get_tree().get_nodes_in_group("player"):
 			sonic = s
 	var _x = $AttackArea.connect("body_entered", self, "onAttack")

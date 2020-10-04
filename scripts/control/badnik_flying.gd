@@ -14,7 +14,7 @@ export(float) var angular_drag = .9
 export(float) var weapon_rotation_speed: float = deg2rad(40)
 
 const DRAG_AIR = 0.00005
-onready var sonic: Sonic = get_node(sonicNode)
+var sonic: Sonic
 onready var weapon: Spatial = $Eye
 onready var anim: AnimationPlayer = $AttackAnimations
 onready var attackArea = $Eye/AttackMesh/AttackArea
@@ -37,6 +37,10 @@ var weapState = WeaponState.Idle
 
 const TIME_TO_CANCEL = .85
 var cancel_timer = 0
+
+func _ready():
+	if has_node(sonicNode):
+		sonic = get_node(sonicNode)
 
 func _physics_process(delta):
 	if state == AIState.Inactive:
