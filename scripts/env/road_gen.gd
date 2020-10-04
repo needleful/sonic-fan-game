@@ -192,9 +192,21 @@ func regenerate():
 			uvs.push_back(data.get_vertex_uv(v_index))
 			
 		for f_index in range(data.get_face_count()):
-			for v in range(3):
-				var vert_index = data.get_face_vertex(f_index, v) + voffset
-				surface.add_index(vert_index)
+			var v0 = data.get_face_vertex(f_index, 0)
+			var v1 = data.get_face_vertex(f_index, 1)
+			var v2 = data.get_face_vertex(f_index, 2)
+			var vp0 = data.get_vertex(v0)
+			var vp1 = data.get_vertex(v1)
+			var vp2 = data.get_vertex(v2)
+			
+			var n = (vp1 - vp0).cross(vp2 - vp0)
+			if n.z < 0:
+				var t = v1
+				v1 = v2
+				v2 = t
+			surface.add_index(v0 + voffset)
+			surface.add_index(v1 + voffset)
+			surface.add_index(v2 + voffset)
 		
 		var end2 = points[points.size() - 1]
 		var beforeEnd = points[points.size() - 2]
@@ -210,9 +222,21 @@ func regenerate():
 			uvs.push_back(data.get_vertex_uv(v_index))
 			
 		for f_index in range(data.get_face_count()):
-			for v in range(3):
-				var vert_index = data.get_face_vertex(f_index, v) + voffset
-				surface.add_index(vert_index)
+			var v0 = data.get_face_vertex(f_index, 0)
+			var v1 = data.get_face_vertex(f_index, 1)
+			var v2 = data.get_face_vertex(f_index, 2)
+			var vp0 = data.get_vertex(v0)
+			var vp1 = data.get_vertex(v1)
+			var vp2 = data.get_vertex(v2)
+			
+			var n = (vp1 - vp0).cross(vp2 - vp0)
+			if n.z < 0:
+				var t = v1
+				v1 = v2
+				v2 = t
+			surface.add_index(v0 + voffset)
+			surface.add_index(v1 + voffset)
+			surface.add_index(v2 + voffset)
 		
 	for i in range(verts.size()):
 		var uv = uvs[i]
