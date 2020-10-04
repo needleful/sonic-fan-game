@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=5 format=2]
+[gd_resource type="Theme" load_steps=11 format=2]
 
 [ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://ui/button_style.tres" type="StyleBox" id=2]
@@ -6,6 +6,18 @@
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 1, 0.831373 )
 expand_margin_left = 5.0
+
+[sub_resource type="StyleBoxEmpty" id=3]
+
+[sub_resource type="StyleBoxEmpty" id=4]
+
+[sub_resource type="StyleBoxEmpty" id=5]
+
+[sub_resource type="StyleBoxEmpty" id=6]
+
+[sub_resource type="StyleBoxEmpty" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=8]
 
 [sub_resource type="DynamicFont" id=2]
 size = 24
@@ -24,6 +36,12 @@ Button/styles/focus = ExtResource( 2 )
 Button/styles/hover = ExtResource( 2 )
 Button/styles/normal = ExtResource( 2 )
 Button/styles/pressed = SubResource( 1 )
+CheckButton/styles/disabled = SubResource( 3 )
+CheckButton/styles/focus = SubResource( 4 )
+CheckButton/styles/hover = SubResource( 5 )
+CheckButton/styles/hover_pressed = SubResource( 6 )
+CheckButton/styles/normal = SubResource( 7 )
+CheckButton/styles/pressed = SubResource( 8 )
 Label/colors/font_color = Color( 1, 1, 1, 1 )
 OptionButton/colors/font_color = Color( 1, 1, 1, 1 )
 TabContainer/colors/font_color_fg = Color( 1, 1, 1, 1 )

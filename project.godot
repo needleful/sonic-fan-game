@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Object",
+"class": "AudioChannel",
+"language": "GDScript",
+"path": "res://scripts/options/audio_channel.gd"
+}, {
+"base": "Object",
 "class": "AudioOptions",
 "language": "GDScript",
 "path": "res://scripts/options/audio.gd"
@@ -65,6 +70,7 @@ _global_script_classes=[ {
 "path": "res://scripts/control/sonic.gd"
 } ]
 _global_script_class_icons={
+"AudioChannel": "",
 "AudioOptions": "",
 "AutoRoad": "",
 "BadnikGround": "",
