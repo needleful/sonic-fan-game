@@ -5,7 +5,7 @@ export (NodePath) var scene_root
 export (String, FILE, "*.tscn") var next_scene
 
 func _ready():
-	connect("body_entered", self, "on_body_entered")
+	var _x = connect("body_entered", self, "on_body_entered")
 
 func on_body_entered(x:Spatial):
 	if x is Sonic:

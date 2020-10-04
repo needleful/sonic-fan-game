@@ -66,7 +66,7 @@ func replace_scene(old_scene:Node, new_scene_file:String, p_player:Sonic, transf
 	player = p_player
 	target_transform = transform
 	load_thread = Thread.new()
-	load_thread.start(self, "load_scene", {"old_scene":old_scene, "new_scene":new_scene_file})
+	var _x = load_thread.start(self, "load_scene", {"old_scene":old_scene, "new_scene":new_scene_file})
 
 func finish_load(old_scene:Node, new_scene:Node):
 	assert(old_scene)
@@ -80,10 +80,12 @@ func finish_load(old_scene:Node, new_scene:Node):
 		var new_target: Spatial = new_scene.get_node("player_spawn")
 		var relPos = target_transform.xform_inv(oldPos)
 		var absPos = new_target.global_transform.xform(relPos)
-		
 		print(oldPos, "->", relPos, "->", absPos)
-		player.global_transform.origin = absPos
 		for s in get_tree().get_nodes_in_group("player"):
+			player.time_limit = s.time_limit
+			player.rings = s.rings
+			player.score = s.score
 			s.free()
 		$"/root".add_child(player)
+		player.global_transform.origin = absPos
 		player.fix_camera()

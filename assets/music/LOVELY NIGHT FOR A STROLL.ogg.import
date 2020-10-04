@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/LOVELY NIGHT FOR A STROLL.ogg-affc26ff008642828713bae771e8f576.oggstr"
+
+[deps]
+
+source_file="res://assets/music/LOVELY NIGHT FOR A STROLL.ogg"
+dest_files=[ "res://.import/LOVELY NIGHT FOR A STROLL.ogg-affc26ff008642828713bae771e8f576.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=19.2

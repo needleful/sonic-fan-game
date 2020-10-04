@@ -412,23 +412,14 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 38.5303, 0.85199, -51.9981 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 77.6366, 0, 0 )
 curve = SubResource( 7 )
 script = ExtResource( 4 )
-stay_vertical = true
-angle_tolerance = 4.0
 template_mesh = ExtResource( 5 )
-material = null
-uv_scale = 5.0
 template_transform = Transform( 0.5, 0, 0, 0, 0.75, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Tunnel" type="Path" parent="Environment"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -43.3421, 2.72004, 137.018 )
 curve = SubResource( 8 )
 script = ExtResource( 4 )
-stay_vertical = true
-angle_tolerance = 4.0
 template_mesh = ExtResource( 2 )
-material = null
-uv_scale = 5.0
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Path" type="Path" parent="Environment"]
 curve = SubResource( 9 )
