@@ -1,9 +1,9 @@
 extends Object
 class_name AudioOptions
 
-var master_audio: AudioChannel = AudioChannel.new("Master") setget set_master
-var sound_effects: AudioChannel = AudioChannel.new("SFX_Sonic") setget set_sfx
-var music: AudioChannel = AudioChannel.new("Music") setget set_music
+export(Resource) var master_audio = AudioChannel.new("Master") setget set_master
+export(Resource) var sound_effects = AudioChannel.new("SFX_Sonic") setget set_sfx
+export(Resource) var music = AudioChannel.new("Music") setget set_music
 
 var volume_widget = preload("res://addons/fast_options/widgets/volume_widget.tscn")
 
@@ -17,11 +17,11 @@ func get_custom_widgets() -> Dictionary:
 		"music":volume_widget
 	}
 
-func set_master(c):
+func set_master(c: AudioChannel):
 	master_audio.apply(c)
 
-func set_sfx(c):
+func set_sfx(c: AudioChannel):
 	sound_effects.apply(c)
 
-func set_music(c):
+func set_music(c: AudioChannel):
 	music.apply(c)

@@ -9,10 +9,10 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Object",
+"base": "Resource",
 "class": "AudioChannel",
 "language": "GDScript",
-"path": "res://scripts/options/audio_channel.gd"
+"path": "res://addons/fast_options/scripts/audio_channel.gd"
 }, {
 "base": "Object",
 "class": "AudioOptions",
