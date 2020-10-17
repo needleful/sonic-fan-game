@@ -180,8 +180,12 @@ func _process(delta):
 	)
 	anim["parameters/Ground/Walk/1/blend_position"] = lean
 	
-	var old_steer = anim["parameters/Ground/Walk/2/blend_position"]
-	anim["parameters/Ground/Walk/2/blend_position"] = lerp(old_steer, local_steer/(PI/3), 0.05)
+	var old_blend: Vector2 = anim["parameters/Ground/Walk/2/blend_position"]
+	var new_blend: Vector2 = Vector2(
+		local_steer/(PI/3),
+		clamp(speed - 9, 0, 1)
+	)
+	anim["parameters/Ground/Walk/2/blend_position"] = lerp(old_blend, new_blend, 0.1)
 
 	$debugUI/status/State.text = State.keys()[state]
 
