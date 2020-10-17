@@ -145,7 +145,6 @@ angle_tolerance = 2.0
 template_mesh = ExtResource( 4 )
 material = SubResource( 3 )
 uv_scale = 25.0
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="CSGCylinder" type="CSGCylinder" parent="env"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -35.5759, 104.185, 213.013 )
@@ -227,10 +226,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2384.28, 190.375, 648.247 )
 curve = SubResource( 9 )
 script = ExtResource( 2 )
 stay_vertical = false
-angle_tolerance = 4.0
 template_mesh = ExtResource( 4 )
-material = null
-uv_scale = 5.0
 template_transform = Transform( 0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0 )
 
 [node name="AutoRoad2" type="Path" parent="env"]
@@ -242,7 +238,6 @@ angle_tolerance = 2.0
 template_mesh = ExtResource( 4 )
 material = ExtResource( 6 )
 uv_scale = 25.0
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Checkpoint" type="Area" parent="env/AutoRoad2"]
 transform = Transform( -0.384811, 0, -0.922995, 0, 1, 0, 0.922995, 0, -0.384811, -75.1266, 7.27742, -41.459 )
@@ -358,9 +353,6 @@ script = ExtResource( 2 )
 stay_vertical = false
 angle_tolerance = 2.0
 template_mesh = ExtResource( 4 )
-material = null
-uv_scale = 5.0
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="Checkpoint" type="Area" parent="env/AutoRoad2/AutoRoad"]
 transform = Transform( 0.173648, 0, -0.984808, 0, 1, 0, 0.984807, 0, 0.173648, -685.104, 5.8555, 563.375 )
@@ -389,21 +381,14 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1634.38, 92.905, 596.857 )
 curve = SubResource( 17 )
 script = ExtResource( 2 )
 stay_vertical = false
-angle_tolerance = 4.0
 template_mesh = ExtResource( 11 )
-material = null
-uv_scale = 5.0
-template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="AutoRoad" type="Path" parent="env/AutoRoad2/Pipe2"]
 transform = Transform( 0.808504, 0, -0.588491, 0, 1, 0, 0.588491, 0, 0.808504, 22.3136, -61.2925, 127.248 )
 curve = SubResource( 18 )
 script = ExtResource( 2 )
 stay_vertical = false
-angle_tolerance = 4.0
 template_mesh = ExtResource( 4 )
-material = null
-uv_scale = 5.0
 template_transform = Transform( -1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0 )
 
 [node name="MeshInstance" type="MeshInstance" parent="env/AutoRoad2/Pipe2/AutoRoad"]
@@ -428,9 +413,6 @@ shape = SubResource( 20 )
 
 [node name="Exit" parent="." instance=ExtResource( 13 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -3124.22, -11.9516, 1293.13 )
-angle_tolerance = 4.0
-material = null
-uv_scale = 5.0
 
 [node name="LoadZone" type="Area" parent="Exit"]
 script = ExtResource( 14 )

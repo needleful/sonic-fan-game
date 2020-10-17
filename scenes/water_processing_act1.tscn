@@ -1,0 +1,174 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
+[ext_resource path="res://assets/models-export/env/canals/Circle.mesh" type="ArrayMesh" id=2]
+[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=3]
+
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 0.259247, -6.09117, -0.475189, 0.389809, -15.3411, 0.0722961, -0.389809, 15.3411, -0.0722961, -1.90067, 248.31, -2.93323, 0, 0, 0, 0, 0, 0, 20.6389, 263.009, -7.30634 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=2]
+_data = {
+"points": PoolVector3Array( 0.177597, -6.2599, 0.24929, -0.177597, 6.2599, -0.24929, 0.132965, -0.0775819, 0.454483, 0.190208, -0.156134, 4.9455, -0.190208, 0.156134, -4.9455, -0.133682, 4.68211, -6.87281, 0.118591, -0.56618, 5.7229, -0.118591, 0.56618, -5.7229, 0.97879, 3.54353, -464.548, 0, 0, 0, 0, 0, 0, 1.0668, -1.06649, -468.375 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+
+[node name="water_processing" type="Spatial"]
+
+[node name="CSGBox" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40, 0 )
+use_collision = true
+invert_faces = true
+width = 200.0
+height = 90.0
+depth = 700.0
+
+[node name="Upward" type="CSGCylinder" parent="CSGBox"]
+transform = Transform( -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, -2.18557e-07, -5, -350.134 )
+invert_faces = true
+radius = 40.0
+height = 170.0
+sides = 32
+
+[node name="CSGBox" type="CSGBox" parent="CSGBox/Upward"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -169.621, -6.25278e-12, 0 )
+invert_faces = true
+width = 339.217
+height = 170.0
+depth = 80.0
+
+[node name="CSGBox4" type="CSGBox" parent="CSGBox/Upward"]
+transform = Transform( -4.37114e-08, -4.37114e-08, -1, -4.37114e-08, 1, -4.37114e-08, 1, 4.37114e-08, -4.37114e-08, -209.019, -1.72213e-06, -187.536 )
+invert_faces = true
+width = 339.217
+height = 156.0
+depth = 68.4
+
+[node name="CSGBox2" type="CSGBox" parent="CSGBox/Upward"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -154.577, -53.0073, 43.3257 )
+invert_faces = true
+width = 24.4221
+height = 60.6956
+depth = 18.6688
+
+[node name="CSGBox3" type="CSGBox" parent="CSGBox/Upward"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -190.215, -53.0073, 43.3257 )
+invert_faces = true
+width = 24.4221
+height = 60.6956
+depth = 18.6688
+
+[node name="basins" type="CSGCylinder" parent="CSGBox"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -52.6746, 0 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGCylinder2" type="CSGCylinder" parent="CSGBox/basins"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 93.8217 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGCylinder3" type="CSGCylinder" parent="CSGBox/basins"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 189.296 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGCylinder4" type="CSGCylinder" parent="CSGBox/basins"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 288.938 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGCylinder5" type="CSGCylinder" parent="CSGBox/basins"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -94.0488 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGCylinder6" type="CSGCylinder" parent="CSGBox/basins"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -188.226 )
+invert_faces = true
+radius = 40.0
+height = 27.1831
+sides = 24
+
+[node name="CSGBox" type="CSGBox" parent="CSGBox"]
+transform = Transform( 0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 100, 0, 0 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="CSGBox2" type="CSGBox" parent="CSGBox"]
+transform = Transform( 0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 98.6792, 0, -100 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="CSGBox3" type="CSGBox" parent="CSGBox"]
+transform = Transform( 0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 100, 0, -200 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="CSGBox4" type="CSGBox" parent="CSGBox"]
+transform = Transform( -0.707107, 8.74228e-08, -0.707107, -6.18173e-08, -1, -6.18173e-08, -0.707107, 0, 0.707107, -101.681, 0, 0 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="CSGBox5" type="CSGBox" parent="CSGBox"]
+transform = Transform( -0.707107, 8.74228e-08, -0.707107, -6.18173e-08, -1, -6.18173e-08, -0.707107, 0, 0.707107, -100.36, 0, -100 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="CSGBox6" type="CSGBox" parent="CSGBox"]
+transform = Transform( -0.707107, 8.74228e-08, -0.707107, -6.18173e-08, -1, -6.18173e-08, -0.707107, 0, 0.707107, -101.681, 0, -200 )
+operation = 2
+invert_faces = true
+width = 99.8405
+height = 92.5105
+depth = 40.0
+
+[node name="AutoRoad" type="Path" parent="CSGBox"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 73.5872, -38.852, -353.621 )
+curve = SubResource( 1 )
+script = ExtResource( 3 )
+stay_vertical = false
+template_mesh = ExtResource( 2 )
+
+[node name="AutoRoad2" type="Path" parent="CSGBox"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 79.4642, -45.0745, 125.241 )
+curve = SubResource( 2 )
+script = ExtResource( 3 )
+stay_vertical = false
+template_mesh = ExtResource( 2 )
+
+[node name="sonic" parent="." instance=ExtResource( 1 )]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, -0.751423, -25.8719, 318.425 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.686143, -0.724708, -0.0632965, -0.155697, -0.231289, 0.960346, -0.71061, -0.649079, -0.271532, 0, 0, 0 )
+light_energy = 0.56
+shadow_enabled = true
