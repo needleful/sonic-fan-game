@@ -57,7 +57,7 @@ const VEL_DIFF_FULL_FRICTION = 4
 const REORIENT_AIR = 1.5
 
 const FLOOR_SNAP_FORCE = 0
-const FLOOR_SNAP_LENGTH = 0.6
+const FLOOR_SNAP_LENGTH = 0.25
 const MIN_FLOOR_ANGLE = 0.02
 
 var state = State.Ground
@@ -457,12 +457,6 @@ func process_ground(delta, accel_move, accel_start):
 		reorient(target_up, 25, 50, delta)
 	else:
 		reorient(target_up, 40, 60, delta)
-		# Snap to floor
-		var dstate = get_world().direct_space_state
-		var pos = global_transform.origin
-		var res = dstate.intersect_ray(pos, pos-up*FLOOR_SNAP_LENGTH, [self])
-		if "position" in res:
-			var _x = move_and_collide(res["position"] - pos)
 
 func process_jump(delta):
 	var movement: Vector3 = get_movement()*ACCEL_JUMPING
