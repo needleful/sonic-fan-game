@@ -1,5 +1,4 @@
 extends KinematicBody
-
 class_name Sonic
 
 export(float) var kill_plane = -300
@@ -173,8 +172,8 @@ func _process(delta):
 	
 	var left = mesh.global_transform.basis.x
 	var forward = mesh.global_transform.basis.z
-	var frontAngle = true_up.dot(forward)*2
-	var sideAngle = true_up.dot(left)*2
+	var frontAngle = true_up.dot(forward)*1.5
+	var sideAngle = true_up.dot(left)*1.5
 	var lean:Vector2 = Vector2(
 		clamp(sideAngle, -1, 1),
 		clamp(frontAngle, -1, 1)
@@ -459,7 +458,7 @@ func process_ground(delta, accel_move, accel_start):
 	else:
 		if is_on_floor():
 			var n = get_floor_normal()
-			if n.dot(target_up) > 0.8:
+			if n.dot(target_up) > 0.5:
 				target_up = n
 			else:
 				target_up = lerp(target_up, n, 0.5)
