@@ -63,6 +63,11 @@ _global_script_classes=[ {
 "class": "RespawnManager",
 "language": "GDScript",
 "path": "res://scripts/global/respawn.gd"
+}, {
+"base": "KinematicBody",
+"class": "Sonic",
+"language": "GDScript",
+"path": "res://scripts/control/sonic.gd"
 } ]
 _global_script_class_icons={
 "AudioChannel": "",
@@ -75,7 +80,8 @@ _global_script_class_icons={
 "LoadZone": "",
 "MoveMath": "",
 "PathedPlatform": "",
-"RespawnManager": ""
+"RespawnManager": "",
+"Sonic": ""
 }
 
 [application]
