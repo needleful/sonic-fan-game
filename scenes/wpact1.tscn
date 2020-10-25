@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://assets/models-export/env/canals/act1_main_level.glb" type="PackedScene" id=1]
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/models-export/env/canals/basin1.glb" type="PackedScene" id=3]
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=4]
 [ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=5]
+[ext_resource path="res://assets/models-export/env/canals/Circle.mesh" type="ArrayMesh" id=6]
 
 [sub_resource type="Curve3D" id=1]
 _data = {
@@ -12,10 +13,31 @@ _data = {
 "tilts": PoolRealArray( 0, 0, 0, 0, 0 )
 }
 
+[sub_resource type="Curve3D" id=2]
+_data = {
+"points": PoolVector3Array( 0.205299, 0.242416, -2.31497, -0.205299, -0.242416, 2.31497, -1.35088, -0.329834, -1.79672, -3.91224, 0.110046, 0.0936584, 3.91224, -0.110046, -0.0936584, 2.73224, -0.0860748, 3.74786, 0, 0, 0, 0, 0, 0, 38.8034, 5.27222, 1.79523, -0.816963, -0.361847, -1.24222, 0, 0, 0, 56.747, 14.9586, 3.04041, 0.759029, -1.12617, 7.52573, -0.759029, 1.12617, -7.52573, 59.0925, 18.7476, -2.40433 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=3]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -8.64493, -0.940437, -302.264, 0, 0, 0, 0, 0, 0, -23.04, -2.94054, 350.397, 1.60446, -7.01196, -0.71524, -1.60446, 7.01196, 0.71524, -24.2961, 4.23484, 351.438, 3.83923, -1.14133, -0.308044, -3.83923, 1.14133, 0.308044, -37.9296, 4.23051, 352.1, 0, 0, 0, 0, 0, 0, -68.5408, 6.45806, 351.952 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0 )
+}
+
 [node name="wpact1" type="Spatial"]
 
 [node name="sonic" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 10.769, -18.8837, -230.795 )
+kill_plane = -60.0
+
+[node name="bigTube" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -70.0079, 297.687, 371.918 )
+curve = SubResource( 1 )
+script = ExtResource( 4 )
+stay_vertical = false
+template_mesh = ExtResource( 5 )
+template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 2, 0, 0, 0 )
 
 [node name="act1_main_level" parent="." instance=ExtResource( 1 )]
 
@@ -33,10 +55,16 @@ transform = Transform( 0.565528, 0, 0.824729, 0, 1, 0, -0.824729, 0, 0.565528, 0
 [node name="basin5" parent="act1_main_level" instance=ExtResource( 3 )]
 transform = Transform( -0.517191, 0, 0.85587, 0, 1, 0, -0.85587, 0, -0.517191, 0, 0, 200 )
 
-[node name="AutoRoad" type="Path" parent="act1_main_level"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -70.0079, 297.687, 371.918 )
-curve = SubResource( 1 )
+[node name="tubes_ascend1" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -37.8494, 135.163, 350.887 )
+curve = SubResource( 2 )
 script = ExtResource( 4 )
 stay_vertical = false
-template_mesh = ExtResource( 5 )
-template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 2, 0, 0, 0 )
+template_mesh = ExtResource( 6 )
+
+[node name="pipes1" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 116.766, 0 )
+curve = SubResource( 3 )
+script = ExtResource( 4 )
+stay_vertical = false
+template_mesh = ExtResource( 6 )
