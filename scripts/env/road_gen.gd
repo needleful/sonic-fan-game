@@ -215,7 +215,7 @@ func regenerate():
 		f = (end2-beforeEnd).normalized()
 		l = up.cross(f).normalized()
 		voffset = verts.size()
-		point_b = Transform(Basis(-l, up, -f), end2)
+		point_b = Transform(Basis(l, up, f), end2)
 		for v_index in range(data.get_vertex_count()):
 			var v = template_transform.xform(data.get_vertex(v_index))
 			verts.push_back(point_b.xform(v))
@@ -230,7 +230,7 @@ func regenerate():
 			var vp2 = data.get_vertex(v2)
 			
 			var n = (vp1 - vp0).cross(vp2 - vp0)
-			if n.z < 0:
+			if n.z > 0:
 				var t = v1
 				v1 = v2
 				v2 = t
