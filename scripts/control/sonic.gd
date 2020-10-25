@@ -74,6 +74,7 @@ var last_wall_jump:Vector3 = Vector3.ZERO
 
 const TIME_JUMP = 0.1
 const TIME_REORIENT = 0
+const TIME_WALLJUMP_SLIP = 0.75
 var timer_air = 0
 
 const TIME_WALL_RUN = 0.06
@@ -264,6 +265,7 @@ func _physics_process(delta):
 				recover = true
 				new_state = State.WallRun
 			if ( Input.is_action_just_pressed("mv_jump") 
+				and timer_air < TIME_WALLJUMP_SLIP
 				and last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
 			):
 				last_wall_jump = target_up
@@ -535,9 +537,9 @@ func set_state(new_state):
 	print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
-	timer_air = 0
 	match new_state:
 		State.Ground:
+			timer_air = 0
 			$Ball.visible = false
 			statePlayback.travel("Ground")
 			recover = true
@@ -554,6 +556,7 @@ func set_state(new_state):
 				velocity += up*VEL_JUMP
 			sneaking = false
 		State.WallRun:
+			timer_air = 0
 			if target_up == Vector3.ZERO:
 				var nw = find_good_wall()
 				if nw == Vector3.ZERO:
