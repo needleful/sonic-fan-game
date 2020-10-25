@@ -500,19 +500,17 @@ func reorient(new_up:Vector3, rotate_speed: float, min_rotate_speed:float, delta
 
 func reorient_air(desiredUp:Vector3, delta:float):
 	var interp = min(delta, 1)
-	
-	var forward = camYaw.global_transform.basis.z
-	var df = Vector3(forward.x, 0, forward.z).normalized()
-	
+
 	# Pitch upright
-	var angle = forward.angle_to(df)
+	var angle = up.angle_to(desiredUp)
 	if abs(angle) > MIN_FLOOR_ANGLE:
 		angle *= interp
-	var pitchAxis = forward.cross(df).normalized()
+	var pitchAxis = up.cross(desiredUp).normalized()
 	if pitchAxis.is_normalized():
 		rotate_up(pitchAxis, angle)
 
 	# Roll upright
+	var forward = camYaw.global_transform.basis.z
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
 	var upCurrent = MoveMath.reject(up, forward).normalized()
 	angle = upCurrent.angle_to(upTarget)
@@ -539,7 +537,7 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 func set_state(new_state):
 	if state == new_state:
 		return
-	#print(State.keys()[state], "->", State.keys()[new_state])
+	print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
 	match new_state:
