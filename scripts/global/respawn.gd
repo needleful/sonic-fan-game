@@ -7,6 +7,7 @@ var respawn_priority: int
 var load_thread: Thread
 var target_transform:Transform
 var player: Sonic
+var old_scene: WeakRef
 
 func reset_level():
 	var _x = get_tree().reload_current_scene()
@@ -33,10 +34,16 @@ func set_spawn(c: Checkpoint):
 		respawn_priority = c.respawn_priority
 		respawn_point = c.get_path()
 
-func load_scene(d:Dictionary):
-	var path = d["new_scene"]
-	var old_scene = d["old_scene"]
-	assert(old_scene)
+func replace_scene(p_old_scene:Node, new_scene_file:String, p_player:Sonic, transform:Transform):
+	old_scene = weakref(p_old_scene)
+	assert(old_scene.get_ref())
+	player = p_player
+	target_transform = transform
+	load_thread = Thread.new()
+	var _x = load_thread.start(self, "load_scene", new_scene_file)
+
+func load_scene(path):
+	assert(old_scene.get_ref())
 	var iloader = ResourceLoader.load_interactive(path)
 	assert(iloader)
 	var result = null
@@ -58,23 +65,19 @@ func load_scene(d:Dictionary):
 	if node == null:
 		print("Failed to instantiate loaded file")
 		return
-	assert(old_scene)
-	call_deferred("finish_load", old_scene, node)
+	assert(old_scene.get_ref())
+	call_deferred("finish_load", node)
 
-func replace_scene(old_scene:Node, new_scene_file:String, p_player:Sonic, transform:Transform):
-	assert(old_scene)
-	player = p_player
-	target_transform = transform
-	load_thread = Thread.new()
-	var _x = load_thread.start(self, "load_scene", {"old_scene":old_scene, "new_scene":new_scene_file})
-
-func finish_load(old_scene:Node, new_scene:Node):
-	assert(old_scene)
+func finish_load(new_scene:Node):
 	load_thread.wait_to_finish()
 	set_process(false)
 	var oldPos = player.global_transform.origin
 	player.get_parent().remove_child(player)
-	old_scene.queue_free()
+	if old_scene.get_ref():
+		old_scene.get_ref().queue_free()
+	else:
+		print_debug("Warning! Bad reference to old_scene")
+	old_scene = null
 	$"/root".add_child(new_scene)
 	if new_scene.has_node("player_spawn"):
 		var new_target: Spatial = new_scene.get_node("player_spawn")
