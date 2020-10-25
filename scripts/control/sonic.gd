@@ -216,7 +216,7 @@ func _physics_process(delta):
 							new_state = State.WallRun
 			else:
 				timer_coyote = 0
-				if up.dot(true_up) < WALL_DOT:
+				if target_up.dot(true_up) < WALL_DOT:
 					new_state = State.WallRun
 		State.Jumping:
 			timer_air += delta
@@ -230,7 +230,9 @@ func _physics_process(delta):
 				n = find_good_wall()
 			if n.dot(true_up) >= WALL_DOT:
 				new_state = State.Ground
-			elif n != Vector3.ZERO:
+			elif (n != Vector3.ZERO
+				and velocity.length_squared() >= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN
+			):
 				set_wall(n)
 				if recover:
 					new_state = State.WallRun
@@ -449,15 +451,18 @@ func process_ground(delta, accel_move, accel_start):
 	velocity = move_and_slide(velocity, target_up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
 	
-	if is_on_floor():
-		target_up = get_floor_normal()
-
 	if state == State.WallRun:
 		var new_wall = find_good_wall()
 		if new_wall != Vector3.ZERO:
 			set_wall(new_wall)
 		reorient(target_up, 25, 50, delta)
 	else:
+		if is_on_floor():
+			var n = get_floor_normal()
+			if n.dot(target_up) > 0.8:
+				target_up = n
+			else:
+				target_up = lerp(target_up, n, 0.5)
 		reorient(target_up, 40, 60, delta)
 
 func process_jump(delta):
@@ -534,7 +539,7 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 func set_state(new_state):
 	if state == new_state:
 		return
-	print(State.keys()[state], "->", State.keys()[new_state])
+	#print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
 	match new_state:
