@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://assets/models-export/env/canals/act1_main_level.glb" type="PackedScene" id=1]
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=4]
 [ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=5]
 [ext_resource path="res://assets/models-export/env/canals/Circle.mesh" type="ArrayMesh" id=6]
+[ext_resource path="res://scripts/entities/checkpoint.gd" type="Script" id=7]
 
 [sub_resource type="Curve3D" id=1]
 _data = {
@@ -27,9 +28,12 @@ _data = {
 
 [sub_resource type="Curve3D" id=4]
 _data = {
-"points": PoolVector3Array( 0, -4.1, -73.8, 0, 4.1, 73.8, -0.207516, 0.228119, -0.308899, -14.207, -9.62207, -12.1559, 14.207, 9.62207, 12.1559, 40.1153, 16.424, 110.729, 0, 0, 55.8832, 0, 0, -55.8832, 31.6615, 90.2577, 154.472 ),
+"points": PoolVector3Array( 0, -4.1, -73.8, 0, 4.1, 73.8, -0.207516, 0.228119, -0.308899, -14.207, -9.62207, -12.1559, 14.207, 9.62207, 12.1559, 40.1153, 16.424, 110.729, 0, 0, 55.8832, 0, 0, -55.8832, 31.5379, 89.9243, 153.387 ),
 "tilts": PoolRealArray( 0, 0, 0 )
 }
+
+[sub_resource type="SphereShape" id=5]
+radius = 10.4894
 
 [node name="wpact1" type="Spatial"]
 
@@ -82,3 +86,71 @@ script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 5 )
 template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Checkpoint" type="Area" parent="pipe_exit"]
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 30.1966, 69.3809, 151.288 )
+script = ExtResource( 7 )
+
+[node name="CollisionShape" type="CollisionShape" parent="pipe_exit/Checkpoint"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25949, 19.5012, -2.96802 )
+shape = SubResource( 5 )
+
+[node name="part2-rough" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30.197, 661.486, 793.334 )
+use_collision = true
+width = 245.0
+height = 210.0
+depth = 335.0
+
+[node name="CSGBox" type="CSGBox" parent="part2-rough"]
+operation = 2
+width = 240.0
+height = 205.0
+depth = 330.0
+
+[node name="CSGCylinder" type="CSGCylinder" parent="part2-rough/CSGBox"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.19381, -81.1017, 165.764 )
+radius = 7.85825
+height = 4.59969
+
+[node name="CSGBox" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, -100, 0, 115 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
+
+[node name="CSGBox2" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, -99.9162, 0, 16.2482 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
+
+[node name="CSGBox3" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0, 0, 1, -99.9162, 0, -91.1733 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
+
+[node name="CSGBox4" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( -0.939693, -0.34202, -8.74228e-08, -0.34202, 0.939693, 0, 8.21505e-08, 2.99003e-08, -1, 106.884, 0, -91.1732 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
+
+[node name="CSGBox5" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( -0.939693, -0.34202, -8.74228e-08, -0.34202, 0.939693, 0, 8.21505e-08, 2.99003e-08, -1, 106.8, 0, 7.57855 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
+
+[node name="CSGBox6" type="CSGBox" parent="part2-rough/CSGBox"]
+transform = Transform( -0.939693, -0.34202, -8.74228e-08, -0.34202, 0.939693, 0, 8.21505e-08, 2.99003e-08, -1, 106.8, 0, 115 )
+operation = 2
+width = 65.0
+height = 250.0
+depth = 65.0
