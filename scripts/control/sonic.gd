@@ -24,7 +24,7 @@ const VEL_JUMP = 10
 const ACCEL_START = 60
 const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 3.5
-const ACCEL_JUMPING = 80
+const ACCEL_JUMPING = 30
 const ACCEL_AIR = 10
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
@@ -87,8 +87,8 @@ const CAM_REORIENT_MAX = 15
 const CAM_ROLL_TOLERANCE = 0.5
 const CAM_PITCH_TOLERANCE = 1
 
-const CAMERA_VELOCITY_YAW = 0
-const CAM_ROTATE_FOLLOW = 0.3
+const CAMERA_VELOCITY_YAW = 0.5
+const CAM_ROTATE_FOLLOW = 1
 const CAM_MAX_ROTATE_FOLLOW = PI
 
 const TIME_COYOTE = 0.25
@@ -212,11 +212,21 @@ func _physics_process(delta):
 					else:
 						set_wall(new_wall)
 						if target_up.dot(true_up) <= WALL_DOT:
-							new_state = State.WallRun
+							if velocity.length_squared() >= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
+								new_state = State.WallRun
+							else:
+								new_state = State.Slip
 			else:
-				timer_coyote = 0
 				if target_up.dot(true_up) < WALL_DOT:
-					new_state = State.WallRun
+					if velocity.length_squared() >= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
+						timer_coyote = 0
+						new_state = State.WallRun
+					else:
+						timer_coyote += delta
+						if timer_coyote >= TIME_COYOTE:
+							new_state = State.Slip
+				else:
+					timer_coyote = 0
 		State.Jumping:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
@@ -252,7 +262,7 @@ func _physics_process(delta):
 					var new_wall = find_good_wall(0)
 					if new_wall != Vector3.ZERO:
 						set_wall(new_wall)
-					elif $WallRunArea.get_overlapping_bodies().size() == 0:
+					elif $Armature/WallRunArea.get_overlapping_bodies().size() == 0:
 						new_state = State.Air
 			else:
 				var vp = MoveMath.reject(velocity, target_up)
@@ -277,10 +287,8 @@ func _physics_process(delta):
 					new_state = State.Ground
 			else:
 				var new_wall = find_good_wall()
-				if new_wall.length_squared() == 0:
+				if new_wall == Vector3.ZERO:
 					new_state = State.Air
-				else:
-					set_wall(new_wall)
 	set_state(new_state)
 	match state:
 		State.Ground:
@@ -350,13 +358,13 @@ func _physics_process(delta):
 	var cz = camYaw.global_transform.basis.z
 	if velocity.dot(cz) > 0:
 		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
-		var yaw = cz.angle_to(v2)
-		var yawZxis = cz.cross(v2).normalized()
-		var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
-		var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
-		var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
-		if yawZxis.is_normalized():
-			camYaw.global_rotate(yawZxis, yaw2)
+		var yawZaxis = cz.cross(v2).normalized()
+		if yawZaxis.is_normalized():
+			var yaw = cz.angle_to(v2)
+			var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
+			var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
+			var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
+			camYaw.global_rotate(yawZaxis, yaw2)
 	
 	$debugUI/status/Up.text = "UP: " + MoveMath.pr(up)
 	$debugUI/status/Velocity.text = "VEL: " + MoveMath.pr(velocity)
@@ -525,7 +533,7 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var v = velocity + vel_difference
 	for i in range(0, get_slide_count()):
 		var col: KinematicCollision = get_slide_collision(i)
-		if $WallRunArea.overlaps_body(col.collider):
+		if $Armature/WallRunArea.overlaps_body(col.collider):
 			var n = col.normal
 			var f = v.dot(n)
 			if f <= min_grounded and f < v.dot(new_wall):
