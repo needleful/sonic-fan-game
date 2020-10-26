@@ -11,10 +11,10 @@ size = 48
 font_data = ExtResource( 5 )
 
 [sub_resource type="SphereShape" id=2]
-radius = 0.43
+radius = 0.47
 
 [sub_resource type="SphereShape" id=3]
-radius = 0.47
+radius = 0.43
 
 [sub_resource type="SphereShape" id=4]
 radius = 0.2
@@ -148,7 +148,7 @@ graph_offset = Vector2( -86, -31 )
 [sub_resource type="Animation" id=34]
 length = 1.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("DeathScreen:visible")
+tracks/0/path = NodePath("../sonic/DeathScreen:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -156,25 +156,23 @@ tracks/0/enabled = true
 tracks/0/keys = {
 "times": PoolRealArray( 0, 0.1 ),
 "transitions": PoolRealArray( 1, 1 ),
-"update": 1,
+"update": 0,
 "values": [ false, true ]
 }
-tracks/1/type = "method"
-tracks/1/path = NodePath(".")
+tracks/1/type = "value"
+tracks/1/path = NodePath("../sonic/Audio:stream")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 1.5 ),
+"times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
-"values": [ {
-"args": [  ],
-"method": "kill"
-} ]
+"update": 0,
+"values": [ ExtResource( 3 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("Audio:playing")
+tracks/2/path = NodePath("../sonic/Audio:playing")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -182,20 +180,22 @@ tracks/2/enabled = true
 tracks/2/keys = {
 "times": PoolRealArray( 0.05 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
+"update": 0,
 "values": [ true ]
 }
-tracks/3/type = "value"
-tracks/3/path = NodePath("Audio:stream")
+tracks/3/type = "method"
+tracks/3/path = NodePath(".")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
 tracks/3/enabled = true
 tracks/3/keys = {
-"times": PoolRealArray( 0 ),
+"times": PoolRealArray( 1.5 ),
 "transitions": PoolRealArray( 1 ),
-"update": 1,
-"values": [ ExtResource( 3 ) ]
+"values": [ {
+"args": [  ],
+"method": "kill"
+} ]
 }
 
 [node name="sonic" groups=[
@@ -353,18 +353,18 @@ visible = false
 [node name="Sonic" parent="Armature/Skeleton" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.43, 0 )
 
-[node name="CollisionShape" type="CollisionShape" parent="." index="6"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
-shape = SubResource( 2 )
-
-[node name="WallRunArea" type="Area" parent="." index="7"]
+[node name="WallRunArea" type="Area" parent="Armature" index="1"]
 collision_layer = 0
 
-[node name="CollisionShape" type="CollisionShape" parent="WallRunArea" index="0"]
+[node name="CollisionShape" type="CollisionShape" parent="Armature/WallRunArea" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
+shape = SubResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="." index="6"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 3 )
 
-[node name="Cam" type="Spatial" parent="." index="8"]
+[node name="Cam" type="Spatial" parent="." index="7"]
 
 [node name="Yaw" type="Spatial" parent="Cam" index="0"]
 
@@ -398,12 +398,12 @@ visible = false
 mesh = SubResource( 6 )
 material/0 = SubResource( 7 )
 
-[node name="Ball" type="MeshInstance" parent="." index="9"]
+[node name="Ball" type="MeshInstance" parent="." index="8"]
 visible = false
 mesh = SubResource( 8 )
 material/0 = SubResource( 9 )
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="10"]
+[node name="AnimationTree" type="AnimationTree" parent="." index="9"]
 tree_root = SubResource( 32 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
@@ -413,9 +413,9 @@ parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
 
-[node name="CustomAnimation" type="AnimationPlayer" parent="." index="11"]
+[node name="CustomAnimation" type="AnimationPlayer" parent="." index="10"]
 anims/Die = SubResource( 34 )
 
-[node name="Audio" type="AudioStreamPlayer" parent="." index="12"]
+[node name="Audio" type="AudioStreamPlayer" parent="." index="11"]
 stream = ExtResource( 3 )
 bus = "SFX_Sonic"
