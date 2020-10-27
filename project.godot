@@ -87,7 +87,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Finding Amy Rose"
-run/main_scene="res://scenes/canals_act1.tscn"
+run/main_scene="res://scenes/wpact1.tscn"
 config/icon="res://icon.png"
 
 [autoload]

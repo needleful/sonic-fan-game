@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=2]
+[gd_scene load_steps=45 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -120,32 +120,48 @@ node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
 [sub_resource type="AnimationNodeAnimation" id=26]
 animation = "Ball-loop"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=27]
+[sub_resource type="AnimationNodeAnimation" id=27]
+animation = "Stop-loop"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=28]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=29]
-xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=30]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=31]
 xfade_time = 0.2
 
-[sub_resource type="AnimationNodeStateMachine" id=32]
+[sub_resource type="AnimationNodeStateMachineTransition" id=31]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=32]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=33]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=34]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=35]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=36]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachine" id=37]
 states/Fall/node = SubResource( 10 )
 states/Fall/position = Vector2( 514, 132 )
 states/Ground/node = SubResource( 25 )
 states/Ground/position = Vector2( 391, 49 )
 states/Jump/node = SubResource( 26 )
 states/Jump/position = Vector2( 643, 49 )
-transitions = [ "Ground", "Jump", SubResource( 27 ), "Jump", "Ground", SubResource( 28 ), "Jump", "Fall", SubResource( 29 ), "Fall", "Ground", SubResource( 30 ), "Ground", "Fall", SubResource( 31 ) ]
+states/Stop-loop/node = SubResource( 27 )
+states/Stop-loop/position = Vector2( 514, -44 )
+transitions = [ "Ground", "Jump", SubResource( 28 ), "Jump", "Ground", SubResource( 29 ), "Jump", "Fall", SubResource( 30 ), "Fall", "Ground", SubResource( 31 ), "Ground", "Fall", SubResource( 32 ), "Ground", "Stop-loop", SubResource( 33 ), "Stop-loop", "Ground", SubResource( 34 ), "Stop-loop", "Jump", SubResource( 35 ), "Stop-loop", "Fall", SubResource( 36 ) ]
 start_node = "Ground"
-graph_offset = Vector2( -86, -31 )
+graph_offset = Vector2( -135, -90 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=33]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
-[sub_resource type="Animation" id=34]
+[sub_resource type="Animation" id=39]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("../sonic/DeathScreen:visible")
@@ -404,17 +420,17 @@ mesh = SubResource( 8 )
 material/0 = SubResource( 9 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="9"]
-tree_root = SubResource( 32 )
+tree_root = SubResource( 37 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 33 )
+parameters/playback = SubResource( 38 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="10"]
-anims/Die = SubResource( 34 )
+anims/Die = SubResource( 39 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="11"]
 stream = ExtResource( 3 )

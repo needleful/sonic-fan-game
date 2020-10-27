@@ -12,6 +12,8 @@ enum State {
 	# Very small window after pressing jump
 	# Allows for more precise movement
 	Jumping,
+	# Jump while sliding for more acceleration
+	SlidingJump,
 	# Flying through the air with little control
 	Air,
 	# Landing on a wall
@@ -24,7 +26,9 @@ const VEL_JUMP = 10
 const ACCEL_START = 60
 const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 3.5
+const ACCEL_SLIDE_WALLRUN = 30
 const ACCEL_JUMPING = 30
+const ACCEL_JUMPING_SLIDE = 200
 const ACCEL_AIR = 10
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
@@ -44,7 +48,7 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = -0.05
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const WALL_RUN_MAGNETISM = 5
+const FLOOR_MAGNETISM = 5
 const WALL_RUN_ROLL_SPEED = 1.2
 const WALL_RUN_PITCH_SPEED = 15
 const WALL_DOT = 0.5
@@ -58,6 +62,9 @@ const REORIENT_AIR = 1.5
 const FLOOR_SNAP_FORCE = 0
 const FLOOR_SNAP_LENGTH = 0.25
 const MIN_FLOOR_ANGLE = 0.02
+
+const MIN_ANGLE_SLIDE = 0.3
+const MAX_ANGLE_SLIDE = PI/2
 
 var state = State.Ground
 var velocity: Vector3 = Vector3(0,0,0)
@@ -88,7 +95,7 @@ const CAM_ROLL_TOLERANCE = 0.5
 const CAM_PITCH_TOLERANCE = 1
 
 const CAMERA_VELOCITY_YAW = 0.5
-const CAM_ROTATE_FOLLOW = 1
+const CAM_ROTATE_FOLLOW = 0.75
 const CAM_MAX_ROTATE_FOLLOW = PI
 
 const TIME_COYOTE = 0.25
@@ -202,7 +209,10 @@ func _physics_process(delta):
 	match state:
 		State.Ground:
 			if Input.is_action_just_pressed("mv_jump"):
-				new_state = State.Jumping
+				if statePlayback.get_current_node() == "Stop-loop":
+					new_state = State.SlidingJump
+				else:
+					new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE:
@@ -227,7 +237,7 @@ func _physics_process(delta):
 							new_state = State.Slip
 				else:
 					timer_coyote = 0
-		State.Jumping:
+		State.Jumping, State.SlidingJump:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
 				new_state = State.Air
@@ -255,7 +265,10 @@ func _physics_process(delta):
 					new_state = State.Slip
 				else:
 					last_wall_jump = target_up
-					new_state = State.Jumping
+					if statePlayback.get_current_node() == "Stop-loop":
+						new_state = State.SlidingJump
+					else:
+						new_state = State.Jumping
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE_WALLRUN:
@@ -280,7 +293,10 @@ func _physics_process(delta):
 				and last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
 			):
 				last_wall_jump = target_up
-				new_state = State.Jumping
+				if statePlayback.get_current_node() == "Stop-loop":
+					new_state = State.SlidingJump
+				else:
+					new_state = State.Jumping
 			elif is_on_floor():
 				var n = get_floor_normal()
 				if n.dot(true_up) >= WALL_DOT:
@@ -294,17 +310,18 @@ func _physics_process(delta):
 		State.Ground:
 			process_ground(delta, ACCEL_RUN, ACCEL_START)
 		State.Air:
-			process_air(delta)
-		State.Jumping:
-			process_jump(delta)
+			process_air(ACCEL_AIR, delta)
 		State.WallRun:
 			var friction = clamp(target_up.dot(true_up), 0, 1)
 			var wall_accel = lerp(ACCEL_WALLRUN, ACCEL_RUN, friction)
-			velocity -= target_up*WALL_RUN_MAGNETISM*delta
-			process_ground(delta, wall_accel, wall_accel)
+			var slide_accel = lerp(ACCEL_SLIDE_WALLRUN, ACCEL_START, friction)
+			process_ground(delta, wall_accel, slide_accel)
 		State.Slip:
-			velocity -= target_up*WALL_RUN_MAGNETISM*delta
-			process_air(delta)
+			process_air(ACCEL_AIR, delta)
+		State.Jumping:
+			process_air(ACCEL_JUMPING, delta)
+		State.SlidingJump:
+			process_air(ACCEL_JUMPING_SLIDE, delta)
 
 	var speed = velocity.length()/MAX_SNEAK
 	
@@ -367,7 +384,7 @@ func _physics_process(delta):
 			camYaw.rotate_y(yawZaxis.dot(camYaw.global_transform.basis.y)*yaw2)
 	
 	$debugUI/status/Up.text = "UP: " + MoveMath.pr(up)
-	$debugUI/status/Velocity.text = "VEL: " + MoveMath.pr(velocity)
+	$debugUI/status/Velocity.text = "VEL: " + str(velocity.length())
 	$debugUI/status/Position.text = "ORIG: " + MoveMath.pr(global_transform.origin)
 	$debugUI/status/Extra.text = "T_UP: " + MoveMath.pr(target_up)
 
@@ -425,17 +442,25 @@ func process_ground(delta, accel_move, accel_start):
 		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 	
-	var steer_speed = 180/(velocity.length()*4 + 3)
-	var steer = movement.angle_to(input)
-	var axis = movement.cross(input).normalized()
+	var steer_speed = 180/(max(6, (velocity.length())*4))
+	var floorvel = MoveMath.reject(velocity, up)
+	var steer = floorvel.angle_to(input)
+	var axis = floorvel.cross(input).normalized()
+	if PI - abs(steer) <= MIN_ANGLE_SLIDE and (
+		floorvel.length_squared() >= SPEED_RUN*SPEED_RUN
+	):
+		statePlayback.travel("Stop-loop")
+		steer = movement.angle_to(input)
+		axis = movement.cross(input)
+	elif statePlayback.get_current_node() == "Stop-loop":
+		if (floorvel.length_squared() < SPEED_STOPPED*SPEED_STOPPED or
+			PI - abs(steer) > MAX_ANGLE_SLIDE
+		):
+			statePlayback.travel("Ground")
+		else:
+			steer -= PI
+			steer *= 0.2
 	if steer != 0 and axis.is_normalized():
-		if abs(steer) < PI/2:
-			var vp = velocity.slide(up)
-			var steer2 = vp.angle_to(input)
-			var axis2 = vp.cross(input).normalized()
-			if steer2 != 0 and axis2.is_normalized():
-				steer = steer2
-				axis = axis2
 		var angle = sign(steer)*min(abs(steer), steer_speed*delta)
 		var factor = (1 - (angle*angle)/(4*PI*PI))
 		velocity = velocity.rotated(axis, angle)*factor
@@ -455,6 +480,7 @@ func process_ground(delta, accel_move, accel_start):
 		return
 	if !up.is_normalized():
 		print("up is bad")
+	velocity -= up*delta*FLOOR_MAGNETISM
 	velocity = move_and_slide(velocity, target_up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
 	
@@ -472,17 +498,8 @@ func process_ground(delta, accel_move, accel_start):
 				target_up = lerp(target_up, n, 0.5)
 		reorient(target_up, 40, 60, delta)
 
-func process_jump(delta):
-	var movement: Vector3 = get_movement()*ACCEL_JUMPING
-	var drag = -DRAG_AIR*velocity*velocity*velocity
-	velocity += (movement + gravity + drag) * delta
-	
-	vel_difference = velocity
-	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
-	vel_difference -= velocity
-
-func process_air(delta):
-	var movement = get_movement()*ACCEL_AIR
+func process_air(accel, delta):
+	var movement = get_movement()*accel
 	var drag = -DRAG_AIR*velocity*velocity*velocity
 	velocity += (movement + gravity + drag) * delta
 	vel_difference = velocity
@@ -555,9 +572,9 @@ func set_state(new_state):
 			recover = true
 			last_wall_jump = Vector3.ZERO
 		State.Air:
-			if state != State.Jumping:
+			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
-		State.Jumping:
+		State.Jumping, State.SlidingJump:
 			$Ball.visible = true
 			statePlayback.travel("Jump")
 			if state == State.Slip:
