@@ -58,6 +58,8 @@ const MIN_PITCH_WALLRUN = 3
 const VEL_DIFF_FULL_FRICTION = 4
 
 const REORIENT_AIR = 1.5
+const REORIENT_ROLL = 1.5
+const REORIENT_PITCH = 2
 
 const FLOOR_SNAP_FORCE = 0
 const FLOOR_SNAP_LENGTH = 0.25
@@ -523,27 +525,32 @@ func reorient(new_up:Vector3, rotate_speed: float, min_rotate_speed:float, delta
 		rotate_up(up_axis, rotate)
 
 func reorient_air(desiredUp:Vector3, delta:float):
-	var interp = min(delta, 1)
-
-	# Pitch upright
-	var angle = up.angle_to(desiredUp)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interp
-	var pitchAxis = up.cross(desiredUp).normalized()
-	if pitchAxis.is_normalized():
-		rotate_up(pitchAxis, angle)
+	var interpRoll = min(delta*REORIENT_ROLL, 1)
+	var interpPitch = min(delta*REORIENT_PITCH, 1)
 
 	# Roll upright
 	var forward = camYaw.global_transform.basis.z
 	var upTarget = MoveMath.reject(desiredUp, forward).normalized()
 	var upCurrent = MoveMath.reject(up, forward).normalized()
-	angle = upCurrent.angle_to(upTarget)
-	if abs(angle) > MIN_FLOOR_ANGLE:
-		angle *= interp
+	var rollangle = upCurrent.angle_to(upTarget)
+	var roll = rollangle
+	if abs(rollangle) > MIN_FLOOR_ANGLE:
+		roll *= interpRoll
 	var rollAxis = upCurrent.cross(upTarget).normalized()
-	
 	if rollAxis.is_normalized():
-		rotate_up(rollAxis, angle)
+		upCurrent = up.rotated(rollAxis, rollangle)
+		rotate_up(rollAxis, roll)
+		
+	# Pitch upright
+	var l = camYaw.global_transform.basis.x
+	upTarget = desiredUp
+	var pitchAngle = upCurrent.angle_to(upTarget)
+	if abs(pitchAngle) > MIN_FLOOR_ANGLE:
+		pitchAngle *= interpPitch
+	var pitchAxis = upCurrent.cross(upTarget).normalized()
+	if pitchAxis.is_normalized():
+		rotate_up(pitchAxis, pitchAngle)
+	
 	
 func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	var new_wall = Vector3.ZERO
