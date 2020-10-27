@@ -41,7 +41,7 @@ const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
 
-const MIN_GROUNDED_ON_WALL = -0.1
+const MIN_GROUNDED_ON_WALL = -0.05
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
 const WALL_RUN_MAGNETISM = 5
@@ -364,7 +364,7 @@ func _physics_process(delta):
 			var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
 			var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
 			var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
-			camYaw.global_rotate(yawZaxis, yaw2)
+			camYaw.rotate_y(yawZaxis.dot(camYaw.global_transform.basis.y)*yaw2)
 	
 	$debugUI/status/Up.text = "UP: " + MoveMath.pr(up)
 	$debugUI/status/Velocity.text = "VEL: " + MoveMath.pr(velocity)

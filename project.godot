@@ -186,6 +186,7 @@ cam_right={
 
 [physics]
 
+common/physics_fps=120
 3d/active_soft_world=false
 
 [rendering]
