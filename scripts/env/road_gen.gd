@@ -9,6 +9,7 @@ export(ArrayMesh) var template_mesh : ArrayMesh setget set_template
 export(Material) var material : Material setget set_material
 export(float) var uv_scale: float = 5
 export(Transform) var template_transform : Transform setget set_template_transform
+export(int, LAYERS_3D_PHYSICS) var collision_layer : int = 5
 
 var mesh: MeshInstance = MeshInstance.new()
 var body: StaticBody = StaticBody.new()
@@ -53,6 +54,7 @@ func regenerate():
 		
 	if !has_node("__auto_body_gen"):
 		body.name = "__auto_body_gen"
+		body.collision_layer = collision_layer
 		add_child(body)
 	
 	if body and !body.has_node("__auto_collider_gen"):

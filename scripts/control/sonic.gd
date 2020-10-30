@@ -542,7 +542,6 @@ func reorient_air(desiredUp:Vector3, delta:float):
 		rotate_up(rollAxis, roll)
 		
 	# Pitch upright
-	var l = camYaw.global_transform.basis.x
 	upTarget = desiredUp
 	var pitchAngle = upCurrent.angle_to(upTarget)
 	if abs(pitchAngle) > MIN_FLOOR_ANGLE:
@@ -607,7 +606,10 @@ func set_state(new_state):
 
 func rotate_up(axis: Vector3, angle:float):
 	up = up.rotated(axis, angle)
-	mesh.global_rotate(axis, angle)
+	var mx = mesh.global_transform.basis.x
+	var mz = mx.cross(up).normalized()
+	mx = mx.rotated(axis, angle).normalized()
+	mesh.global_transform = Transform(Basis(mx, up, mz), mesh.global_transform.origin)
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
