@@ -10,38 +10,22 @@ export(Material) var material : Material setget set_material
 export(float) var uv_scale: float = 5
 export(Transform) var template_transform : Transform setget set_template_transform
 export(int, LAYERS_3D_PHYSICS) var collision_layer : int = 5
+export(PackedScene) var object_template: PackedScene setget set_placed_objects
+export(float, 1.0, 500.0) var object_distance = 25 setget set_object_distance
+export(Transform) var object_transform: Transform setget set_object_transform
+export(bool) var object_place_vertically: bool = true setget set_object_vertical
 
 var mesh: MeshInstance = MeshInstance.new()
 var body: StaticBody = StaticBody.new()
 var collider: CollisionShape = CollisionShape.new()
+var objects : Node = Node.new()
+
+const OBJECT_PLACEMENT_TOLERANCE = 0.1
+const OBJECT_MAX_ITERATIONS = 4
 
 func _ready():
 	var _x = connect("curve_changed", self, "regenerate")
 	regenerate()
-
-func set_tolerance(tol):
-	angle_tolerance = tol
-	if Engine.editor_hint:
-		regenerate()
-
-func set_template(t):
-	template_mesh = t
-	if Engine.editor_hint:
-		regenerate()
-
-func set_template_transform(tr):
-	template_transform = tr
-	if Engine.editor_hint:
-		regenerate()
-
-func set_vertical(v):
-	stay_vertical = v
-	if Engine.editor_hint:
-		regenerate()
-
-func set_material(m):
-	material = m
-	mesh.material_override = material
 
 func regenerate():
 	print("Regenerating autoroad...")
@@ -249,9 +233,125 @@ func regenerate():
 	surface.generate_normals()
 	mesh.mesh = surface.commit()
 	collider.shape = mesh.mesh.create_trimesh_shape()
+	
+	var wr = weakref(object_template)
+	if wr.get_ref():
+		place_objects(wr, points)
+
+func place_objects(template:WeakRef, points:PoolVector3Array = PoolVector3Array()):
+	assert(template.get_ref())
+	if !has_node("__auto_objects_gen"):
+		objects.name = "__auto_objects_gen"
+		add_child(objects)
+	else:
+		for c in objects.get_children():
+			c.queue_free()
+	
+	if points.size() == 0:
+		points = curve.get_baked_points()
+	
+	var current_point_distance = 0
+	var objects_placed = 0
+	var current_point = 0
+	while current_point < points.size() - 1:
+		var req_distance = objects_placed*object_distance
+		var start: Vector3 = points[current_point]
+		var end: Vector3 = points[current_point+1]
+		var forward:Vector3 = (end - start).normalized()
+		
+		var d2 = current_point_distance + (end - start).length()
+		if d2 + OBJECT_PLACEMENT_TOLERANCE < req_distance:
+			# need to go more points first
+			current_point_distance = d2
+			current_point += 1
+			continue
+		else:
+			# Binary search to the proper place
+			var d1: float = current_point_distance
+			var p1: Vector3 = start
+			var p2: Vector3 = end
+			var matched = false
+			var iterations = 0
+			while !matched:
+				if abs(d1 - req_distance) <= OBJECT_PLACEMENT_TOLERANCE:
+					start = p1
+					matched = true
+				elif abs(d2 - req_distance) <= OBJECT_PLACEMENT_TOLERANCE:
+					start = p2
+					matched = true
+				else:
+					iterations += 1
+					var dn = (d1 + d2)/2
+					var pn = (p1 + p2)/2
+					if dn > req_distance:
+						d2 = dn
+						p2 = pn
+					else:
+						d1 = dn
+						p1 = pn
+					if iterations > OBJECT_MAX_ITERATIONS:
+						start = pn
+						matched = true
+		var newObject: Spatial = template.get_ref().instance()
+		objects.add_child(newObject)
+		
+		var up: Vector3
+		if object_place_vertically or stay_vertical:
+			up = Vector3.UP
+			forward = MoveMath.reject(forward, up).normalized()
+		else:
+			var offset = curve.get_closest_offset(start)
+			up = curve.interpolate_baked_up_vector(offset).normalized()
+			
+		var left = up.cross(forward).normalized()
+		var baseTransform: Transform = Transform(Basis(left, up, forward), start)
+		newObject.global_transform = global_transform*baseTransform*object_transform
+		objects_placed += 1
 
 func has_edge(edges: PoolIntArray, to_find_0: int, to_find_1: int) -> bool:
 	for i in range(0, edges.size() - 1, 2):
 		if edges[i] == to_find_0 and edges[i+1] == to_find_1:
 			return true
 	return false
+
+func set_tolerance(tol):
+	angle_tolerance = tol
+	if Engine.editor_hint:
+		regenerate()
+
+func set_template(t):
+	template_mesh = t
+	if Engine.editor_hint:
+		regenerate()
+
+func set_template_transform(tr):
+	template_transform = tr
+	if Engine.editor_hint:
+		regenerate()
+
+func set_vertical(v):
+	stay_vertical = v
+	if Engine.editor_hint:
+		regenerate()
+
+func set_material(m):
+	material = m
+	mesh.material_override = material
+
+func set_placed_objects(po):
+	object_template = po
+	place_objects(weakref(object_template))
+
+func set_object_distance(f):
+	object_distance = f
+	place_objects(weakref(object_template))
+
+func set_object_transform(t):
+	object_transform = t
+	place_objects(weakref(object_template))
+
+func set_object_vertical(v):
+	object_place_vertically = v
+	place_objects(weakref(object_template))
+	
+

@@ -92,7 +92,6 @@ script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 5 )
 template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 2, 0, 0, 0 )
-collision_layer = 0
 
 [node name="basin1" parent="act1_main_level" instance=ExtResource( 3 )]
 
