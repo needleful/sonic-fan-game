@@ -239,7 +239,8 @@ func regenerate():
 		place_objects(wr, points)
 
 func place_objects(template:WeakRef, points:PoolVector3Array = PoolVector3Array()):
-	assert(template.get_ref())
+	if(!template.get_ref()):
+		return
 	if !has_node("__auto_objects_gen"):
 		objects.name = "__auto_objects_gen"
 		add_child(objects)
