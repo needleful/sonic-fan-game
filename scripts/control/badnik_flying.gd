@@ -1,7 +1,5 @@
 extends RigidBody
 
-export(NodePath) var sonicNode: NodePath
-
 export(float) var player_outer_radius = 8
 export(float) var player_inner_radius = 3
 export(float) var acceleration = 34
@@ -12,6 +10,9 @@ export(float) var repulsion = 10
 export(float) var avoidance_strength = 30
 export(float) var angular_drag = .9
 export(float) var weapon_rotation_speed: float = deg2rad(40)
+export(NodePath) var kill_box: NodePath
+
+var killbox: Area
 
 const DRAG_AIR = 0.00005
 var sonic: Sonic
@@ -39,8 +40,10 @@ const TIME_TO_CANCEL = .85
 var cancel_timer = 0
 
 func _ready():
-	if has_node(sonicNode):
-		sonic = get_node(sonicNode)
+	if has_node(kill_box):
+		killbox = get_node(kill_box) as Area
+		killbox.connect("body_entered", self, "_on_Activation_body_entered")
+		killbox.connect("body_exited", self, "on_Killbox_exited")
 
 func _physics_process(delta):
 	if state == AIState.Inactive:
@@ -152,3 +155,7 @@ func _on_Activation_body_entered(body):
 	if body is Sonic:
 		sonic = body
 		state = AIState.Active
+
+func on_Killbox_exited(body):
+	if body == sonic:
+		state = AIState.Inactive

@@ -7,8 +7,7 @@ var up: Vector3 = Vector3.UP
 
 var velocity: Vector3 = Vector3(0,0,0)
 
-export(NodePath) var sonicNode: NodePath
-onready var sonic: Sonic
+var sonic: Sonic
 
 export(NodePath) var pathNode: NodePath
 onready var path: Path = get_node(pathNode)
@@ -22,6 +21,9 @@ export(float) var speed_rotation:float = 3*PI
 
 export(float) var time_to_chase:float = 0.15
 export(float) var time_to_forget: float = 30
+# If the 
+export(NodePath) var kill_box: NodePath
+var killbox: Area
 
 const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
@@ -56,16 +58,17 @@ const DIST_PATROL_POINT = 4
 var patrol_point: int = 0
 
 func _ready():
-	if has_node(sonicNode):
-		sonic = get_node(sonicNode)
-	else:
-		for s in get_tree().get_nodes_in_group("player"):
-			sonic = s
+	if has_node(kill_box):
+		killbox = get_node(kill_box) as Area
 	var _x = $AttackArea.connect("body_entered", self, "onAttack")
 	_x = $AttackArea.connect("body_exited", self, "onAttackStop")
 	_x = $AttackArea/Weapon.connect("body_entered", self, "kill")
-	_x = visionCone.connect("body_entered", self, "onVisionEntered")
-	_x = visionCone.connect("body_exited", self, "onVisionExited")
+	if killbox:
+		_x = killbox.connect("body_entered", self, "onVisionEntered")
+		_x = killbox.connect("body_exited", self, "onVisionExited")
+	else:
+		_x = visionCone.connect("body_entered", self, "onVisionEntered")
+		_x = visionCone.connect("body_exited", self, "onVisionExited")
 
 func kill(body):
 	if body != self and body.has_method("die"):
@@ -88,12 +91,16 @@ func _physics_process(delta):
 	
 	var s: RID = get_world().space
 	var space: PhysicsDirectSpaceState = PhysicsServer.space_get_direct_state(s)
-	var raycast = space.intersect_ray(
-		visionCone.global_transform.origin,
-		sonic.global_transform.origin,
-		[self, visionCone, $AttackArea, weapon]
-	)
-	var see_sonic:bool = raycast.has("collider") and raycast["collider"] is Sonic
+	var see_sonic:bool
+	if sonic:
+		var raycast = space.intersect_ray(
+			visionCone.global_transform.origin,
+			sonic.global_transform.origin,
+			[self, visionCone, $AttackArea, weapon]
+		)
+		see_sonic = raycast.has("collider") and raycast["collider"] is Sonic
+	else:
+		see_sonic = false
 	
 	match state:
 		AIState.Chase:
@@ -169,7 +176,10 @@ func get_patrol_point() -> Vector3:
 		return p_pos - origin
 
 func get_chase_dir() -> Vector3:
-	return sonic.global_transform.origin - weapon.global_transform.origin
+	if sonic:
+		return sonic.global_transform.origin - weapon.global_transform.origin
+	else:
+		return Vector3.ZERO
 	
 func reorient(new_up:Vector3, interp:float, max_degrees, delta):
 	if new_up.length_squared() <= 0.9:
@@ -201,6 +211,7 @@ func onAttackStop(_b):
 
 func onVisionEntered(body):
 	if body is Sonic and !body.dead:
+		sonic = body
 		player_in_cone = true
 
 func onVisionExited(body):
@@ -212,5 +223,6 @@ func doneAttacking():
 	$AttackLight.visible = false
 
 func die():
-	sonic.give_points(100)
+	if sonic:
+		sonic.give_points(100)
 	queue_free()

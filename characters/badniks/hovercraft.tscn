@@ -428,4 +428,5 @@ autoplay = true
 
 [node name="CollisionShape" type="CollisionShape" parent="Activation" index="0"]
 shape = SubResource( 9 )
+
 [connection signal="body_entered" from="Activation" to="." method="_on_Activation_body_entered"]

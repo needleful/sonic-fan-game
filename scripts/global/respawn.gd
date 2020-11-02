@@ -10,6 +10,9 @@ var player: Sonic
 var old_scene: WeakRef
 
 func reset_level():
+	if player != null:
+		player.queue_free()
+		player = null
 	var _x = get_tree().reload_current_scene()
 	if respawn_priority >= 0 and has_node(respawn_point):
 		for s in get_tree().get_nodes_in_group("player"):
@@ -25,6 +28,9 @@ func place_player(path, time_limit):
 	sonic.global_transform = point.global_transform
 
 func reset_no_respawn():
+	if player != null:
+		player.queue_free()
+		player = null
 	respawn_point = NodePath("")
 	respawn_priority = -9999
 	var _x = get_tree().reload_current_scene()
@@ -55,40 +61,47 @@ func load_scene(path):
 		elif res != OK:
 			print_debug("Failed to load %s with error %d" % [path, res])
 			break
-	var node
 	if result == null:
 		print("Failed to load scene")
-		node = null
-		return
-	else:
-		node = result.instance()
-	if node == null:
-		print("Failed to instantiate loaded file")
 		return
 	assert(old_scene.get_ref())
-	call_deferred("finish_load", node)
+	call_deferred("finish_load", result)
 
-func finish_load(new_scene:Node):
+func finish_load(new_scene:PackedScene):
 	load_thread.wait_to_finish()
 	set_process(false)
-	var oldPos = player.global_transform.origin
+	#var oldTransform = player.global_transform
+	var oldTransform = player.global_transform
 	player.get_parent().remove_child(player)
 	if old_scene.get_ref():
 		old_scene.get_ref().queue_free()
 	else:
 		print_debug("Warning! Bad reference to old_scene")
 	old_scene = null
-	$"/root".add_child(new_scene)
-	if new_scene.has_node("player_spawn"):
-		var new_target: Spatial = new_scene.get_node("player_spawn")
-		var relPos = target_transform.xform_inv(oldPos)
-		var absPos = new_target.global_transform.xform(relPos)
-		print(oldPos, "->", relPos, "->", absPos)
+	get_tree().change_scene_to(new_scene)
+	call_deferred("insert_player", oldTransform)
+
+func insert_player(oldTransform: Transform):
+	var sc = get_tree().current_scene
+	if sc.has_node("player_spawn"):
+		var new_target: Spatial = sc.get_node("player_spawn")
+		var relTransform = target_transform.affine_inverse()*oldTransform
+		var absTransform = new_target.global_transform*relTransform
+		var odir = oldTransform.basis.z
+		var ndir = absTransform.basis.z
+		var vel_rot = odir.angle_to(ndir)
+		var vel_axis = odir.cross(ndir).normalized() 
+		#var relTransform = target_transform.inverse()*oldTransform
+		#var absTransform = new_target.global_transform*relTransform
+		#print(oldTransform.origin, "->", relTransform.origin, "->", absTransform.origin)
 		for s in get_tree().get_nodes_in_group("player"):
 			player.time_limit = s.time_limit
 			player.rings = s.rings
 			player.score = s.score
-			s.free()
+			s.queue_free()
 		$"/root".add_child(player)
-		player.global_transform.origin = absPos
-		player.fix_camera()
+		#player.global_transform = absTransform
+		player.global_transform = absTransform
+		player.up = player.get_node("Armature").global_transform.basis.y
+		player.velocity = player.velocity.rotated(vel_axis, vel_rot)
+		#player.fix_camera()

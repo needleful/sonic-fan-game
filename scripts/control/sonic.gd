@@ -449,6 +449,7 @@ func process_ground(delta, accel_move, accel_start):
 	var steer = floorvel.angle_to(input)
 	var axis = floorvel.cross(input).normalized()
 	if PI - abs(steer) <= MIN_ANGLE_SLIDE and (
+		input != Vector3.ZERO and
 		floorvel.length_squared() >= SPEED_RUN*SPEED_RUN
 	):
 		statePlayback.travel("Stop-loop")
@@ -573,7 +574,6 @@ func set_state(new_state):
 	match new_state:
 		State.Ground:
 			timer_air = 0
-			$Ball.visible = false
 			statePlayback.travel("Ground")
 			recover = true
 			last_wall_jump = Vector3.ZERO
@@ -581,7 +581,6 @@ func set_state(new_state):
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
-			$Ball.visible = true
 			statePlayback.travel("Jump")
 			if state == State.Slip:
 				velocity += target_up*VEL_JUMP
@@ -596,11 +595,9 @@ func set_state(new_state):
 					set_wall(up)
 				else:
 					set_wall(nw)
-			$Ball.visible = false
 			statePlayback.travel("Ground")
 		State.Slip:
 			statePlayback.travel("Fall")
-			$Ball.visible = false
 			recover = false
 	state = new_state
 
