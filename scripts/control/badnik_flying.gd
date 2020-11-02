@@ -42,8 +42,9 @@ var cancel_timer = 0
 func _ready():
 	if has_node(kill_box):
 		killbox = get_node(kill_box) as Area
-		killbox.connect("body_entered", self, "_on_Activation_body_entered")
-		killbox.connect("body_exited", self, "on_Killbox_exited")
+		if killbox:
+			killbox.connect("body_entered", self, "_on_Activation_body_entered")
+			killbox.connect("body_exited", self, "on_Killbox_exited")
 
 func _physics_process(delta):
 	if state == AIState.Inactive:

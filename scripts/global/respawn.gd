@@ -8,8 +8,10 @@ var load_thread: Thread
 var target_transform:Transform
 var player: Sonic
 var old_scene: WeakRef
+var new_level = true
 
 func reset_level():
+	new_level = false
 	if player != null:
 		player.queue_free()
 		player = null
@@ -28,6 +30,7 @@ func place_player(path, time_limit):
 	sonic.global_transform = point.global_transform
 
 func reset_no_respawn():
+	new_level = false
 	if player != null:
 		player.queue_free()
 		player = null
@@ -41,6 +44,7 @@ func set_spawn(c: Checkpoint):
 		respawn_point = c.get_path()
 
 func replace_scene(p_old_scene:Node, new_scene_file:String, p_player:Sonic, transform:Transform):
+	new_level = true
 	old_scene = weakref(p_old_scene)
 	assert(old_scene.get_ref())
 	player = p_player
@@ -82,6 +86,7 @@ func finish_load(new_scene:PackedScene):
 	call_deferred("insert_player", oldTransform)
 
 func insert_player(oldTransform: Transform):
+	new_level = false
 	var sc = get_tree().current_scene
 	if sc.has_node("player_spawn"):
 		var new_target: Spatial = sc.get_node("player_spawn")

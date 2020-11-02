@@ -88,6 +88,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 option_scripts = [ ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ) ]
+save_path = "res://settings.cfg"
+defaults_file = "res://defaults.cfg"
+
 [connection signal="pressed" from="MainMenu/Resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="MainMenu/Options" to="." method="_on_Options_pressed"]
 [connection signal="pressed" from="MainMenu/RestartCheckoint" to="." method="_on_RestartCheckoint_pressed"]

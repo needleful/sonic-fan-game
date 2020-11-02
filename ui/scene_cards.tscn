@@ -1,0 +1,132 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://ui/game_theme.tres" type="Theme" id=1]
+[ext_resource path="res://assets/fonts/ClearSans-Light.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://scripts/global/scene_cards.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFont" id=2]
+size = 64
+font_data = ExtResource( 2 )
+
+[sub_resource type="Animation" id=1]
+resource_name = "Start_Level"
+length = 5.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("closer:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("opener:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("opener/Zone:percent_visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 1, 1.5, 4.5, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0, 1.0, 0.0 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("opener/Act:percent_visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 1, 1.8, 2, 4.5, 5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 0.0, 1.0, 1.0, 0.0 ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath(".:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/5/type = "method"
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0, 5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"values": [ {
+"args": [  ],
+"method": "hideUI"
+}, {
+"args": [  ],
+"method": "showUI"
+} ]
+}
+
+[node name="scene_cards" type="Control"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="opener" type="VBoxContainer" parent="."]
+visible = false
+anchor_left = 0.07
+anchor_top = 0.07
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Zone" type="Label" parent="opener"]
+margin_right = 952.0
+margin_bottom = 87.0
+custom_fonts/font = SubResource( 2 )
+text = "UI TEST ZONE"
+percent_visible = 0.0
+
+[node name="Act" type="Label" parent="opener"]
+margin_top = 91.0
+margin_right = 952.0
+margin_bottom = 124.0
+text = "ACT 1"
+percent_visible = 0.0
+
+[node name="closer" type="Control" parent="."]
+visible = false
+margin_right = 40.0
+margin_bottom = 40.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Start_Level = SubResource( 1 )

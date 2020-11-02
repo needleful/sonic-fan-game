@@ -4,6 +4,9 @@
 
 [node name="basin1" instance=ExtResource( 1 )]
 
+[node name="Basin" parent="." index="0"]
+use_in_baked_light = true
+
 [node name="basin" parent="Basin" index="0"]
 collision_layer = 5
 

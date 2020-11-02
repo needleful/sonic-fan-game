@@ -132,6 +132,8 @@ const SPRING_LEN_MAX = 10
 
 const CAM_TILT = 0.5
 
+onready var ui = $"/root/SonicUi"
+
 func _ready():
 	set_score(score)
 	set_rings(rings)
@@ -165,7 +167,8 @@ func _process(delta):
 	if time_limit <= 0:
 		time_up()
 	else:
-		$UI/Values/Time.text = "%2d:%02d" % [int(time_limit/60), int(time_limit)%60]
+		if ui:
+			ui.get_node("Values/Time").text = "%2d:%02d" % [int(time_limit/60), int(time_limit)%60]
 
 	# Animation Logic
 	if velocity.length_squared() >= SPEED_STOPPED*SPEED_STOPPED:
@@ -683,11 +686,13 @@ func time_up():
 
 func set_score(s):
 	score = s
-	$UI/Values/Score.text = str(s)
+	if ui:
+		ui.get_node("Values/Score").text = str(s)
 
 func set_rings(r):
 	rings = r
-	$UI/Values/Rings.text = str(r)
+	if ui:
+		ui.get_node("Values/Rings").text = str(r)
 
 func give_points(p):
 	set_score(score + p)

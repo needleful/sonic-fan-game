@@ -1,9 +1,8 @@
-[gd_scene load_steps=42 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
 [ext_resource path="res://assets/sfx/death.wav" type="AudioStream" id=3]
-[ext_resource path="res://ui/game_theme.tres" type="Theme" id=4]
 [ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=5]
 
 [sub_resource type="DynamicFont" id=1]
@@ -29,92 +28,103 @@ size = Vector3( 0.1, 0.1, 0.1 )
 flags_no_depth_test = true
 albedo_color = Color( 1, 0, 0, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=10]
+[sub_resource type="AnimationNodeAnimation" id=8]
 animation = "Fall-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=11]
+[sub_resource type="AnimationNodeTimeScale" id=9]
 
-[sub_resource type="AnimationNodeAnimation" id=12]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Walk-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=13]
+[sub_resource type="AnimationNodeAnimation" id=11]
 animation = "Idle-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=14]
+[sub_resource type="AnimationNodeAnimation" id=12]
 animation = "IdleLeanRight-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=15]
+[sub_resource type="AnimationNodeAnimation" id=13]
 animation = "IdleLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=16]
+[sub_resource type="AnimationNodeAnimation" id=14]
 animation = "IdleLeanForward-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=17]
+[sub_resource type="AnimationNodeAnimation" id=15]
 animation = "IdleLeanBackward-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=18]
-blend_point_0/node = SubResource( 13 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=16]
+blend_point_0/node = SubResource( 11 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 14 )
+blend_point_1/node = SubResource( 12 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 15 )
+blend_point_2/node = SubResource( 13 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 16 )
+blend_point_3/node = SubResource( 14 )
 blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 17 )
+blend_point_4/node = SubResource( 15 )
 blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeAnimation" id=19]
+[sub_resource type="AnimationNodeAnimation" id=17]
 animation = "Run-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=20]
+[sub_resource type="AnimationNodeAnimation" id=18]
 animation = "RunLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=21]
+[sub_resource type="AnimationNodeAnimation" id=19]
 animation = "RunLeanRight-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=22]
+[sub_resource type="AnimationNodeAnimation" id=20]
 animation = "RunHard-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=23]
-blend_point_0/node = SubResource( 19 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=21]
+blend_point_0/node = SubResource( 17 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 20 )
+blend_point_1/node = SubResource( 18 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 21 )
+blend_point_2/node = SubResource( 19 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 22 )
+blend_point_3/node = SubResource( 20 )
 blend_point_3/pos = Vector2( 0, 1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=24]
-blend_point_0/node = SubResource( 12 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=22]
+blend_point_0/node = SubResource( 10 )
 blend_point_0/pos = 1.0
-blend_point_1/node = SubResource( 18 )
+blend_point_1/node = SubResource( 16 )
 blend_point_1/pos = 0.0
-blend_point_2/node = SubResource( 23 )
+blend_point_2/node = SubResource( 21 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 3.0
 snap = 0.5
 
-[sub_resource type="AnimationNodeBlendTree" id=25]
+[sub_resource type="AnimationNodeBlendTree" id=23]
 graph_offset = Vector2( -134, 41 )
-nodes/Speed/node = SubResource( 11 )
+nodes/Speed/node = SubResource( 9 )
 nodes/Speed/position = Vector2( 280, 80 )
-nodes/Walk/node = SubResource( 24 )
+nodes/Walk/node = SubResource( 22 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
 node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
 
-[sub_resource type="AnimationNodeAnimation" id=26]
+[sub_resource type="AnimationNodeAnimation" id=24]
 animation = "Ball-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=27]
+[sub_resource type="AnimationNodeAnimation" id=25]
 animation = "Stop-loop"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=26]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=27]
+
 [sub_resource type="AnimationNodeStateMachineTransition" id=28]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=29]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=30]
+xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=31]
 
@@ -122,34 +132,23 @@ animation = "Stop-loop"
 xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=33]
-xfade_time = 0.1
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=34]
-xfade_time = 0.1
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=35]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=36]
-xfade_time = 0.2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=40]
-
-[sub_resource type="AnimationNodeStateMachine" id=37]
-states/Fall/node = SubResource( 10 )
+[sub_resource type="AnimationNodeStateMachine" id=34]
+states/Fall/node = SubResource( 8 )
 states/Fall/position = Vector2( 514, 132 )
-states/Ground/node = SubResource( 25 )
+states/Ground/node = SubResource( 23 )
 states/Ground/position = Vector2( 293, 132 )
-states/Jump/node = SubResource( 26 )
+states/Jump/node = SubResource( 24 )
 states/Jump/position = Vector2( 293, -44 )
-states/Stop-loop/node = SubResource( 27 )
+states/Stop-loop/node = SubResource( 25 )
 states/Stop-loop/position = Vector2( 514, -44 )
-transitions = [ "Ground", "Jump", SubResource( 28 ), "Fall", "Ground", SubResource( 31 ), "Ground", "Fall", SubResource( 32 ), "Ground", "Stop-loop", SubResource( 33 ), "Stop-loop", "Ground", SubResource( 34 ), "Stop-loop", "Jump", SubResource( 35 ), "Stop-loop", "Fall", SubResource( 36 ), "Jump", "Ground", SubResource( 40 ) ]
+transitions = [ "Ground", "Jump", SubResource( 26 ), "Fall", "Ground", SubResource( 27 ), "Ground", "Fall", SubResource( 28 ), "Ground", "Stop-loop", SubResource( 29 ), "Stop-loop", "Ground", SubResource( 30 ), "Stop-loop", "Jump", SubResource( 31 ), "Stop-loop", "Fall", SubResource( 32 ), "Jump", "Ground", SubResource( 33 ) ]
 start_node = "Ground"
 graph_offset = Vector2( -345, -94 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=38]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=35]
 
-[sub_resource type="Animation" id=39]
+[sub_resource type="Animation" id=36]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("../sonic/DeathScreen:visible")
@@ -209,88 +208,7 @@ collision_layer = 2
 collision_mask = 3
 script = ExtResource( 2 )
 
-[node name="UI" type="HBoxContainer" parent="." index="0"]
-anchor_left = 0.05
-anchor_top = 0.05
-anchor_right = 0.05
-anchor_bottom = 0.05
-margin_left = -0.200001
-margin_right = 145.8
-margin_bottom = 83.0
-theme = ExtResource( 4 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Labels" type="VBoxContainer" parent="UI" index="0"]
-margin_right = 90.0
-margin_bottom = 107.0
-size_flags_horizontal = 3
-
-[node name="L1" type="Label" parent="UI/Labels" index="0"]
-margin_right = 90.0
-margin_bottom = 33.0
-custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -1
-custom_constants/shadow_offset_y = 2
-text = "SCORE"
-
-[node name="L2" type="Label" parent="UI/Labels" index="1"]
-margin_top = 37.0
-margin_right = 90.0
-margin_bottom = 70.0
-custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -1
-custom_constants/shadow_offset_y = 2
-text = "TIME"
-
-[node name="L3" type="Label" parent="UI/Labels" index="2"]
-margin_top = 74.0
-margin_right = 90.0
-margin_bottom = 107.0
-custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -1
-custom_constants/shadow_offset_y = 2
-text = "RINGS"
-
-[node name="Values" type="VBoxContainer" parent="UI" index="1"]
-margin_left = 94.0
-margin_right = 146.0
-margin_bottom = 107.0
-
-[node name="Score" type="Label" parent="UI/Values" index="0"]
-margin_right = 52.0
-margin_bottom = 33.0
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -2
-custom_constants/shadow_offset_y = 2
-text = "000"
-align = 2
-
-[node name="Time" type="Label" parent="UI/Values" index="1"]
-margin_top = 37.0
-margin_right = 52.0
-margin_bottom = 70.0
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -2
-custom_constants/shadow_offset_y = 2
-text = "0:00"
-align = 2
-
-[node name="Rings" type="Label" parent="UI/Values" index="2"]
-margin_top = 74.0
-margin_right = 52.0
-margin_bottom = 107.0
-custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
-custom_constants/shadow_offset_x = -2
-custom_constants/shadow_offset_y = 2
-text = "0"
-align = 2
-
-[node name="DeathScreen" type="ColorRect" parent="." index="1"]
+[node name="DeathScreen" type="ColorRect" parent="." index="0"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -310,7 +228,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="debugUI" type="PanelContainer" parent="." index="2"]
+[node name="debugUI" type="PanelContainer" parent="." index="1"]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -351,24 +269,32 @@ margin_top = 72.0
 margin_right = 187.0
 margin_bottom = 86.0
 
-[node name="Sun" parent="." index="3"]
+[node name="Sun" parent="." index="2"]
 visible = false
+
+[node name="OmniLight" type="OmniLight" parent="Armature" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0834094, 0 )
+light_color = Color( 0.290196, 0.298039, 0.505882, 1 )
+light_energy = 0.1
+light_indirect_energy = 0.0
+light_specular = 0.0
+omni_range = 1.35735
 
 [node name="Sonic" parent="Armature/Skeleton" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.43, 0 )
 
-[node name="WallRunArea" type="Area" parent="Armature" index="1"]
+[node name="WallRunArea" type="Area" parent="Armature" index="2"]
 collision_layer = 0
 
 [node name="CollisionShape" type="CollisionShape" parent="Armature/WallRunArea" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
 shape = SubResource( 2 )
 
-[node name="CollisionShape" type="CollisionShape" parent="." index="6"]
+[node name="CollisionShape" type="CollisionShape" parent="." index="5"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 3 )
 
-[node name="Cam" type="Spatial" parent="." index="7"]
+[node name="Cam" type="Spatial" parent="." index="6"]
 
 [node name="Yaw" type="Spatial" parent="Cam" index="0"]
 
@@ -404,19 +330,19 @@ visible = false
 mesh = SubResource( 6 )
 material/0 = SubResource( 7 )
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="8"]
-tree_root = SubResource( 37 )
+[node name="AnimationTree" type="AnimationTree" parent="." index="7"]
+tree_root = SubResource( 34 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 38 )
+parameters/playback = SubResource( 35 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
 
-[node name="CustomAnimation" type="AnimationPlayer" parent="." index="9"]
-anims/Die = SubResource( 39 )
+[node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
+anims/Die = SubResource( 36 )
 
-[node name="Audio" type="AudioStreamPlayer" parent="." index="10"]
+[node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
 stream = ExtResource( 3 )
 bus = "SFX_Sonic"
