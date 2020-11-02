@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://scenes/components/act1_main_level.tscn" type="PackedScene" id=1]
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
@@ -9,15 +9,20 @@
 [ext_resource path="res://scripts/entities/checkpoint.gd" type="Script" id=7]
 [ext_resource path="res://scenes/transition_wpact12.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scripts/entities/load_zone.gd" type="Script" id=9]
-[ext_resource path="res://scripts/env/scene_properties.gd" type="Script" id=10]
+[ext_resource path="res://scripts/main_menu.gd" type="Script" id=10]
+[ext_resource path="res://addons/fast_options/scripts/options_menu.gd" type="Script" id=11]
+[ext_resource path="res://addons/fast_options/default_options/graphics.gd" type="Script" id=12]
+[ext_resource path="res://addons/fast_options/default_options/display.gd" type="Script" id=13]
+[ext_resource path="res://scripts/options/audio.gd" type="Script" id=14]
+[ext_resource path="res://ui/game_theme.tres" type="Theme" id=15]
 
-[sub_resource type="ProceduralSky" id=23]
+[sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.341176, 0.423529, 0.470588, 1 )
 sky_horizon_color = Color( 0.45098, 0.490196, 0.521569, 1 )
 
-[sub_resource type="Environment" id=1]
+[sub_resource type="Environment" id=2]
 background_mode = 2
-background_sky = SubResource( 23 )
+background_sky = SubResource( 1 )
 background_energy = 0.1
 fog_enabled = true
 fog_color = Color( 0, 0, 0, 1 )
@@ -25,8 +30,7 @@ fog_sun_color = Color( 0.227451, 0.239216, 0.262745, 1 )
 fog_depth_begin = 100.0
 fog_depth_end = 750.0
 
-[sub_resource type="Animation" id=2]
-resource_name = "Fire_light"
+[sub_resource type="Animation" id=3]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:translation")
@@ -53,68 +57,65 @@ tracks/1/keys = {
 "values": [ Color( 1, 0.847059, 0.682353, 1 ), Color( 0.941176, 0.74902, 0.611765, 1 ), Color( 0.882353, 0.698039, 0.615686, 1 ) ]
 }
 
-[sub_resource type="Curve3D" id=3]
+[sub_resource type="Curve3D" id=4]
 _data = {
 "points": PoolVector3Array( 40.5403, -0.254852, 0.361969, -40.5403, 0.254852, -0.361969, 2.51336, 1.79608, 2.07526, -24.5951, 16.5281, -16.107, 24.5951, -16.5281, 16.107, -32.9356, -52.7815, 69.0322, -11.1828, 4.11984, -31.2079, 11.1828, -4.11984, 31.2079, -37.0867, -261.824, 138.445, 0, 0, 0, 0, 0, 0, 37.0079, -276.187, 159.182, 3.80261, -37.1584, 0.187927, -3.80261, 37.1584, -0.187927, 108.954, -243.273, 162.547 ),
 "tilts": PoolRealArray( 0, 0, 0, 0, 0 )
 }
 
-[sub_resource type="Curve3D" id=4]
+[sub_resource type="Curve3D" id=5]
 _data = {
 "points": PoolVector3Array( 0.205299, 0.242416, -2.31497, -0.205299, -0.242416, 2.31497, -1.35088, -0.329834, -1.79672, -3.91224, 0.110046, 0.0936584, 3.91224, -0.110046, -0.0936584, 2.73224, -0.0860748, 3.74786, 0, 0, 0, 0, 0, 0, 38.8034, 5.27222, 1.79523, -0.816963, -0.361847, -1.24222, 0, 0, 0, 56.747, 14.9586, 3.04041, 0.759029, -1.12617, 7.52573, -0.759029, 1.12617, -7.52573, 59.0925, 18.7476, -2.40433 ),
 "tilts": PoolRealArray( 0, 0, 0, 0, 0 )
 }
 
-[sub_resource type="Curve3D" id=5]
+[sub_resource type="Curve3D" id=6]
 _data = {
 "points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -8.64493, -0.940437, -302.264, 0, 0, 0, 0, 0, 0, -23.04, -2.94054, 350.397, 1.60446, -7.01196, -0.71524, -1.60446, 7.01196, 0.71524, -24.2961, 4.23484, 351.438, 3.83923, -1.14133, -0.308044, -3.83923, 1.14133, 0.308044, -37.9296, 4.23051, 352.1, 0, 0, 0, 0, 0, 0, -68.5408, 6.45806, 351.952 ),
 "tilts": PoolRealArray( 0, 0, 0, 0, 0 )
 }
 
-[sub_resource type="Curve3D" id=6]
+[sub_resource type="Curve3D" id=7]
 _data = {
 "points": PoolVector3Array( 0, -4.1, -73.8, 0, 4.1, 73.8, -0.207516, 0.228119, -0.308899, -14.207, -9.62207, -12.1559, 14.207, 9.62207, 12.1559, 40.1153, 16.424, 110.729, 0, 0, 55.8832, 0, 0, -55.8832, 31.5379, 89.9243, 153.387 ),
 "tilts": PoolRealArray( 0, 0, 0 )
 }
 
-[sub_resource type="SphereShape" id=7]
+[sub_resource type="SphereShape" id=8]
 radius = 10.4894
 
-[sub_resource type="CubeMesh" id=8]
+[sub_resource type="CubeMesh" id=9]
 size = Vector3( 120, 1, 8 )
 
-[sub_resource type="BoxShape" id=9]
+[sub_resource type="BoxShape" id=10]
 extents = Vector3( 60, 0.5, 4 )
 
-[sub_resource type="CubeMesh" id=10]
+[sub_resource type="CubeMesh" id=11]
 size = Vector3( 3, 1, 25 )
 
-[sub_resource type="CubeMesh" id=11]
+[sub_resource type="CubeMesh" id=12]
 size = Vector3( 5, 1, 5 )
 
-[sub_resource type="BoxShape" id=12]
+[sub_resource type="BoxShape" id=13]
 extents = Vector3( 2.5, 0.5, 2.5 )
 
-[sub_resource type="BoxShape" id=13]
+[sub_resource type="BoxShape" id=14]
 extents = Vector3( 1.5, 0.5, 12.5 )
 
-[sub_resource type="CubeMesh" id=14]
+[sub_resource type="CubeMesh" id=15]
 size = Vector3( 50, 2, 20 )
 
-[sub_resource type="BoxShape" id=15]
+[sub_resource type="BoxShape" id=16]
 extents = Vector3( 25, 1, 10 )
 
-[sub_resource type="CubeMesh" id=16]
+[sub_resource type="CubeMesh" id=17]
 size = Vector3( 50, 1, 3 )
 
-[sub_resource type="BoxShape" id=17]
+[sub_resource type="BoxShape" id=18]
 extents = Vector3( 25, 0.5, 1.5 )
 
-[sub_resource type="CubeMesh" id=18]
+[sub_resource type="CubeMesh" id=19]
 size = Vector3( 6, 2, 6 )
-
-[sub_resource type="BoxShape" id=19]
-extents = Vector3( 3, 1, 3 )
 
 [sub_resource type="BoxShape" id=20]
 extents = Vector3( 3, 1, 3 )
@@ -122,19 +123,98 @@ extents = Vector3( 3, 1, 3 )
 [sub_resource type="BoxShape" id=21]
 extents = Vector3( 3, 1, 3 )
 
-[sub_resource type="SphereShape" id=22]
+[sub_resource type="BoxShape" id=22]
+extents = Vector3( 3, 1, 3 )
+
+[sub_resource type="SphereShape" id=23]
 radius = 14.4009
 
 [node name="wpact1" type="Spatial"]
-script = ExtResource( 10 )
-zone_name = "Water Processing Zone"
-act = 1
 
 [node name="sonic" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.786991, -19.4747, -227.951 )
+transform = Transform( 0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 0.786987, -19.4747, -227.951 )
+
+[node name="main_menu" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 15 )
+script = ExtResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+zone_name = "Water Processing Zone"
+act = 1
+camera_rotation = Vector2( 1.5, 0.1 )
+
+[node name="MainMenu" type="VBoxContainer" parent="main_menu"]
+anchor_left = 0.01
+anchor_top = 0.5
+anchor_right = 0.01
+anchor_bottom = 0.5
+margin_left = -0.24
+margin_top = -118.0
+margin_right = 251.76
+margin_bottom = 118.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="main_menu/MainMenu"]
+margin_right = 252.0
+margin_bottom = 33.0
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+custom_constants/shadow_offset_x = -2
+custom_constants/shadow_offset_y = 2
+text = "MAIN MENU"
+
+[node name="NewGame" type="Button" parent="main_menu/MainMenu"]
+margin_top = 37.0
+margin_right = 252.0
+margin_bottom = 73.0
+text = "START GAME"
+align = 0
+
+[node name="LevelSelect" type="Button" parent="main_menu/MainMenu"]
+margin_top = 77.0
+margin_right = 252.0
+margin_bottom = 113.0
+text = "LEVEL SELECT"
+align = 0
+
+[node name="Options" type="Button" parent="main_menu/MainMenu"]
+margin_top = 117.0
+margin_right = 252.0
+margin_bottom = 153.0
+text = "OPTIONS"
+align = 0
+
+[node name="Quit" type="Button" parent="main_menu/MainMenu"]
+margin_top = 157.0
+margin_right = 252.0
+margin_bottom = 193.0
+text = "QUIT"
+align = 0
+
+[node name="FastOptionsMenu" type="Panel" parent="main_menu"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -460.0
+margin_top = -259.0
+margin_right = 460.0
+margin_bottom = 259.0
+script = ExtResource( 11 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+option_scripts = [ ExtResource( 12 ), ExtResource( 13 ), ExtResource( 14 ) ]
+save_path = "res://settings.cfg"
+defaults_file = "res://defaults.cfg"
 
 [node name="Lighting" type="WorldEnvironment" parent="."]
-environment = SubResource( 1 )
+environment = SubResource( 2 )
 
 [node name="campfire" type="OmniLight" parent="Lighting"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0412822, -19.5069, -228.988 )
@@ -145,7 +225,7 @@ omni_range = 3.33661
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Lighting/campfire"]
 autoplay = "Fire_light"
-anims/Fire_light = SubResource( 2 )
+anims/Fire_light = SubResource( 3 )
 
 [node name="SpotLight" type="SpotLight" parent="Lighting"]
 transform = Transform( 0.947871, -0.170158, 0.269418, -0.306197, -0.252286, 0.91793, -0.0882227, -0.952574, -0.291236, 52.2696, 334.588, 354.702 )
@@ -182,12 +262,12 @@ spot_attenuation = 0.840898
 spot_angle_attenuation = 0.68302
 
 [node name="SpotLight3" type="SpotLight" parent="Lighting"]
-transform = Transform( 0.946272, 1.41351e-08, -0.323372, 0.29351, -0.419722, 0.858886, -0.135726, -0.907653, -0.397171, -54.1209, 238.825, 497.25 )
+transform = Transform( 0.895151, -0.284148, 0.34346, -0.424598, -0.308912, 0.851053, -0.135726, -0.907653, -0.397171, -54.1209, 238.825, 497.25 )
 light_color = Color( 0.921569, 1, 0.764706, 1 )
 light_energy = 0.6
 shadow_enabled = true
 shadow_bias = 0.5
-spot_range = 220.492
+spot_range = 53.6956
 spot_angle = 35.123
 
 [node name="act1_main_level" parent="." instance=ExtResource( 1 )]
@@ -208,7 +288,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 100 )
 
 [node name="bigTube" type="Path" parent="act1_main_level"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -70.0079, 297.687, 371.918 )
-curve = SubResource( 3 )
+curve = SubResource( 4 )
 script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 5 )
@@ -216,7 +296,7 @@ template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 2, 0, 0, 0 )
 
 [node name="tubes_ascend1" type="Path" parent="act1_main_level"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -37.8494, 135.163, 350.887 )
-curve = SubResource( 4 )
+curve = SubResource( 5 )
 script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 6 )
@@ -224,7 +304,7 @@ collision_layer = 1
 
 [node name="pipes1" type="Path" parent="act1_main_level"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 116.766, 0 )
-curve = SubResource( 5 )
+curve = SubResource( 6 )
 script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 6 )
@@ -232,7 +312,7 @@ collision_layer = 1
 
 [node name="pipe_exit" type="Path" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 490.313, 804.301 )
-curve = SubResource( 6 )
+curve = SubResource( 7 )
 script = ExtResource( 4 )
 stay_vertical = false
 template_mesh = ExtResource( 5 )
@@ -244,7 +324,7 @@ script = ExtResource( 7 )
 
 [node name="CollisionShape" type="CollisionShape" parent="pipe_exit/Checkpoint"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25949, 19.5012, -2.96802 )
-shape = SubResource( 7 )
+shape = SubResource( 8 )
 
 [node name="part2-rough" type="CSGBox" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30.197, 661.486, 793.334 )
@@ -361,236 +441,236 @@ depth = 5.0
 
 [node name="bridge" type="MeshInstance" parent="part2-rough"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 46.6416, 108.918 )
-mesh = SubResource( 8 )
+mesh = SubResource( 9 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/bridge"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/bridge/StaticBody"]
-shape = SubResource( 9 )
+shape = SubResource( 10 )
 
 [node name="Stairs" type="MeshInstance" parent="part2-rough/bridge/StaticBody"]
 transform = Transform( 1, 0, 0, 0, 0.819152, 0.573576, 0, -0.573576, 0.819152, -40.162, 6.87506, 13.324 )
-mesh = SubResource( 10 )
+mesh = SubResource( 11 )
 material/0 = null
 
 [node name="MeshInstance" type="MeshInstance" parent="part2-rough/bridge/StaticBody/Stairs"]
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, -0.589207, -1.33136, 14.3793 )
-mesh = SubResource( 11 )
+mesh = SubResource( 12 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/bridge/StaticBody/Stairs"]
 
 [node name="CollisionShape2" type="CollisionShape" parent="part2-rough/bridge/StaticBody/Stairs/StaticBody"]
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, -0.589207, -1.3313, 14.3793 )
-shape = SubResource( 12 )
+shape = SubResource( 13 )
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/bridge/StaticBody/Stairs/StaticBody"]
-shape = SubResource( 13 )
+shape = SubResource( 14 )
 
 [node name="bridge2" type="MeshInstance" parent="part2-rough"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 46.6416, 8.92725 )
-mesh = SubResource( 8 )
+mesh = SubResource( 9 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/bridge2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/bridge2/StaticBody"]
-shape = SubResource( 9 )
+shape = SubResource( 10 )
 
 [node name="MeshInstance" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -60.2428, 44.5191, -35.3735 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance2" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -60.2428, 44.5191, 68.8905 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance2/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance5" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 69.2824, -6.26575, -86.7734 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance5"]
 collision_layer = 5
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance5/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance6" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 69.2824, -6.26575, 7.29053 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance6"]
 collision_layer = 5
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance6/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance7" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -62.7346, -6.26575, -86.7734 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance7"]
 collision_layer = 5
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance7/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance8" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -62.7346, -6.26575, 14.0189 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance8"]
 collision_layer = 5
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance8/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance3" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 68.1011, 44.5191, -39.9163 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance3"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance3/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="MeshInstance4" type="MeshInstance" parent="part2-rough"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 68.1011, 44.5191, 64.3477 )
-mesh = SubResource( 14 )
+mesh = SubResource( 15 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/MeshInstance4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/MeshInstance4/StaticBody"]
-shape = SubResource( 15 )
+shape = SubResource( 16 )
 
 [node name="Stairs" type="MeshInstance" parent="part2-rough"]
 transform = Transform( 0.866025, -0.5, 0, 0.5, 0.866025, 0, 0, 0, 1, -12.3, -90.4691, -163.442 )
-mesh = SubResource( 16 )
+mesh = SubResource( 17 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/StaticBody"]
-shape = SubResource( 17 )
+shape = SubResource( 18 )
 
 [node name="Stairs2" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( -0.5, 0.866025, -7.57103e-08, 0.866025, 0.5, 4.37114e-08, 7.57103e-08, -4.37114e-08, -1, 12.4999, 21.6506, 3 )
-mesh = SubResource( 16 )
+mesh = SubResource( 17 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Stairs2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Stairs2/StaticBody"]
-shape = SubResource( 17 )
+shape = SubResource( 18 )
 
 [node name="Stairs4" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( -0.866025, 0.5, -8.74228e-08, 0.5, 0.866025, 0, 7.57103e-08, -4.37114e-08, -1, 43.6999, 75.6904, 0 )
-mesh = SubResource( 16 )
+mesh = SubResource( 17 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Stairs4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Stairs4/StaticBody"]
-shape = SubResource( 17 )
+shape = SubResource( 18 )
 
 [node name="Stairs3" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 43.3013, 0 )
-mesh = SubResource( 16 )
+mesh = SubResource( 17 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Stairs3"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Stairs3/StaticBody"]
-shape = SubResource( 17 )
+shape = SubResource( 18 )
 
 [node name="Stairs2" type="MeshInstance" parent="part2-rough/Stairs/Stairs3"]
 transform = Transform( -0.5, 0.866025, -7.57103e-08, 0.866025, 0.5, 4.37114e-08, 7.57103e-08, -4.37114e-08, -1, 12.4999, 21.6506, 3 )
-mesh = SubResource( 16 )
+mesh = SubResource( 17 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Stairs3/Stairs2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Stairs3/Stairs2/StaticBody"]
-shape = SubResource( 17 )
+shape = SubResource( 18 )
 
 [node name="Path" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 26.9843, -1.86182, 1.4762 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path/StaticBody"]
-shape = SubResource( 19 )
+shape = SubResource( 20 )
 
 [node name="Path2" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, -2.64883, 44.2109, 1.4762 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path2"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path2/StaticBody"]
-shape = SubResource( 20 )
+shape = SubResource( 21 )
 
 [node name="Path5" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 82.0511, 122.716, 325.482 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path5"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path5/StaticBody"]
-shape = SubResource( 20 )
+shape = SubResource( 21 )
 
 [node name="Path6" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 87.2472, 119.716, 325.482 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path6"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path6/StaticBody"]
-shape = SubResource( 20 )
+shape = SubResource( 21 )
 
 [node name="Path3" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 52.0172, 41.4938, 1.4762 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path3"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path3/StaticBody"]
-shape = SubResource( 21 )
+shape = SubResource( 22 )
 
 [node name="Path4" type="MeshInstance" parent="part2-rough/Stairs"]
 transform = Transform( 0.866025, 0.5, 0, -0.5, 0.866025, 0, 0, 0, 1, 22.363, 87.4355, 1.4762 )
-mesh = SubResource( 18 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="StaticBody" type="StaticBody" parent="part2-rough/Stairs/Path4"]
 
 [node name="CollisionShape" type="CollisionShape" parent="part2-rough/Stairs/Path4/StaticBody"]
-shape = SubResource( 21 )
+shape = SubResource( 22 )
 
 [node name="transition_wpact12" parent="." instance=ExtResource( 8 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 31.6, 724.607, 961.2 )
@@ -602,4 +682,11 @@ next_scene = "res://scenes/wpact2.tscn"
 
 [node name="CollisionShape" type="CollisionShape" parent="transition_wpact12/LoadZone"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8147e-06, 98.3603, 168.66 )
-shape = SubResource( 22 )
+shape = SubResource( 23 )
+
+[connection signal="pressed" from="main_menu/MainMenu/NewGame" to="main_menu" method="_on_NewGame_pressed"]
+[connection signal="pressed" from="main_menu/MainMenu/LevelSelect" to="main_menu" method="_on_LevelSelect_pressed"]
+[connection signal="pressed" from="main_menu/MainMenu/Options" to="main_menu" method="_on_Options_pressed"]
+[connection signal="pressed" from="main_menu/MainMenu/Quit" to="main_menu" method="_on_Quit_pressed"]
+[connection signal="apply" from="main_menu/FastOptionsMenu" to="main_menu" method="_on_FastOptionsMenu_apply"]
+[connection signal="cancel" from="main_menu/FastOptionsMenu" to="main_menu" method="_on_FastOptionsMenu_cancel"]

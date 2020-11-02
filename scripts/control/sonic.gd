@@ -20,6 +20,8 @@ enum State {
 	WallRun,
 	# Slipping off a wall
 	Slip,
+	# Playing an animation
+	CustomAnimation
 }
 
 const VEL_JUMP = 10
@@ -105,6 +107,7 @@ const TIME_COYOTE_WALLRUN = 0.25
 var timer_coyote = 0
 
 const SPEED_ROTATE_MESH = 24
+const SPEED_FLIP_JUMP = 18
 
 const SNS_CAM_MOUSE = 0.001
 const SNS_CAM_CONTROLLER = 0.02
@@ -324,8 +327,10 @@ func _physics_process(delta):
 		State.Slip:
 			process_air(ACCEL_AIR, delta)
 		State.Jumping:
+			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING, delta)
 		State.SlidingJump:
+			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING_SLIDE, delta)
 
 	var speed = velocity.length()/MAX_SNEAK
@@ -571,6 +576,7 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 func set_state(new_state):
 	if state == new_state:
 		return
+	#$Armature/Skeleton.rotation = Vector3.ZERO
 	print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
@@ -651,9 +657,9 @@ func get_camera_rot()->Vector2:
 	return ret + c*SNS_CAM_CONTROLLER
 
 func fix_camera():
-	camYaw.rotate_y(-cameraRot.x)
-	camSpring.rotate_x(cameraRot.y)
-	$Cam/Yaw/Reverse.rotate_x(-cameraRot.y)
+	camYaw.rotate_y(-camRot.x)
+	camSpring.rotate_x(camRot.y)
+	$Cam/Yaw/Reverse.rotate_x(-camRot.y)
 
 func set_wall(w):
 	if w == Vector3.ZERO:
@@ -696,3 +702,10 @@ func set_rings(r):
 
 func give_points(p):
 	set_score(score + p)
+
+func playAnimation(anim:String):
+	statePlayback.travel(anim)
+	set_state(State.CustomAnimation)
+
+func endAnimation():
+	set_state(State.Ground) 
