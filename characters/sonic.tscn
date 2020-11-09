@@ -146,9 +146,9 @@ switch_mode = 2
 auto_advance = true
 xfade_time = 0.1
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=41]
+[sub_resource type="AnimationNodeStateMachineTransition" id=38]
 
-[sub_resource type="AnimationNodeStateMachine" id=38]
+[sub_resource type="AnimationNodeStateMachine" id=39]
 states/Fall/node = SubResource( 8 )
 states/Fall/position = Vector2( 514, 132 )
 states/Ground/node = SubResource( 23 )
@@ -161,13 +161,13 @@ states/Stand/node = SubResource( 26 )
 states/Stand/position = Vector2( 514, 287 )
 states/Stop-loop/node = SubResource( 27 )
 states/Stop-loop/position = Vector2( 514, -44 )
-transitions = [ "Ground", "Jump", SubResource( 28 ), "Fall", "Ground", SubResource( 29 ), "Ground", "Fall", SubResource( 30 ), "Ground", "Stop-loop", SubResource( 31 ), "Stop-loop", "Ground", SubResource( 32 ), "Stop-loop", "Jump", SubResource( 33 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 41 ) ]
+transitions = [ "Ground", "Jump", SubResource( 28 ), "Fall", "Ground", SubResource( 29 ), "Ground", "Fall", SubResource( 30 ), "Ground", "Stop-loop", SubResource( 31 ), "Stop-loop", "Ground", SubResource( 32 ), "Stop-loop", "Jump", SubResource( 33 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 38 ) ]
 start_node = "Ground"
 graph_offset = Vector2( -302, 35 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=39]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=40]
 
-[sub_resource type="Animation" id=40]
+[sub_resource type="Animation" id=41]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("../sonic/DeathScreen:visible")
@@ -294,7 +294,7 @@ visible = false
 
 [node name="OmniLight" type="OmniLight" parent="Armature" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0834094, 0 )
-light_color = Color( 0.290196, 0.298039, 0.505882, 1 )
+light_color = Color( 0.211765, 0.211765, 0.278431, 1 )
 light_energy = 0.1
 light_indirect_energy = 0.0
 light_specular = 0.0
@@ -351,17 +351,17 @@ mesh = SubResource( 6 )
 material/0 = SubResource( 7 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="7"]
-tree_root = SubResource( 38 )
+tree_root = SubResource( 39 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 39 )
+parameters/playback = SubResource( 40 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
-anims/Die = SubResource( 40 )
+anims/Die = SubResource( 41 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
 stream = ExtResource( 3 )

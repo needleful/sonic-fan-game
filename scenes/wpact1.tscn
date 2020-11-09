@@ -17,15 +17,16 @@
 [ext_resource path="res://ui/game_theme.tres" type="Theme" id=15]
 
 [sub_resource type="ProceduralSky" id=1]
-sky_top_color = Color( 0.341176, 0.423529, 0.470588, 1 )
-sky_horizon_color = Color( 0.45098, 0.490196, 0.521569, 1 )
+sky_top_color = Color( 0.317647, 0.341176, 0.356863, 1 )
+sky_horizon_color = Color( 0.192157, 0.192157, 0.188235, 1 )
+ground_horizon_color = Color( 0.0862745, 0.0784314, 0.0745098, 1 )
 
 [sub_resource type="Environment" id=2]
 background_mode = 2
 background_sky = SubResource( 1 )
 background_energy = 0.1
 fog_enabled = true
-fog_color = Color( 0, 0, 0, 1 )
+fog_color = Color( 0.133333, 0.156863, 0.156863, 1 )
 fog_sun_color = Color( 0.227451, 0.239216, 0.262745, 1 )
 fog_depth_begin = 100.0
 fog_depth_end = 750.0
@@ -228,7 +229,7 @@ autoplay = "Fire_light"
 anims/Fire_light = SubResource( 3 )
 
 [node name="SpotLight" type="SpotLight" parent="Lighting"]
-transform = Transform( 0.947871, -0.170158, 0.269418, -0.306197, -0.252286, 0.91793, -0.0882227, -0.952574, -0.291236, 52.2696, 334.588, 354.702 )
+transform = Transform( 0.964819, 0.0462082, 0.258824, -0.237336, -0.270488, 0.93301, 0.113121, -0.961614, -0.250005, 50.9824, 334.588, 354.702 )
 light_energy = 0.6
 shadow_enabled = true
 shadow_bias = 0.5
