@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=2]
+[gd_scene load_steps=49 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -76,6 +76,9 @@ animation = "RunLeanRight-loop"
 [sub_resource type="AnimationNodeAnimation" id=20]
 animation = "RunHard-loop"
 
+[sub_resource type="AnimationNodeAnimation" id=44]
+animation = "RunNoJump-loop"
+
 [sub_resource type="AnimationNodeBlendSpace2D" id=21]
 blend_point_0/node = SubResource( 17 )
 blend_point_0/pos = Vector2( 0, 0 )
@@ -85,6 +88,8 @@ blend_point_2/node = SubResource( 19 )
 blend_point_2/pos = Vector2( 1, 0 )
 blend_point_3/node = SubResource( 20 )
 blend_point_3/pos = Vector2( 0, 1 )
+blend_point_4/node = SubResource( 44 )
+blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
 [sub_resource type="AnimationNodeBlendSpace1D" id=22]
@@ -99,11 +104,11 @@ max_space = 3.0
 snap = 0.5
 
 [sub_resource type="AnimationNodeBlendTree" id=23]
-graph_offset = Vector2( -134, 41 )
+graph_offset = Vector2( -365, 15 )
 nodes/Speed/node = SubResource( 9 )
 nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 22 )
-nodes/Walk/position = Vector2( 60, 80 )
+nodes/Walk/position = Vector2( 40, 80 )
 nodes/output/position = Vector2( 520, 100 )
 node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
@@ -163,7 +168,7 @@ states/Stop-loop/node = SubResource( 27 )
 states/Stop-loop/position = Vector2( 514, -44 )
 transitions = [ "Ground", "Jump", SubResource( 28 ), "Fall", "Ground", SubResource( 29 ), "Ground", "Fall", SubResource( 30 ), "Ground", "Stop-loop", SubResource( 31 ), "Stop-loop", "Ground", SubResource( 32 ), "Stop-loop", "Jump", SubResource( 33 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 38 ) ]
 start_node = "Ground"
-graph_offset = Vector2( -270, -86 )
+graph_offset = Vector2( -279, 66 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=40]
 
@@ -386,7 +391,7 @@ parameters/playback = SubResource( 40 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
-parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
+parameters/Ground/Walk/2/blend_position = Vector2( 0.228, -1.064 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
 anims/Die = SubResource( 41 )

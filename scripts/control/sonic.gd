@@ -81,6 +81,7 @@ var sneaking: bool = false
 
 var recover = true
 var last_wall_jump:Vector3 = Vector3.ZERO
+var can_wall_jump:bool = true
 
 const TIME_JUMP = 0.1
 const TIME_REORIENT = 0
@@ -195,10 +196,11 @@ func _process(delta):
 	)
 	anim["parameters/Ground/Walk/1/blend_position"] = lean
 	
+	var wj = 0 if can_wall_jump else 1.5
 	var old_blend: Vector2 = anim["parameters/Ground/Walk/2/blend_position"]
 	var new_blend: Vector2 = Vector2(
 		local_steer/(PI/3),
-		clamp(speed - 9, 0, 1)
+		clamp(speed - 9 - wj , -wj, 1)
 	)
 	anim["parameters/Ground/Walk/2/blend_position"] = lerp(old_blend, new_blend, 0.1)
 
@@ -266,17 +268,16 @@ func _physics_process(delta):
 				else:
 					new_state = State.Slip
 		State.WallRun:
-			if ( Input.is_action_just_pressed("mv_jump") 
-				and last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
-			):
-				if last_wall_jump.dot(target_up) > 0:
-					new_state = State.Slip
-				else:
+			can_wall_jump = last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
+			if Input.is_action_just_pressed("mv_jump"):
+				if can_wall_jump:
 					last_wall_jump = target_up
 					if statePlayback.get_current_node() == "Stop-loop":
 						new_state = State.SlidingJump
 					else:
 						new_state = State.Jumping
+				else:
+					new_state = State.Slip
 			elif !is_on_floor():
 				timer_coyote += delta
 				if timer_coyote >= TIME_COYOTE_WALLRUN:
@@ -293,13 +294,12 @@ func _physics_process(delta):
 				elif !recover or vp.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
 					new_state = State.Slip
 		State.Slip:
+			can_wall_jump = ( last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP 
+				and timer_air < TIME_WALLJUMP_SLIP)
 			if velocity.length_squared() >= SPEED_WALL_RUN_RECOVERY*SPEED_WALL_RUN_RECOVERY:
 				recover = true
 				new_state = State.WallRun
-			if ( Input.is_action_just_pressed("mv_jump") 
-				and timer_air < TIME_WALLJUMP_SLIP
-				and last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
-			):
+			if can_wall_jump and Input.is_action_just_pressed("mv_jump"):
 				last_wall_jump = target_up
 				if statePlayback.get_current_node() == "Stop-loop":
 					new_state = State.SlidingJump
@@ -582,6 +582,7 @@ func set_state(new_state):
 	timer_coyote = 0
 	match new_state:
 		State.Ground:
+			can_wall_jump = true
 			$CustomAnimation.play("Jump-Reset")
 			timer_air = 0
 			statePlayback.travel("Ground")
