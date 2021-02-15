@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=2]
+[gd_scene load_steps=46 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -105,7 +105,7 @@ nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 22 )
 nodes/Walk/position = Vector2( 60, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
+node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
 [sub_resource type="AnimationNodeAnimation" id=24]
 animation = "Ball-loop"
@@ -218,38 +218,6 @@ tracks/3/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ true ]
-}
-
-[sub_resource type="Animation" id=42]
-resource_name = "Jump-Reset"
-tracks/0/type = "value"
-tracks/0/path = NodePath("Armature:rotation_degrees")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ Vector3( 0, 0, 0 ) ]
-}
-
-[sub_resource type="Animation" id=43]
-resource_name = "Jump-Roll"
-length = 0.6
-loop = true
-tracks/0/type = "value"
-tracks/0/path = NodePath("Armature:rotation_degrees")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/keys = {
-"times": PoolRealArray( 0, 0.3, 0.6 ),
-"transitions": PoolRealArray( 1, 1, 1 ),
-"update": 0,
-"values": [ Vector3( 0, 0, 0 ), Vector3( 180, 0, 0 ), Vector3( 360, 0, 0 ) ]
 }
 
 [node name="sonic" groups=[
@@ -394,8 +362,6 @@ parameters/Ground/Walk/2/blend_position = Vector2( -0.00810081, 0.431035 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
 anims/Die = SubResource( 41 )
-anims/Jump-Reset = SubResource( 42 )
-anims/Jump-Roll = SubResource( 43 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
 stream = ExtResource( 3 )
