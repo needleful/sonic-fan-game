@@ -582,6 +582,7 @@ func set_state(new_state):
 	timer_coyote = 0
 	match new_state:
 		State.Ground:
+			$CustomAnimation.play("Jump-Reset")
 			timer_air = 0
 			statePlayback.travel("Ground")
 			recover = true
@@ -591,12 +592,14 @@ func set_state(new_state):
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
 			statePlayback.travel("Jump")
+			$CustomAnimation.play("Jump-Roll")
 			if state == State.Slip:
 				velocity += target_up*VEL_JUMP
 			else:
 				velocity += up*VEL_JUMP
 			sneaking = false
 		State.WallRun:
+			$CustomAnimation.play("Jump-Reset")
 			timer_air = 0
 			if target_up == Vector3.ZERO:
 				var nw = find_good_wall()
@@ -606,6 +609,7 @@ func set_state(new_state):
 					set_wall(nw)
 			statePlayback.travel("Ground")
 		State.Slip:
+			$CustomAnimation.play("Jump-Reset")
 			statePlayback.travel("Fall")
 			recover = false
 	state = new_state
