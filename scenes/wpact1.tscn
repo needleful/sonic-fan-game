@@ -197,6 +197,7 @@ text = "QUIT"
 align = 0
 
 [node name="FastOptionsMenu" type="Panel" parent="main_menu"]
+visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -289,32 +290,64 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -70.0079, 297.687, 371.918 )
 curve = SubResource( 4 )
 script = ExtResource( 4 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 5 )
+material = null
+uv_scale = 5.0
 template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 2, 0, 0, 0 )
+collision_layer = 5
+object_template = null
+object_distance = 25.0
+object_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+object_place_vertically = true
 
 [node name="tubes_ascend1" type="Path" parent="act1_main_level"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -37.8494, 135.163, 350.887 )
 curve = SubResource( 5 )
 script = ExtResource( 4 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 6 )
+material = null
+uv_scale = 5.0
+template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 collision_layer = 1
+object_template = null
+object_distance = 25.0
+object_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+object_place_vertically = true
 
 [node name="pipes1" type="Path" parent="act1_main_level"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 116.766, 0 )
 curve = SubResource( 6 )
 script = ExtResource( 4 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 6 )
+material = null
+uv_scale = 5.0
+template_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 collision_layer = 1
+object_template = null
+object_distance = 25.0
+object_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+object_place_vertically = true
 
 [node name="pipe_exit" type="Path" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 490.313, 804.301 )
 curve = SubResource( 7 )
 script = ExtResource( 4 )
 stay_vertical = false
+angle_tolerance = 4.0
 template_mesh = ExtResource( 5 )
+material = null
+uv_scale = 5.0
 template_transform = Transform( 1.7, 0, 0, 0, 1.7, 0, 0, 0, 1, 0, 0, 0 )
+collision_layer = 5
+object_template = null
+object_distance = 25.0
+object_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+object_place_vertically = true
 
 [node name="Checkpoint" type="Area" parent="pipe_exit"]
 transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 30.1966, 69.3809, 151.288 )

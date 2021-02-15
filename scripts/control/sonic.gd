@@ -591,6 +591,7 @@ func set_state(new_state):
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
 			statePlayback.travel("Jump")
+			$CustomAnimation.play("Jump-Roll")
 			if state == State.Slip:
 				velocity += target_up*VEL_JUMP
 			else:
@@ -608,8 +609,11 @@ func set_state(new_state):
 		State.Slip:
 			statePlayback.travel("Fall")
 			recover = false
+	if new_state != State.Jumping and new_state != State.SlidingJump:
+		$CustomAnimation.play("Jump-Reset")
 	state = new_state
 
+# Rotate the player mesh about about axis by an angle in radians
 func rotate_up(axis: Vector3, angle:float):
 	up = up.rotated(axis, angle)
 	var mx = mesh.global_transform.basis.x
