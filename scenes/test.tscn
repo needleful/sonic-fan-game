@@ -424,8 +424,17 @@ sides = 18
 transform = Transform( -0.99975, -0.0223732, 0, 0.0223732, -0.99975, 0, 0, 0, 1, 762.676, 55.5662, -5.3242 )
 curve = SubResource( 8 )
 script = ExtResource( 7 )
+stay_vertical = true
+angle_tolerance = 4.0
 template_mesh = ExtResource( 6 )
+material = null
+uv_scale = 5.0
 template_transform = Transform( 0, 0.2, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0 )
+collision_layer = 5
+object_template = null
+object_distance = 25.0
+object_transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+object_place_vertically = true
 
 [node name="spring" parent="." instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 38.8298, -0.0406636, -40.1576 )

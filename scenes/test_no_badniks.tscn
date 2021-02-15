@@ -69,6 +69,7 @@ shadow_color = Color( 0.239216, 0.25098, 0.364706, 1 )
 [node name="TorusLoop" type="CSGBox" parent="Environment"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -69.4868, 18.1739, 80 )
 use_collision = true
+collision_layer = 5
 width = 59.5862
 height = 42.261
 depth = 53.5087
