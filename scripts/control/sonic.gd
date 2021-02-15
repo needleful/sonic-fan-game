@@ -87,6 +87,9 @@ const TIME_REORIENT = 0
 const TIME_WALLJUMP_SLIP = 0.75
 var timer_air = 0
 
+const SPEED_ROLL_JUMP = 18
+var roll_jump_speed: float = 0
+
 const TIME_WALL_RUN = 0.06
 var timer_wall_run = 0
 
@@ -115,7 +118,8 @@ var cameraRot: Vector2 = Vector2(0,0)
 onready var camFollow = $Cam
 onready var camYaw = $Cam/Yaw
 onready var camSpring: SpringArm = $Cam/Yaw/SpringArm
-onready var mesh: Spatial = $Armature
+onready var pcRoot: Spatial = $ObjectRoot
+onready var mesh: Spatial = $ObjectRoot/Armature
 onready var cam : Camera = $Cam/Yaw/SpringArm/Camera
 onready var cam_reverse : Camera = $Cam/Yaw/Reverse/Camera
 
@@ -185,8 +189,8 @@ func _process(delta):
 	anim["parameters/Ground/Walk/blend_position"] = lerp(old_speed, speed, 0.5)
 	anim["parameters/Ground/Speed/scale"] = min(0.75+speed/1.5, 2+speed/3)
 	
-	var left = mesh.global_transform.basis.x
-	var forward = mesh.global_transform.basis.z
+	var left = pcRoot.global_transform.basis.x
+	var forward = pcRoot.global_transform.basis.z
 	var frontAngle = true_up.dot(forward)*1.5
 	var sideAngle = true_up.dot(left)*1.5
 	var lean:Vector2 = Vector2(
@@ -283,7 +287,7 @@ func _physics_process(delta):
 					var new_wall = find_good_wall(0)
 					if new_wall != Vector3.ZERO:
 						set_wall(new_wall)
-					elif $Armature/WallRunArea.get_overlapping_bodies().size() == 0:
+					elif $ObjectRoot/WallRunArea.get_overlapping_bodies().size() == 0:
 						new_state = State.Air
 			else:
 				var vp = MoveMath.reject(velocity, target_up)
@@ -327,10 +331,8 @@ func _physics_process(delta):
 		State.Slip:
 			process_air(ACCEL_AIR, delta)
 		State.Jumping:
-			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING, delta)
 		State.SlidingJump:
-			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING_SLIDE, delta)
 
 	var speed = velocity.length()/MAX_SNEAK
@@ -521,6 +523,7 @@ func process_air(accel, delta):
 	if timer_air >= TIME_REORIENT:
 		reorient_air(true_up, delta*REORIENT_AIR)
 	target_up = up
+	mesh.rotate_x(delta*roll_jump_speed)
 
 func reorient(new_up:Vector3, rotate_speed: float, min_rotate_speed:float, delta:float):
 	if !new_up.is_normalized():
@@ -576,12 +579,13 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 func set_state(new_state):
 	if state == new_state:
 		return
-	#$Armature/Skeleton.rotation = Vector3.ZERO
 	print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
 	match new_state:
 		State.Ground:
+			roll_jump_speed = 0
+			mesh.rotation = Vector3.ZERO
 			timer_air = 0
 			statePlayback.travel("Ground")
 			recover = true
@@ -590,6 +594,8 @@ func set_state(new_state):
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
+			mesh.rotation = Vector3.ZERO
+			roll_jump_speed = SPEED_ROLL_JUMP
 			statePlayback.travel("Jump")
 			if state == State.Slip:
 				velocity += target_up*VEL_JUMP
@@ -597,6 +603,8 @@ func set_state(new_state):
 				velocity += up*VEL_JUMP
 			sneaking = false
 		State.WallRun:
+			roll_jump_speed = 0
+			mesh.rotation = Vector3.ZERO
 			timer_air = 0
 			if target_up == Vector3.ZERO:
 				var nw = find_good_wall()
@@ -610,17 +618,17 @@ func set_state(new_state):
 			recover = false
 	state = new_state
 
-# Rotate the player mesh about about axis by an angle in radians
+# Rotate the player mesh object about about axis by an angle in radians
 func rotate_up(axis: Vector3, angle:float):
 	up = up.rotated(axis, angle)
-	var mx = mesh.global_transform.basis.x
+	var mx = pcRoot.global_transform.basis.x
 	var mz = mx.cross(up).normalized()
 	mx = mx.rotated(axis, angle).normalized()
-	mesh.global_transform = Transform(Basis(mx, up, mz), mesh.global_transform.origin)
+	pcRoot.global_transform = Transform(Basis(mx, up, mz), pcRoot.global_transform.origin)
 
 func rotate_by_speed(delta):
 	var bx = up.cross(velocity).normalized()
-	var rx = mesh.global_transform.basis.x.normalized()
+	var rx = pcRoot.global_transform.basis.x.normalized()
 	var r = rx.angle_to(bx)
 	if r == 0:
 		return
@@ -628,7 +636,7 @@ func rotate_by_speed(delta):
 	var angle = sign(r)*min(abs(r), delta*SPEED_ROTATE_MESH)
 	
 	if axis.is_normalized():
-		mesh.global_rotate(axis, angle)
+		pcRoot.global_rotate(axis, angle)
 
 func get_movement(movement_up: Vector3 = up)->Vector3:
 	var input = Vector2(
