@@ -23,7 +23,7 @@ func start(other_scene:String = ""):
 	$"/root/Pause".set_process_input(true)
 	for sonic in get_tree().get_nodes_in_group("player"):
 		sonic.set_process_input(true)
-		sonic.endAnimation()
+		sonic.playAnimation("Stand")
 	$"/root/SceneCards".open_level(zone_name, act)
 
 func _on_Quit_pressed():

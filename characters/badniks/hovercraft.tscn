@@ -20,6 +20,7 @@ bottom_radius = 0.1
 height = 9.0
 
 [sub_resource type="SphereMesh" id=3]
+resource_local_to_scene = true
 radius = 0.5
 height = 1.0
 
@@ -49,7 +50,7 @@ rings = 6
 [sub_resource type="Animation" id=7]
 length = 6.0
 tracks/0/type = "value"
-tracks/0/path = NodePath("../hovercraft/Eye/SpotLight:spot_angle")
+tracks/0/path = NodePath("Eye/SpotLight:spot_angle")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -61,7 +62,7 @@ tracks/0/keys = {
 "values": [ 8.0, 4.0, 20.0, 8.0, 8.0 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("../hovercraft/Eye/SpotLight:light_color")
+tracks/1/path = NodePath("Eye/SpotLight:light_color")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -73,7 +74,7 @@ tracks/1/keys = {
 "values": [ Color( 0.980392, 0.647059, 1, 1 ), Color( 1, 0.980392, 0.909804, 1 ), Color( 0.997549, 0.135784, 0.179902, 1 ), Color( 1, 0.572549, 0.878431, 1 ), Color( 0.980392, 0.647059, 1, 1 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("../hovercraft/Eye/SpotLight:light_energy")
+tracks/2/path = NodePath("Eye/SpotLight:light_energy")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -85,7 +86,7 @@ tracks/2/keys = {
 "values": [ 2.0, 2.0, 4.0, 9.0, 2.0, 2.0 ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("../hovercraft/Eye/AttackMesh:visible")
+tracks/3/path = NodePath("Eye/AttackMesh:visible")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -97,7 +98,7 @@ tracks/3/keys = {
 "values": [ false, true, false ]
 }
 tracks/4/type = "value"
-tracks/4/path = NodePath("../hovercraft/Eye/AttackMesh/AttackArea/CollisionShape:shape:radius")
+tracks/4/path = NodePath("Eye/AttackMesh/AttackArea/CollisionShape:shape:radius")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
@@ -129,7 +130,7 @@ tracks/5/keys = {
 } ]
 }
 tracks/6/type = "value"
-tracks/6/path = NodePath("../hovercraft/AttackAudio:stream")
+tracks/6/path = NodePath("AttackAudio:stream")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/imported = false
@@ -141,7 +142,7 @@ tracks/6/keys = {
 "values": [ ExtResource( 5 ), ExtResource( 4 ) ]
 }
 tracks/7/type = "value"
-tracks/7/path = NodePath("../hovercraft/AttackAudio:playing")
+tracks/7/path = NodePath("AttackAudio:playing")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/imported = false
@@ -153,7 +154,7 @@ tracks/7/keys = {
 "values": [ false, true, true ]
 }
 tracks/8/type = "value"
-tracks/8/path = NodePath("../hovercraft/AttackAudio/Secondary:stream")
+tracks/8/path = NodePath("AttackAudio/Secondary:stream")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/imported = false
@@ -165,7 +166,7 @@ tracks/8/keys = {
 "values": [ ExtResource( 7 ) ]
 }
 tracks/9/type = "value"
-tracks/9/path = NodePath("../hovercraft/AttackAudio/Secondary:playing")
+tracks/9/path = NodePath("AttackAudio/Secondary:playing")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/imported = false
@@ -177,7 +178,7 @@ tracks/9/keys = {
 "values": [ false, true ]
 }
 tracks/10/type = "value"
-tracks/10/path = NodePath("../hovercraft/Eye/MeshInstance:mesh:material:emission")
+tracks/10/path = NodePath("Eye/MeshInstance:mesh:material:emission")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/imported = false
@@ -189,7 +190,7 @@ tracks/10/keys = {
 "values": [ Color( 1, 0.243137, 0.933333, 1 ), Color( 1, 0.831373, 0.984314, 1 ), Color( 1, 0.831373, 0.984314, 1 ), Color( 1, 0.2, 0.92549, 1 ) ]
 }
 tracks/11/type = "value"
-tracks/11/path = NodePath("../hovercraft/Eye/OmniLight:light_energy")
+tracks/11/path = NodePath("Eye/OmniLight:light_energy")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/imported = false
@@ -201,7 +202,7 @@ tracks/11/keys = {
 "values": [ 0.6, 1.01463, 4.0, 4.0, 0.6 ]
 }
 tracks/12/type = "value"
-tracks/12/path = NodePath("../hovercraft/Eye/MeshInstance:scale")
+tracks/12/path = NodePath("Eye/MeshInstance:scale")
 tracks/12/interp = 1
 tracks/12/loop_wrap = true
 tracks/12/imported = false
@@ -216,7 +217,7 @@ tracks/12/keys = {
 [sub_resource type="Animation" id=8]
 length = 0.5
 tracks/0/type = "value"
-tracks/0/path = NodePath("../hovercraft/Eye/SpotLight:spot_angle")
+tracks/0/path = NodePath("Eye/SpotLight:spot_angle")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -228,7 +229,7 @@ tracks/0/keys = {
 "values": [ 8.0 ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath("../hovercraft/Eye/SpotLight:light_color")
+tracks/1/path = NodePath("Eye/SpotLight:light_color")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -240,7 +241,7 @@ tracks/1/keys = {
 "values": [ Color( 0.980392, 0.647059, 1, 1 ) ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("../hovercraft/AttackAudio:playing")
+tracks/2/path = NodePath("AttackAudio:playing")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -252,7 +253,7 @@ tracks/2/keys = {
 "values": [ true ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("../hovercraft/AttackAudio:stream")
+tracks/3/path = NodePath("AttackAudio:stream")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -278,7 +279,7 @@ tracks/4/keys = {
 } ]
 }
 tracks/5/type = "value"
-tracks/5/path = NodePath("../hovercraft/Eye/OmniLight:light_energy")
+tracks/5/path = NodePath("Eye/OmniLight:light_energy")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/imported = false
@@ -290,7 +291,7 @@ tracks/5/keys = {
 "values": [ 0.6 ]
 }
 tracks/6/type = "value"
-tracks/6/path = NodePath("../hovercraft/Eye/MeshInstance:mesh:material:emission")
+tracks/6/path = NodePath("Eye/MeshInstance:mesh:material:emission")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/imported = false
@@ -302,7 +303,7 @@ tracks/6/keys = {
 "values": [ Color( 1, 0.243137, 0.933333, 1 ) ]
 }
 tracks/7/type = "value"
-tracks/7/path = NodePath("../hovercraft/Eye/SpotLight:light_energy")
+tracks/7/path = NodePath("Eye/SpotLight:light_energy")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/imported = false

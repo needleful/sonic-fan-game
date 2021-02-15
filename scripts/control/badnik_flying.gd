@@ -10,11 +10,11 @@ export(float) var repulsion = 10
 export(float) var avoidance_strength = 30
 export(float) var angular_drag = .9
 export(float) var weapon_rotation_speed: float = deg2rad(40)
+export(float) var air_drag = 0.03
 export(NodePath) var kill_box: NodePath
 
 var killbox: Area
 
-const DRAG_AIR = 0.00005
 var sonic: Sonic
 onready var weapon: Spatial = $Eye
 onready var anim: AnimationPlayer = $AttackAnimations
@@ -106,7 +106,7 @@ func _physics_process(delta):
 	
 	var move_correction = accel.normalized() - linear_velocity.normalized()
 	var vcor = move_correction*pivot_acceleration
-	var drag:Vector3 = DRAG_AIR*linear_velocity*linear_velocity*linear_velocity
+	var drag:Vector3 = (air_drag*0.001)*linear_velocity*linear_velocity*linear_velocity
 	
 	if weapState != WeaponState.Firing:
 		add_central_force((accel-drag+vcor)*mass)

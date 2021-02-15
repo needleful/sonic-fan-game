@@ -133,7 +133,7 @@ radius = 14.4009
 [node name="wpact1" type="Spatial"]
 
 [node name="sonic" parent="." instance=ExtResource( 2 )]
-transform = Transform( 0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 0.786987, -19.4747, -227.951 )
+transform = Transform( 0.34202, 0, 0.939693, 0, 1, 0, -0.939693, 0, 0.34202, 0.786987, -19.4747, -227.951 )
 
 [node name="main_menu" type="Control" parent="."]
 anchor_right = 1.0
@@ -197,7 +197,6 @@ text = "QUIT"
 align = 0
 
 [node name="FastOptionsMenu" type="Panel" parent="main_menu"]
-visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -211,8 +210,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 option_scripts = [ ExtResource( 12 ), ExtResource( 13 ), ExtResource( 14 ) ]
-save_path = "res://settings.cfg"
-defaults_file = "res://defaults.cfg"
 
 [node name="Lighting" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )
@@ -267,7 +264,7 @@ transform = Transform( 0.895151, -0.284148, 0.34346, -0.424598, -0.308912, 0.851
 light_color = Color( 0.921569, 1, 0.764706, 1 )
 light_energy = 0.6
 shadow_enabled = true
-shadow_bias = 0.5
+shadow_bias = 0.07
 spot_range = 53.6956
 spot_angle = 35.123
 
