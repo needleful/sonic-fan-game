@@ -1,25 +1,42 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
 
-[sub_resource type="Curve3D" id=5]
-_data = {
-"points": PoolVector3Array( -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603, -17.3323, 15.8138, -3.7571, 17.3323, -15.8138, 3.7571, -19.5819, -10.0642, -0.200043, -8.07931, -6.61233, 13.5671, 8.07931, 6.61233, -13.5671, 1.82944, 8.20815, -0.665791, -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603 ),
-"tilts": PoolRealArray( 0, 0, 0, 0 )
+[sub_resource type="CubeMesh" id=5]
+size = Vector3( 16, 2, 16 )
+
+[sub_resource type="BoxShape" id=6]
+extents = Vector3( 8, 1, 8 )
+
+[sub_resource type="BoxShape" id=7]
+extents = Vector3( 50, 10, 1 )
+
+[sub_resource type="CubeMesh" id=8]
+size = Vector3( 100, 20, 2 )
+
+[sub_resource type="Animation" id=9]
+resource_name = "rotate"
+length = 8.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 8 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( 360, 0, 0 ) ]
 }
 
-[sub_resource type="CubeMesh" id=1]
-size = Vector3( 3, 2, 3 )
-
-[sub_resource type="BoxShape" id=2]
-extents = Vector3( 1.5, 1, 1.5 )
-
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=4]
 resource_name = "Travel"
 length = 20.0
 loop = true
 tracks/0/type = "value"
-tracks/0/path = NodePath("PathFollow:unit_offset")
+tracks/0/path = NodePath("Path/PathFollow:unit_offset")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -30,28 +47,106 @@ tracks/0/keys = {
 "update": 0,
 "values": [ 0.0, 1.0 ]
 }
+tracks/1/type = "value"
+tracks/1/path = NodePath("Path2/PathFollow:unit_offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 20 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 1.0, 0.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Path3/PathFollow:unit_offset")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 20 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
 
-[sub_resource type="CubeMesh" id=3]
-size = Vector3( 16, 2, 16 )
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603, -17.3323, 15.8138, -3.7571, 17.3323, -15.8138, 3.7571, -19.5819, -10.0642, -0.200043, -8.07931, -6.61233, 13.5671, 8.07931, 6.61233, -13.5671, 1.82944, 8.20815, -0.665791, -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
 
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 8, 1, 8 )
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 4, 2, 6 )
+
+[sub_resource type="BoxShape" id=3]
+extents = Vector3( 2, 1, 3 )
+
+[sub_resource type="Curve3D" id=10]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, 0.526369, -1.79806, -0.410669, 0, 0, 0, 0, 0, 0, 1.24606, 37.242, 0.14271, 0, 0, 0, 0, 0, 0, 0.526369, -1.79806, -0.410669 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
+
+[sub_resource type="BoxShape" id=11]
+extents = Vector3( 2, 1, 2 )
+
+[sub_resource type="CubeMesh" id=12]
+size = Vector3( 4, 2, 4 )
+
+[sub_resource type="Curve3D" id=13]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -8.50176, 0.210598, 0, 0, 0, 0, 0, 0, 0, -45.7083, 0.125459, 0, 0, 0, 0, 0, 0, 0, -8.50176, 0.210598, 0 ),
+"tilts": PoolRealArray( 0, 0, 0 )
+}
 
 [node name="Spatial" type="Spatial"]
 
 [node name="sonic" parent="." instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.592104, 0 )
-kill_plane = null
-time_limit = null
-score = null
-rings = null
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.27436, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+mesh = SubResource( 5 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 6 )
+
+[node name="KinematicBody" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 59.9306, 0, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape" type="CollisionShape" parent="KinematicBody"]
+shape = SubResource( 7 )
+
+[node name="MeshInstance" type="MeshInstance" parent="KinematicBody"]
+mesh = SubResource( 8 )
+material/0 = null
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="KinematicBody"]
+autoplay = "rotate"
+anims/rotate = SubResource( 9 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Travel"
+anims/Travel = SubResource( 4 )
 
 [node name="Path" type="Path" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.4132 )
-curve = SubResource( 5 )
+curve = SubResource( 1 )
 
 [node name="PathFollow" type="PathFollow" parent="Path"]
-transform = Transform( -0.909734, 0, -0.415186, 0, 0.999999, 0, 0.415186, 0, -0.909734, 20.9385, 5.38099, 0.500603 )
+transform = Transform( -0.996052, 0, -0.0887556, 0, 0.999999, 0, 0.0887556, 0, -0.996052, 20.9385, 5.38099, 0.500603 )
 rotation_mode = 1
 
 [node name="floor" type="RigidBody" parent="Path/PathFollow"]
@@ -61,25 +156,44 @@ __meta__ = {
 }
 
 [node name="MeshInstance" type="MeshInstance" parent="Path/PathFollow/floor"]
-mesh = SubResource( 1 )
+mesh = SubResource( 2 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="Path/PathFollow/floor"]
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Path"]
-autoplay = "Travel"
-anims/Travel = SubResource( 6 )
+[node name="Path2" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27436, -14.8449 )
+curve = SubResource( 10 )
 
-[node name="StaticBody" type="StaticBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.27436, 0 )
+[node name="PathFollow" type="PathFollow" parent="Path2"]
+transform = Transform( 0.686125, 0.0443375, -0.72613, 0.0285032, -0.999013, -0.0340662, -0.726924, 0.00267675, -0.68671, 0.526369, -1.79806, -0.410669 )
+offset = 77.6108
+
+[node name="KinematicBody" type="KinematicBody" parent="Path2/PathFollow"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Path2/PathFollow/KinematicBody"]
+shape = SubResource( 11 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Path2/PathFollow/KinematicBody/CollisionShape"]
+mesh = SubResource( 12 )
+material/0 = null
+
+[node name="Path3" type="Path" parent="."]
+curve = SubResource( 13 )
+
+[node name="PathFollow" type="PathFollow" parent="Path3"]
+transform = Transform( 0.999991, -0.00414319, 0, 0.00414319, 0.999991, 0, 0, 0, 1, -8.50176, 0.210598, 0 )
+
+[node name="floor2" type="RigidBody" parent="Path3/PathFollow"]
+mode = 3
 __meta__ = {
 "_edit_group_": true
 }
 
-[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
-mesh = SubResource( 3 )
+[node name="MeshInstance" type="MeshInstance" parent="Path3/PathFollow/floor2"]
+mesh = SubResource( 2 )
 material/0 = null
 
-[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
-shape = SubResource( 4 )
+[node name="CollisionShape" type="CollisionShape" parent="Path3/PathFollow/floor2"]
+shape = SubResource( 3 )

@@ -50,7 +50,7 @@ const FORCE_CENTRIFUGAL = 1
 const MIN_GROUNDED_ON_WALL = -0.05
 const MIN_SPEED_WALL_RUN = 15
 const SPEED_WALL_RUN_RECOVERY = 30
-const FLOOR_MAGNETISM = 5
+const FLOOR_MAGNETISM = 0.01
 const WALL_RUN_ROLL_SPEED = 1.2
 const WALL_RUN_PITCH_SPEED = 15
 const WALL_DOT = 0.5
@@ -78,6 +78,7 @@ var true_up:Vector3 = -gravity.normalized()
 var up: Vector3 = true_up
 var target_up: Vector3 = true_up
 var sneaking: bool = false
+var velocity_floor: Vector3 = Vector3.ZERO
 
 var recover = true
 var last_wall_jump:Vector3 = Vector3.ZERO
@@ -396,7 +397,7 @@ func _physics_process(delta):
 	$debugUI/status/Up.text = "UP: " + MoveMath.pr(up)
 	$debugUI/status/Velocity.text = "VEL: " + str(velocity.length())
 	$debugUI/status/Position.text = "ORIG: " + MoveMath.pr(global_transform.origin)
-	$debugUI/status/Extra.text = "T_UP: " + MoveMath.pr(target_up)
+	$debugUI/status/Extra.text = "F_VEL: " + MoveMath.pr(velocity_floor)
 
 func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
@@ -491,6 +492,7 @@ func process_ground(delta, accel_move, accel_start):
 		return
 	if !up.is_normalized():
 		print("up is bad")
+	velocity_floor = move_and_slide(velocity_floor)
 	velocity -= up*delta*FLOOR_MAGNETISM
 	velocity = move_and_slide(velocity, target_up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
@@ -507,6 +509,9 @@ func process_ground(delta, accel_move, accel_start):
 				target_up = n
 			else:
 				target_up = lerp(target_up, n, 0.5)
+			velocity_floor = lerp(velocity_floor, get_floor_velocity().slide(target_up), delta*10)
+		else:
+			velocity_floor *= 0.1
 		reorient(target_up, 40, 60, delta)
 
 func process_air(accel, delta):
@@ -589,9 +594,13 @@ func set_state(new_state):
 			recover = true
 			last_wall_jump = Vector3.ZERO
 		State.Air:
+			velocity += velocity_floor
+			velocity_floor = Vector3.ZERO
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
+			velocity += velocity_floor
+			velocity_floor = Vector3.ZERO
 			statePlayback.travel("Jump")
 			$CustomAnimation.play("Jump-Roll")
 			if state == State.Slip:
@@ -610,6 +619,8 @@ func set_state(new_state):
 					set_wall(nw)
 			statePlayback.travel("Ground")
 		State.Slip:
+			velocity += velocity_floor
+			velocity_floor = Vector3.ZERO
 			$CustomAnimation.play("Jump-Reset")
 			statePlayback.travel("Fall")
 			recover = false

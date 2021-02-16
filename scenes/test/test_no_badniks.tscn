@@ -53,6 +53,7 @@ _data = {
 [node name="Spatial" type="Spatial"]
 
 [node name="sonic" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.441011, 0 )
 
 [node name="Lighting" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )

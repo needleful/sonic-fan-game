@@ -5,114 +5,114 @@
 [ext_resource path="res://assets/sfx/death.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=5]
 
-[sub_resource type="DynamicFont" id=40]
+[sub_resource type="DynamicFont" id=1]
 size = 48
 font_data = ExtResource( 5 )
 
-[sub_resource type="SphereShape" id=41]
+[sub_resource type="SphereShape" id=2]
 radius = 0.47
 
-[sub_resource type="SphereShape" id=42]
+[sub_resource type="SphereShape" id=3]
 radius = 0.43
 
-[sub_resource type="SphereShape" id=43]
+[sub_resource type="SphereShape" id=4]
 radius = 0.2
 
-[sub_resource type="SphereShape" id=44]
+[sub_resource type="SphereShape" id=5]
 radius = 0.2
 
-[sub_resource type="PrismMesh" id=45]
+[sub_resource type="PrismMesh" id=6]
 size = Vector3( 0.1, 0.1, 0.1 )
 
-[sub_resource type="SpatialMaterial" id=46]
+[sub_resource type="SpatialMaterial" id=7]
 flags_no_depth_test = true
 albedo_color = Color( 1, 0, 0, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=9]
+[sub_resource type="AnimationNodeAnimation" id=8]
 animation = "Fall-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=10]
+[sub_resource type="AnimationNodeTimeScale" id=9]
 
-[sub_resource type="AnimationNodeAnimation" id=11]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Walk-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=12]
+[sub_resource type="AnimationNodeAnimation" id=11]
 animation = "Idle-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=13]
+[sub_resource type="AnimationNodeAnimation" id=12]
 animation = "IdleLeanRight-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=14]
+[sub_resource type="AnimationNodeAnimation" id=13]
 animation = "IdleLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=15]
+[sub_resource type="AnimationNodeAnimation" id=14]
 animation = "IdleLeanForward-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=16]
+[sub_resource type="AnimationNodeAnimation" id=15]
 animation = "IdleLeanBackward-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=17]
-blend_point_0/node = SubResource( 12 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=16]
+blend_point_0/node = SubResource( 11 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 13 )
+blend_point_1/node = SubResource( 12 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 14 )
+blend_point_2/node = SubResource( 13 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 15 )
+blend_point_3/node = SubResource( 14 )
 blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 16 )
+blend_point_4/node = SubResource( 15 )
 blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeAnimation" id=18]
+[sub_resource type="AnimationNodeAnimation" id=17]
 animation = "Run-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=19]
+[sub_resource type="AnimationNodeAnimation" id=18]
 animation = "RunLeanLeft-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=20]
+[sub_resource type="AnimationNodeAnimation" id=19]
 animation = "RunLeanRight-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=21]
+[sub_resource type="AnimationNodeAnimation" id=20]
 animation = "RunHard-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=22]
+[sub_resource type="AnimationNodeAnimation" id=21]
 animation = "RunNoJump-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=23]
-blend_point_0/node = SubResource( 18 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=22]
+blend_point_0/node = SubResource( 17 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 19 )
+blend_point_1/node = SubResource( 18 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 20 )
+blend_point_2/node = SubResource( 19 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 21 )
+blend_point_3/node = SubResource( 20 )
 blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 22 )
+blend_point_4/node = SubResource( 21 )
 blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=24]
-blend_point_0/node = SubResource( 11 )
+[sub_resource type="AnimationNodeBlendSpace1D" id=23]
+blend_point_0/node = SubResource( 10 )
 blend_point_0/pos = 1.0
-blend_point_1/node = SubResource( 17 )
+blend_point_1/node = SubResource( 16 )
 blend_point_1/pos = 0.0
-blend_point_2/node = SubResource( 23 )
+blend_point_2/node = SubResource( 22 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 3.0
 snap = 0.5
 
-[sub_resource type="AnimationNodeBlendTree" id=25]
+[sub_resource type="AnimationNodeBlendTree" id=24]
 graph_offset = Vector2( -365, 15 )
-nodes/Speed/node = SubResource( 10 )
+nodes/Speed/node = SubResource( 9 )
 nodes/Speed/position = Vector2( 280, 80 )
-nodes/Walk/node = SubResource( 24 )
+nodes/Walk/node = SubResource( 23 )
 nodes/Walk/position = Vector2( 40, 80 )
 nodes/output/position = Vector2( 520, 100 )
 node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
-[sub_resource type="AnimationNodeAnimation" id=8]
+[sub_resource type="AnimationNodeAnimation" id=25]
 animation = "Ball-loop"
 
 [sub_resource type="AnimationNodeAnimation" id=26]
@@ -121,21 +121,21 @@ animation = "Sit-loop"
 [sub_resource type="AnimationNodeAnimation" id=27]
 animation = "Stand"
 
-[sub_resource type="AnimationNodeAnimation" id=47]
+[sub_resource type="AnimationNodeAnimation" id=28]
 animation = "Jump"
 
-[sub_resource type="AnimationNodeAnimation" id=28]
+[sub_resource type="AnimationNodeAnimation" id=29]
 animation = "Stop-loop"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=29]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=30]
-xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=31]
-xfade_time = 0.1
+xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=32]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=33]
 xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=34]
@@ -152,36 +152,36 @@ xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=38]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=48]
+[sub_resource type="AnimationNodeStateMachineTransition" id=39]
 switch_mode = 2
 auto_advance = true
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=49]
+[sub_resource type="AnimationNodeStateMachineTransition" id=40]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=50]
+[sub_resource type="AnimationNodeStateMachineTransition" id=41]
 
-[sub_resource type="AnimationNodeStateMachine" id=39]
-states/Fall/node = SubResource( 9 )
+[sub_resource type="AnimationNodeStateMachine" id=42]
+states/Fall/node = SubResource( 8 )
 states/Fall/position = Vector2( 514, 132 )
-states/Ground/node = SubResource( 25 )
+states/Ground/node = SubResource( 24 )
 states/Ground/position = Vector2( 293, 132 )
-states/Jump/node = SubResource( 8 )
+states/Jump/node = SubResource( 25 )
 states/Jump/position = Vector2( 81, -44 )
 states/Sit/node = SubResource( 26 )
 states/Sit/position = Vector2( 293, 287 )
 states/Stand/node = SubResource( 27 )
 states/Stand/position = Vector2( 514, 287 )
-states/StartJump/node = SubResource( 47 )
+states/StartJump/node = SubResource( 28 )
 states/StartJump/position = Vector2( 293, -44 )
-states/Stop-loop/node = SubResource( 28 )
+states/Stop-loop/node = SubResource( 29 )
 states/Stop-loop/position = Vector2( 514, -44 )
-transitions = [ "Fall", "Ground", SubResource( 29 ), "Ground", "Fall", SubResource( 30 ), "Ground", "Stop-loop", SubResource( 31 ), "Stop-loop", "Ground", SubResource( 32 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 38 ), "StartJump", "Jump", SubResource( 48 ), "Ground", "StartJump", SubResource( 49 ), "Stop-loop", "StartJump", SubResource( 50 ) ]
+transitions = [ "Fall", "Ground", SubResource( 30 ), "Ground", "Fall", SubResource( 31 ), "Ground", "Stop-loop", SubResource( 32 ), "Stop-loop", "Ground", SubResource( 33 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 38 ), "StartJump", "Jump", SubResource( 39 ), "Ground", "StartJump", SubResource( 40 ), "Stop-loop", "StartJump", SubResource( 41 ) ]
 start_node = "Ground"
 graph_offset = Vector2( -268, -98 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=51]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=43]
 
-[sub_resource type="Animation" id=52]
+[sub_resource type="Animation" id=44]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("../sonic/DeathScreen:visible")
@@ -234,7 +234,7 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=53]
+[sub_resource type="Animation" id=45]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Armature/Skeleton/Sonic:rotation_degrees")
 tracks/0/interp = 1
@@ -272,7 +272,7 @@ tracks/2/keys = {
 "values": [ false ]
 }
 
-[sub_resource type="Animation" id=54]
+[sub_resource type="Animation" id=46]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Armature/Skeleton/Sonic:rotation_degrees")
@@ -318,7 +318,7 @@ __meta__ = {
 [node name="Label" type="Label" parent="DeathScreen" index="0"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_fonts/font = SubResource( 40 )
+custom_fonts/font = SubResource( 1 )
 text = "Game Over"
 align = 1
 valign = 1
@@ -327,46 +327,47 @@ __meta__ = {
 }
 
 [node name="debugUI" type="PanelContainer" parent="." index="1"]
-visible = false
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -201.0
-margin_top = -155.0
+margin_left = -309.353
+margin_top = -216.736
+margin_right = -108.353
+margin_bottom = -31.7361
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="status" type="VBoxContainer" parent="debugUI" index="0"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 194.0
-margin_bottom = 148.0
+margin_left = 14.0
+margin_top = 14.0
+margin_right = 187.0
+margin_bottom = 171.0
 
 [node name="State" type="Label" parent="debugUI/status" index="0"]
-margin_right = 187.0
-margin_bottom = 14.0
+margin_right = 173.0
+margin_bottom = 25.0
 
 [node name="Position" type="Label" parent="debugUI/status" index="1"]
-margin_top = 18.0
-margin_right = 187.0
-margin_bottom = 32.0
+margin_top = 33.0
+margin_right = 173.0
+margin_bottom = 58.0
 
 [node name="Velocity" type="Label" parent="debugUI/status" index="2"]
-margin_top = 36.0
-margin_right = 187.0
-margin_bottom = 50.0
+margin_top = 66.0
+margin_right = 173.0
+margin_bottom = 91.0
 
 [node name="Up" type="Label" parent="debugUI/status" index="3"]
-margin_top = 54.0
-margin_right = 187.0
-margin_bottom = 68.0
+margin_top = 99.0
+margin_right = 173.0
+margin_bottom = 124.0
 
 [node name="Extra" type="Label" parent="debugUI/status" index="4"]
-margin_top = 72.0
-margin_right = 187.0
-margin_bottom = 86.0
+margin_top = 132.0
+margin_right = 173.0
+margin_bottom = 157.0
 
 [node name="Sun" parent="." index="2"]
 visible = false
@@ -384,11 +385,11 @@ collision_layer = 0
 
 [node name="CollisionShape" type="CollisionShape" parent="Armature/WallRunArea" index="0"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
-shape = SubResource( 41 )
+shape = SubResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="." index="5"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
-shape = SubResource( 42 )
+shape = SubResource( 3 )
 
 [node name="Cam" type="Spatial" parent="." index="6"]
 
@@ -401,7 +402,7 @@ current = true
 [node name="SpringArm" type="SpringArm" parent="Cam/Yaw" index="1"]
 transform = Transform( 1, -3.25841e-07, 3.25841e-07, -3.25841e-07, -1, 0, 3.25841e-07, -1.06173e-13, -1, 0, 0.23, 0 )
 collision_mask = 4
-shape = SubResource( 43 )
+shape = SubResource( 4 )
 spring_length = 3.0
 
 [node name="Camera" type="Camera" parent="Cam/Yaw/SpringArm" index="0"]
@@ -412,7 +413,7 @@ far = 8192.0
 [node name="Reverse" type="SpringArm" parent="Cam/Yaw" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0 )
 collision_mask = 4
-shape = SubResource( 44 )
+shape = SubResource( 5 )
 spring_length = 4.5
 
 [node name="Camera" type="Camera" parent="Cam/Yaw/Reverse" index="0"]
@@ -423,14 +424,14 @@ far = 8192.0
 [node name="MeshInstance" type="MeshInstance" parent="Cam/Yaw" index="3"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 visible = false
-mesh = SubResource( 45 )
-material/0 = SubResource( 46 )
+mesh = SubResource( 6 )
+material/0 = SubResource( 7 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="7"]
-tree_root = SubResource( 39 )
+tree_root = SubResource( 42 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 51 )
+parameters/playback = SubResource( 43 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
@@ -438,9 +439,9 @@ parameters/Ground/Walk/2/blend_position = Vector2( 0.228, -1.064 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
 autoplay = "Jump-Reset"
-anims/Die = SubResource( 52 )
-anims/Jump-Reset = SubResource( 53 )
-anims/Jump-Roll = SubResource( 54 )
+anims/Die = SubResource( 44 )
+anims/Jump-Reset = SubResource( 45 )
+anims/Jump-Roll = SubResource( 46 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
 stream = ExtResource( 3 )
