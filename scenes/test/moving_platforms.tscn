@@ -1,0 +1,85 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
+
+[sub_resource type="Curve3D" id=5]
+_data = {
+"points": PoolVector3Array( -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603, -17.3323, 15.8138, -3.7571, 17.3323, -15.8138, 3.7571, -19.5819, -10.0642, -0.200043, -8.07931, -6.61233, 13.5671, 8.07931, 6.61233, -13.5671, 1.82944, 8.20815, -0.665791, -2.45982, 11.8203, -1.45403, 2.45982, -11.8203, 1.45403, 20.9385, 5.38099, 0.500603 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 3, 2, 3 )
+
+[sub_resource type="BoxShape" id=2]
+extents = Vector3( 1.5, 1, 1.5 )
+
+[sub_resource type="Animation" id=6]
+resource_name = "Travel"
+length = 20.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PathFollow:unit_offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 20 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
+}
+
+[sub_resource type="CubeMesh" id=3]
+size = Vector3( 16, 2, 16 )
+
+[sub_resource type="BoxShape" id=4]
+extents = Vector3( 8, 1, 8 )
+
+[node name="Spatial" type="Spatial"]
+
+[node name="sonic" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.592104, 0 )
+kill_plane = null
+time_limit = null
+score = null
+rings = null
+
+[node name="Path" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.4132 )
+curve = SubResource( 5 )
+
+[node name="PathFollow" type="PathFollow" parent="Path"]
+transform = Transform( -0.909734, 0, -0.415186, 0, 0.999999, 0, 0.415186, 0, -0.909734, 20.9385, 5.38099, 0.500603 )
+rotation_mode = 1
+
+[node name="floor" type="RigidBody" parent="Path/PathFollow"]
+mode = 3
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="Path/PathFollow/floor"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="Path/PathFollow/floor"]
+shape = SubResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Path"]
+autoplay = "Travel"
+anims/Travel = SubResource( 6 )
+
+[node name="StaticBody" type="StaticBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.27436, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+mesh = SubResource( 3 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+shape = SubResource( 4 )
