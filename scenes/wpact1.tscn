@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=46 format=2]
 
 [ext_resource path="res://scenes/components/act1_main_level.tscn" type="PackedScene" id=1]
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
@@ -15,6 +15,11 @@
 [ext_resource path="res://addons/fast_options/default_options/display.gd" type="Script" id=13]
 [ext_resource path="res://scripts/options/audio.gd" type="Script" id=14]
 [ext_resource path="res://ui/game_theme.tres" type="Theme" id=15]
+[ext_resource path="res://assets/sfx/ambient/tech/fans01.ogg" type="AudioStream" id=16]
+[ext_resource path="res://assets/sfx/ambient/tech/spooky01.ogg" type="AudioStream" id=17]
+[ext_resource path="res://entities/random_audio_player.tscn" type="PackedScene" id=18]
+[ext_resource path="res://assets/sfx/ambient/tech/spooky02.ogg" type="AudioStream" id=19]
+[ext_resource path="res://assets/sfx/ambient/tech/machine02.ogg" type="AudioStream" id=20]
 
 [sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.317647, 0.341176, 0.356863, 1 )
@@ -56,6 +61,29 @@ tracks/1/keys = {
 "transitions": PoolRealArray( 1, 1, 1 ),
 "update": 0,
 "values": [ Color( 1, 0.847059, 0.682353, 1 ), Color( 0.941176, 0.74902, 0.611765, 1 ), Color( 0.882353, 0.698039, 0.615686, 1 ) ]
+}
+
+[sub_resource type="Curve3D" id=24]
+_data = {
+"points": PoolVector3Array( -22.0963, -99.5317, 2.88, 22.0963, 99.5317, -2.88, -121.273, 803.391, 1008.2, -35.3335, 65.9022, 20.7131, 35.3335, -65.9022, -20.7131, 124.375, 772.459, 990.201, 51.081, -3.03082, -3.38605, -51.081, 3.03082, 3.38605, -28.3574, 667.94, 1017.26, -22.0963, -99.5317, 2.88, 22.0963, 99.5317, -2.88, -121.273, 803.391, 1008.2 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+
+[sub_resource type="Animation" id=25]
+resource_name = "move"
+length = 20.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("PathFollow:unit_offset")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 20 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1.0 ]
 }
 
 [sub_resource type="Curve3D" id=4]
@@ -227,12 +255,28 @@ autoplay = "Fire_light"
 anims/Fire_light = SubResource( 3 )
 
 [node name="SpotLight" type="SpotLight" parent="Lighting"]
-transform = Transform( 0.964819, 0.0462082, 0.258824, -0.237336, -0.270488, 0.93301, 0.113121, -0.961614, -0.250005, 50.9824, 334.588, 354.702 )
+transform = Transform( 0.878838, 0.156812, 0.450614, -0.402115, -0.264894, 0.876433, 0.2568, -0.951442, -0.169743, -0.174595, 265.021, 383.879 )
 light_energy = 0.6
 shadow_enabled = true
 shadow_bias = 0.5
-spot_range = 355.395
-spot_angle = 22.5
+spot_range = 140.0
+spot_angle = 25.0
+
+[node name="SpotLight4" type="SpotLight" parent="Lighting"]
+transform = Transform( 0.89272, 0.240779, 0.38089, -0.442392, 0.307591, 0.842423, 0.08568, -0.920551, 0.381111, 64.0953, 222.769, 378.431 )
+light_energy = 0.6
+shadow_enabled = true
+shadow_bias = 0.5
+spot_range = 140.0
+spot_angle = 25.0
+
+[node name="SpotLight5" type="SpotLight" parent="Lighting"]
+transform = Transform( 0.988239, -2.49133e-08, 0.152917, -0.15235, 0.0860602, 0.984573, -0.0131601, -0.99629, 0.085048, -61.8561, 145.927, 396.928 )
+light_energy = 0.6
+shadow_enabled = true
+shadow_bias = 0.5
+spot_range = 137.364
+spot_angle = 25.0
 
 [node name="OmniLight2" type="OmniLight" parent="Lighting"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4.76837e-07, 493.023, 805.463 )
@@ -270,6 +314,40 @@ spot_range = 53.6956
 spot_angle = 35.123
 
 [node name="act1_main_level" parent="." instance=ExtResource( 1 )]
+
+[node name="Path" type="Path" parent="act1_main_level"]
+curve = SubResource( 24 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="act1_main_level/Path"]
+autoplay = "move"
+anims/move = SubResource( 25 )
+
+[node name="PathFollow" type="PathFollow" parent="act1_main_level/Path"]
+transform = Transform( 0.924221, -0.364744, -0.11304, 0.36771, 0.929922, 0.00585829, 0.102982, -0.0469807, 0.993573, -121.273, 803.391, 1008.2 )
+offset = 734.513
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="act1_main_level/Path/PathFollow"]
+transform = Transform( 0.999999, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+stream = ExtResource( 20 )
+unit_db = -8.186
+unit_size = 27.5
+autoplay = true
+bus = "SFX_Ambient"
+
+[node name="RandomAudioPlayer" parent="act1_main_level" instance=ExtResource( 18 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 75.1477, 105.435, 620.194 )
+stream = ExtResource( 17 )
+unit_size = 70.0
+bus = "SFX_Ambient"
+minimum_time = 15.0
+maximum_time = 90.0
+
+[node name="fans" type="AudioStreamPlayer3D" parent="act1_main_level"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 130.283, 282.592 )
+stream = ExtResource( 16 )
+unit_size = 100.0
+autoplay = true
+bus = "SFX_Ambient"
 
 [node name="basin1" parent="act1_main_level" instance=ExtResource( 3 )]
 
@@ -356,6 +434,14 @@ script = ExtResource( 7 )
 [node name="CollisionShape" type="CollisionShape" parent="pipe_exit/Checkpoint"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25949, 19.5012, -2.96802 )
 shape = SubResource( 8 )
+
+[node name="RandomAudioPlayer" parent="pipe_exit" instance=ExtResource( 18 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -63.6214, 37.0392, -109.504 )
+stream = ExtResource( 19 )
+unit_size = 41.1
+bus = "SFX_Ambient"
+minimum_time = 20.0
+maximum_time = 90.0
 
 [node name="part2-rough" type="CSGBox" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 30.197, 661.486, 793.334 )

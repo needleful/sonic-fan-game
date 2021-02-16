@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/spooky01.ogg-3f52866631d3e15c04636dad96f2a7c4.oggstr"
+
+[deps]
+
+source_file="res://assets/sfx/ambient/tech/spooky01.ogg"
+dest_files=[ "res://.import/spooky01.ogg-3f52866631d3e15c04636dad96f2a7c4.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

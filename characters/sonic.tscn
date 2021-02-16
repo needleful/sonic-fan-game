@@ -13,7 +13,7 @@ font_data = ExtResource( 5 )
 radius = 0.47
 
 [sub_resource type="SphereShape" id=42]
-radius = 0.35
+radius = 0.43
 
 [sub_resource type="SphereShape" id=43]
 radius = 0.2
@@ -259,6 +259,18 @@ tracks/1/keys = {
 "update": 0,
 "values": [ 0.43 ]
 }
+tracks/2/type = "value"
+tracks/2/path = NodePath("DeathScreen:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
 
 [sub_resource type="Animation" id=54]
 loop = true
@@ -366,9 +378,6 @@ light_energy = 0.1
 light_indirect_energy = 0.0
 light_specular = 0.0
 omni_range = 1.35735
-
-[node name="Sonic" parent="Armature/Skeleton" index="0"]
-transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0 )
 
 [node name="WallRunArea" type="Area" parent="Armature" index="2"]
 collision_layer = 0
