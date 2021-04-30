@@ -1,9 +1,13 @@
-[gd_scene load_steps=51 format=2]
+[gd_scene load_steps=57 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
 [ext_resource path="res://assets/sfx/death.wav" type="AudioStream" id=3]
+[ext_resource path="res://scripts/Journal.gd" type="Script" id=4]
 [ext_resource path="res://assets/fonts/ClearSans-Bold.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://entities/journal.tscn" type="PackedScene" id=6]
+[ext_resource path="res://pages/00_intro.png" type="Texture" id=7]
+[ext_resource path="res://pages/01_premise.png" type="Texture" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 48
@@ -18,170 +22,266 @@ radius = 0.43
 [sub_resource type="SphereShape" id=4]
 radius = 0.2
 
-[sub_resource type="SphereShape" id=5]
+[sub_resource type="Animation" id=5]
+resource_name = "close"
+tracks/0/type = "method"
+tracks/0/path = NodePath("journal")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ "Close" ],
+"method": "play_anim"
+} ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("journal:translation")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.3, 0.999998 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0.02, -0.34 ), Vector3( 0.0424505, 0.0132564, -0.586401 ), Vector3( -0.166766, -0.484383, 0.0587881 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("journal:rotation_degrees")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.3, 0.6, 0.999998 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 79.047, -0.000155454, -0.000146858 ), Vector3( 69.3037, -40.8045, -33.2906 ), Vector3( 79.047, -0.000155454, -0.000146858 ), Vector3( -0.022505, -7.57355, -8.01766 ) ]
+}
+tracks/3/type = "method"
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 1 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "complete_close"
+} ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "open"
+tracks/0/type = "value"
+tracks/0/path = NodePath("journal:translation")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( -0.158988, -0.452924, 0.05497 ), Vector3( -0.0794941, -0.248092, -0.403129 ), Vector3( 0, 0.02, -0.34 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("journal:rotation_degrees")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( -16.4018, -16.038, -23.5051 ), Vector3( 79.047, -0.000155454, -0.000146858 ) ]
+}
+tracks/2/type = "method"
+tracks/2/path = NodePath("journal")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.4 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ "Open" ],
+"method": "play_anim"
+} ]
+}
+
+[sub_resource type="SphereShape" id=7]
 radius = 0.2
 
-[sub_resource type="PrismMesh" id=6]
+[sub_resource type="PrismMesh" id=8]
 size = Vector3( 0.1, 0.1, 0.1 )
 
-[sub_resource type="SpatialMaterial" id=7]
+[sub_resource type="SpatialMaterial" id=9]
 flags_no_depth_test = true
 albedo_color = Color( 1, 0, 0, 1 )
 
-[sub_resource type="AnimationNodeAnimation" id=8]
+[sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Fall-loop"
 
-[sub_resource type="AnimationNodeTimeScale" id=9]
-
-[sub_resource type="AnimationNodeAnimation" id=10]
-animation = "Walk-loop"
-
-[sub_resource type="AnimationNodeAnimation" id=11]
-animation = "Idle-loop"
+[sub_resource type="AnimationNodeTimeScale" id=11]
 
 [sub_resource type="AnimationNodeAnimation" id=12]
-animation = "IdleLeanRight-loop"
+animation = "Walk-loop"
 
 [sub_resource type="AnimationNodeAnimation" id=13]
-animation = "IdleLeanLeft-loop"
+animation = "Idle-loop"
 
 [sub_resource type="AnimationNodeAnimation" id=14]
-animation = "IdleLeanForward-loop"
+animation = "IdleLeanRight-loop"
 
 [sub_resource type="AnimationNodeAnimation" id=15]
-animation = "IdleLeanBackward-loop"
+animation = "IdleLeanLeft-loop"
 
-[sub_resource type="AnimationNodeBlendSpace2D" id=16]
-blend_point_0/node = SubResource( 11 )
-blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 12 )
-blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 13 )
-blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 14 )
-blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 15 )
-blend_point_4/pos = Vector2( 0, -1 )
-snap = Vector2( 0.5, 0.5 )
+[sub_resource type="AnimationNodeAnimation" id=16]
+animation = "IdleLeanForward-loop"
 
 [sub_resource type="AnimationNodeAnimation" id=17]
-animation = "Run-loop"
+animation = "IdleLeanBackward-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=18]
-animation = "RunLeanLeft-loop"
-
-[sub_resource type="AnimationNodeAnimation" id=19]
-animation = "RunLeanRight-loop"
-
-[sub_resource type="AnimationNodeAnimation" id=20]
-animation = "RunHard-loop"
-
-[sub_resource type="AnimationNodeAnimation" id=21]
-animation = "RunNoJump-loop"
-
-[sub_resource type="AnimationNodeBlendSpace2D" id=22]
-blend_point_0/node = SubResource( 17 )
+[sub_resource type="AnimationNodeBlendSpace2D" id=18]
+blend_point_0/node = SubResource( 13 )
 blend_point_0/pos = Vector2( 0, 0 )
-blend_point_1/node = SubResource( 18 )
+blend_point_1/node = SubResource( 14 )
 blend_point_1/pos = Vector2( -1, 0 )
-blend_point_2/node = SubResource( 19 )
+blend_point_2/node = SubResource( 15 )
 blend_point_2/pos = Vector2( 1, 0 )
-blend_point_3/node = SubResource( 20 )
+blend_point_3/node = SubResource( 16 )
 blend_point_3/pos = Vector2( 0, 1 )
-blend_point_4/node = SubResource( 21 )
+blend_point_4/node = SubResource( 17 )
 blend_point_4/pos = Vector2( 0, -1 )
 snap = Vector2( 0.5, 0.5 )
 
-[sub_resource type="AnimationNodeBlendSpace1D" id=23]
-blend_point_0/node = SubResource( 10 )
+[sub_resource type="AnimationNodeAnimation" id=19]
+animation = "Run-loop"
+
+[sub_resource type="AnimationNodeAnimation" id=20]
+animation = "RunLeanLeft-loop"
+
+[sub_resource type="AnimationNodeAnimation" id=21]
+animation = "RunLeanRight-loop"
+
+[sub_resource type="AnimationNodeAnimation" id=22]
+animation = "RunHard-loop"
+
+[sub_resource type="AnimationNodeAnimation" id=23]
+animation = "RunNoJump-loop"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id=24]
+blend_point_0/node = SubResource( 19 )
+blend_point_0/pos = Vector2( 0, 0 )
+blend_point_1/node = SubResource( 20 )
+blend_point_1/pos = Vector2( -1, 0 )
+blend_point_2/node = SubResource( 21 )
+blend_point_2/pos = Vector2( 1, 0 )
+blend_point_3/node = SubResource( 22 )
+blend_point_3/pos = Vector2( 0, 1 )
+blend_point_4/node = SubResource( 23 )
+blend_point_4/pos = Vector2( 0, -1 )
+snap = Vector2( 0.5, 0.5 )
+
+[sub_resource type="AnimationNodeBlendSpace1D" id=25]
+blend_point_0/node = SubResource( 12 )
 blend_point_0/pos = 1.0
-blend_point_1/node = SubResource( 16 )
+blend_point_1/node = SubResource( 18 )
 blend_point_1/pos = 0.0
-blend_point_2/node = SubResource( 22 )
+blend_point_2/node = SubResource( 24 )
 blend_point_2/pos = 3.0
 min_space = 0.0
 max_space = 3.0
 snap = 0.5
 
-[sub_resource type="AnimationNodeBlendTree" id=24]
+[sub_resource type="AnimationNodeBlendTree" id=26]
 graph_offset = Vector2( -365, 15 )
-nodes/Speed/node = SubResource( 9 )
+nodes/Speed/node = SubResource( 11 )
 nodes/Speed/position = Vector2( 280, 80 )
-nodes/Walk/node = SubResource( 23 )
+nodes/Walk/node = SubResource( 25 )
 nodes/Walk/position = Vector2( 40, 80 )
 nodes/output/position = Vector2( 520, 100 )
 node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
 
-[sub_resource type="AnimationNodeAnimation" id=25]
+[sub_resource type="AnimationNodeAnimation" id=27]
 animation = "Ball-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=26]
+[sub_resource type="AnimationNodeAnimation" id=28]
 animation = "Sit-loop"
 
-[sub_resource type="AnimationNodeAnimation" id=27]
+[sub_resource type="AnimationNodeAnimation" id=29]
 animation = "Stand"
 
-[sub_resource type="AnimationNodeAnimation" id=28]
+[sub_resource type="AnimationNodeAnimation" id=30]
 animation = "Jump"
 
-[sub_resource type="AnimationNodeAnimation" id=29]
+[sub_resource type="AnimationNodeAnimation" id=31]
 animation = "Stop-loop"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=30]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=31]
-xfade_time = 0.2
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=32]
-xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=33]
-xfade_time = 0.1
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=34]
 xfade_time = 0.2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=34]
+xfade_time = 0.1
+
 [sub_resource type="AnimationNodeStateMachineTransition" id=35]
+xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=36]
+xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=37]
-switch_mode = 2
-auto_advance = true
-xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=38]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=39]
 switch_mode = 2
 auto_advance = true
+xfade_time = 0.1
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=40]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=41]
+switch_mode = 2
+auto_advance = true
 
-[sub_resource type="AnimationNodeStateMachine" id=42]
-states/Fall/node = SubResource( 8 )
+[sub_resource type="AnimationNodeStateMachineTransition" id=42]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=43]
+
+[sub_resource type="AnimationNodeStateMachine" id=44]
+states/Fall/node = SubResource( 10 )
 states/Fall/position = Vector2( 514, 132 )
-states/Ground/node = SubResource( 24 )
+states/Ground/node = SubResource( 26 )
 states/Ground/position = Vector2( 293, 132 )
-states/Jump/node = SubResource( 25 )
+states/Jump/node = SubResource( 27 )
 states/Jump/position = Vector2( 81, -44 )
-states/Sit/node = SubResource( 26 )
+states/Sit/node = SubResource( 28 )
 states/Sit/position = Vector2( 293, 287 )
-states/Stand/node = SubResource( 27 )
+states/Stand/node = SubResource( 29 )
 states/Stand/position = Vector2( 514, 287 )
-states/StartJump/node = SubResource( 28 )
+states/StartJump/node = SubResource( 30 )
 states/StartJump/position = Vector2( 293, -44 )
-states/Stop-loop/node = SubResource( 29 )
+states/Stop-loop/node = SubResource( 31 )
 states/Stop-loop/position = Vector2( 514, -44 )
-transitions = [ "Fall", "Ground", SubResource( 30 ), "Ground", "Fall", SubResource( 31 ), "Ground", "Stop-loop", SubResource( 32 ), "Stop-loop", "Ground", SubResource( 33 ), "Stop-loop", "Fall", SubResource( 34 ), "Jump", "Ground", SubResource( 35 ), "Sit", "Stand", SubResource( 36 ), "Stand", "Ground", SubResource( 37 ), "Ground", "Sit", SubResource( 38 ), "StartJump", "Jump", SubResource( 39 ), "Ground", "StartJump", SubResource( 40 ), "Stop-loop", "StartJump", SubResource( 41 ) ]
+transitions = [ "Fall", "Ground", SubResource( 32 ), "Ground", "Fall", SubResource( 33 ), "Ground", "Stop-loop", SubResource( 34 ), "Stop-loop", "Ground", SubResource( 35 ), "Stop-loop", "Fall", SubResource( 36 ), "Jump", "Ground", SubResource( 37 ), "Sit", "Stand", SubResource( 38 ), "Stand", "Ground", SubResource( 39 ), "Ground", "Sit", SubResource( 40 ), "StartJump", "Jump", SubResource( 41 ), "Ground", "StartJump", SubResource( 42 ), "Stop-loop", "StartJump", SubResource( 43 ) ]
 start_node = "Ground"
 graph_offset = Vector2( -268, -98 )
 
-[sub_resource type="AnimationNodeStateMachinePlayback" id=43]
+[sub_resource type="AnimationNodeStateMachinePlayback" id=45]
 
-[sub_resource type="Animation" id=44]
+[sub_resource type="Animation" id=46]
 length = 1.5
 tracks/0/type = "value"
 tracks/0/path = NodePath("../sonic/DeathScreen:visible")
@@ -234,7 +334,7 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[sub_resource type="Animation" id=45]
+[sub_resource type="Animation" id=47]
 tracks/0/type = "value"
 tracks/0/path = NodePath("Armature/Skeleton/Sonic:rotation_degrees")
 tracks/0/interp = 1
@@ -272,7 +372,7 @@ tracks/2/keys = {
 "values": [ false ]
 }
 
-[sub_resource type="Animation" id=46]
+[sub_resource type="Animation" id=48]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath("Armature/Skeleton/Sonic:rotation_degrees")
@@ -327,6 +427,7 @@ __meta__ = {
 }
 
 [node name="debugUI" type="PanelContainer" parent="." index="1"]
+visible = false
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -410,10 +511,47 @@ transform = Transform( -1, 1.77636e-14, -8.74227e-08, -1.0533e-08, -0.992715, 0.
 near = 0.08
 far = 8192.0
 
+[node name="Journal" type="Spatial" parent="Cam/Yaw/SpringArm/Camera" index="0"]
+pause_mode = 2
+visible = false
+script = ExtResource( 4 )
+pages = [ ExtResource( 7 ), ExtResource( 8 ) ]
+current_page = 1
+
+[node name="journalUI" type="Control" parent="Cam/Yaw/SpringArm/Camera/Journal" index="0"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Cam/Yaw/SpringArm/Camera/Journal/journalUI" index="0"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 66.468
+margin_top = -57.5269
+margin_right = 144.468
+margin_bottom = -32.5269
+text = "Journal"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Cam/Yaw/SpringArm/Camera/Journal" index="1"]
+anims/close = SubResource( 5 )
+anims/open = SubResource( 6 )
+
+[node name="journal" parent="Cam/Yaw/SpringArm/Camera/Journal" index="2" instance=ExtResource( 6 )]
+transform = Transform( 1, -1.00604e-07, -5.15518e-07, -4.87009e-07, 0.190005, -0.981789, 1.96721e-07, 0.981789, 0.190005, 0, 0.02, -0.34 )
+
+[node name="SpotLight" type="SpotLight" parent="Cam/Yaw/SpringArm/Camera/Journal" index="3"]
+transform = Transform( 1, -3.51785e-07, 2.15737e-07, -1.0941e-08, 0.5, 0.866026, -4.12523e-07, -0.866026, 0.5, 1.95626e-07, 0.455731, 0.154079 )
+light_color = Color( 0.796078, 0.996078, 1, 1 )
+light_energy = 0.24
+spot_range = 0.939475
+
 [node name="Reverse" type="SpringArm" parent="Cam/Yaw" index="2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0 )
 collision_mask = 4
-shape = SubResource( 5 )
+shape = SubResource( 7 )
 spring_length = 4.5
 
 [node name="Camera" type="Camera" parent="Cam/Yaw/Reverse" index="0"]
@@ -424,14 +562,14 @@ far = 8192.0
 [node name="MeshInstance" type="MeshInstance" parent="Cam/Yaw" index="3"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 visible = false
-mesh = SubResource( 6 )
-material/0 = SubResource( 7 )
+mesh = SubResource( 8 )
+material/0 = SubResource( 9 )
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="7"]
-tree_root = SubResource( 42 )
+tree_root = SubResource( 44 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
-parameters/playback = SubResource( 43 )
+parameters/playback = SubResource( 45 )
 parameters/Ground/Speed/scale = 1.0
 parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
@@ -439,10 +577,9 @@ parameters/Ground/Walk/2/blend_position = Vector2( 0.228, -1.064 )
 
 [node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
 autoplay = "Jump-Reset"
-anims/Die = SubResource( 44 )
-anims/Jump-Reset = SubResource( 45 )
-anims/Jump-Roll = SubResource( 46 )
+anims/Die = SubResource( 46 )
+anims/Jump-Reset = SubResource( 47 )
+anims/Jump-Roll = SubResource( 48 )
 
 [node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
 stream = ExtResource( 3 )
-bus = "SFX_Sonic"

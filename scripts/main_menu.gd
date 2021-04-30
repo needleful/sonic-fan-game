@@ -1,7 +1,7 @@
 extends Control
 
 export(String) var zone_name
-export(int) var act
+export(String) var act
 export(Vector2) var camera_rotation
 
 func _ready():

@@ -2,7 +2,7 @@ extends Object
 class_name AudioOptions
 
 export(Resource) var master_audio = AudioChannel.new("Master") setget set_master
-export(Resource) var sound_effects = AudioChannel.new("SFX_Sonic") setget set_sfx
+export(Resource) var sound_effects = AudioChannel.new("SFX") setget set_sfx
 export(Resource) var music = AudioChannel.new("Music") setget set_music
 
 var volume_widget = preload("res://addons/fast_options/widgets/volume_widget.tscn")

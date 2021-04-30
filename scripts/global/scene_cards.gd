@@ -1,8 +1,8 @@
 extends Control
 
-func open_level(zone:String, act:int):
+func open_level(zone:String, act:String):
 	$opener/Zone.text = zone
-	$opener/Act.text = "Act %d" % act
+	$opener/Act.text = "Act " + act
 	$AnimationPlayer.play("Start_Level")
 
 func hideUI():

@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/models-export/env/workshop.glb" type="PackedScene" id=1]
+[ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/env/scene_properties.gd" type="Script" id=3]
+
+[node name="workshop" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
+zone_name = "The Workshop"
+act = "like it doesn't hurt"
+
+[node name="sonic" parent="." index="0" instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 8.2876, 0 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="." index="1"]
+transform = Transform( 0.77768, -0.556616, 0.29222, -0.512775, -0.292715, 0.807081, -0.363697, -0.777494, -0.513057, 0, 14.2131, 0 )
+shadow_enabled = true
+shadow_bias = 0.05
+
+[node name="static_collision" parent="Terrain-Walk" index="0"]
+collision_layer = 5
+
+[node name="static_collision" parent="Cliffs-Low" index="0"]
+collision_layer = 5

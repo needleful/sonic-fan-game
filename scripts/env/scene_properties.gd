@@ -2,7 +2,7 @@ extends Spatial
 class_name SceneProperties
 
 export(String) var zone_name: String
-export(int) var act: int
+export(String) var act: String
 
 func _ready():
 	if $"/root/Respawn".new_level:

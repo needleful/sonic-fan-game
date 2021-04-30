@@ -21,7 +21,9 @@ enum State {
 	# Slipping off a wall
 	Slip,
 	# Playing an animation
-	CustomAnimation
+	CustomAnimation,
+	# Sonic's ded
+	Dead
 }
 
 const VEL_JUMP = 10
@@ -49,8 +51,8 @@ const FORCE_CENTRIFUGAL = 1
 
 const MIN_GROUNDED_ON_WALL = -0.05
 const MIN_SPEED_WALL_RUN = 15
-const SPEED_WALL_RUN_RECOVERY = 30
-const FLOOR_MAGNETISM = 0.01
+const SPEED_WALL_RUN_RECOVERY = 40
+const FLOOR_MAGNETISM = 0.5
 const WALL_RUN_ROLL_SPEED = 1.2
 const WALL_RUN_PITCH_SPEED = 15
 const WALL_DOT = 0.5
@@ -78,15 +80,14 @@ var true_up:Vector3 = -gravity.normalized()
 var up: Vector3 = true_up
 var target_up: Vector3 = true_up
 var sneaking: bool = false
-var velocity_floor: Vector3 = Vector3.ZERO
 
-var recover = true
 var last_wall_jump:Vector3 = Vector3.ZERO
 var can_wall_jump:bool = true
 
 const TIME_JUMP = 0.1
 const TIME_REORIENT = 0
 const TIME_WALLJUMP_SLIP = 0.75
+const TIME_SLIP_FORGET = 3.2
 var timer_air = 0
 
 const TIME_WALL_RUN = 0.06
@@ -120,6 +121,8 @@ onready var camSpring: SpringArm = $Cam/Yaw/SpringArm
 onready var mesh: Spatial = $Armature
 onready var cam : Camera = $Cam/Yaw/SpringArm/Camera
 onready var cam_reverse : Camera = $Cam/Yaw/Reverse/Camera
+
+onready var journal = cam.get_node("Journal")
 
 onready var anim: AnimationTree = $AnimationTree
 onready var statePlayback: AnimationNodeStateMachinePlayback = anim["parameters/playback"]
@@ -197,15 +200,36 @@ func _process(delta):
 	)
 	anim["parameters/Ground/Walk/1/blend_position"] = lean
 	
-	var wj = 0 if can_wall_jump else 1.5
+	var wj = 0.0 if can_wall_jump else 1.5
 	var old_blend: Vector2 = anim["parameters/Ground/Walk/2/blend_position"]
 	var new_blend: Vector2 = Vector2(
 		local_steer/(PI/3),
 		clamp(speed - 9 - wj , -wj, 1)
 	)
 	anim["parameters/Ground/Walk/2/blend_position"] = lerp(old_blend, new_blend, 0.1)
+	# Pull out camera based on speed
+	camSpring.spring_length = clamp(
+		speed*SPRING_LEN_ADD+SPRING_LEN_BASE,
+		SPRING_LEN_MIN,
+		SPRING_LEN_MAX)
 
-	$debugUI/status/State.text = State.keys()[state]
+	# Look ahead of the player
+	var camUp = camYaw.global_transform.basis.y
+	cam.global_transform = cam.global_transform.looking_at(
+		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
+		camUp)
+	
+	#Yaw based on velocity
+	var cz = camYaw.global_transform.basis.z
+	if c == Vector2.ZERO and velocity.dot(cz) > 0:
+		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
+		var yawZaxis = cz.cross(v2).normalized()
+		if yawZaxis.is_normalized():
+			var yaw = cz.angle_to(v2)
+			var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
+			var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
+			var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
+			camYaw.rotate_y(yawZaxis.dot(camYaw.global_transform.basis.y)*yaw2)
 
 func _physics_process(delta):
 	if global_transform.origin.y < kill_plane:
@@ -264,10 +288,7 @@ func _physics_process(delta):
 				and velocity.length_squared() >= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN
 			):
 				set_wall(n)
-				if recover:
-					new_state = State.WallRun
-				else:
-					new_state = State.Slip
+				new_state = State.WallRun
 		State.WallRun:
 			can_wall_jump = last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP
 			if Input.is_action_just_pressed("mv_jump"):
@@ -292,14 +313,11 @@ func _physics_process(delta):
 				timer_coyote = 0
 				if target_up.dot(true_up) >= WALL_DOT:
 					new_state = State.Ground
-				elif !recover or vp.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
+				elif vp.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
 					new_state = State.Slip
 		State.Slip:
 			can_wall_jump = ( last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP 
 				and timer_air < TIME_WALLJUMP_SLIP)
-			if velocity.length_squared() >= SPEED_WALL_RUN_RECOVERY*SPEED_WALL_RUN_RECOVERY:
-				recover = true
-				new_state = State.WallRun
 			if can_wall_jump and Input.is_action_just_pressed("mv_jump"):
 				last_wall_jump = target_up
 				if statePlayback.get_current_node() == "Stop-loop":
@@ -310,28 +328,26 @@ func _physics_process(delta):
 				var n = get_floor_normal()
 				if n.dot(true_up) >= WALL_DOT:
 					new_state = State.Ground
-			else:
-				var new_wall = find_good_wall()
-				if new_wall == Vector3.ZERO:
-					new_state = State.Air
+			elif ( velocity.length_squared() >= SPEED_WALL_RUN_RECOVERY*SPEED_WALL_RUN_RECOVERY
+				and $Armature/WallRunArea.get_overlapping_bodies().size() > 0
+			):
+				new_state = State.WallRun
+			elif timer_air > TIME_SLIP_FORGET:
+				new_state = State.Air
 	set_state(new_state)
 	match state:
 		State.Ground:
 			process_ground(delta, ACCEL_RUN, ACCEL_START)
-		State.Air:
+		State.Air, State.Slip:
 			process_air(ACCEL_AIR, delta)
 		State.WallRun:
 			var friction = clamp(target_up.dot(true_up), 0, 1)
 			var wall_accel = lerp(ACCEL_WALLRUN, ACCEL_RUN, friction)
 			var slide_accel = lerp(ACCEL_SLIDE_WALLRUN, ACCEL_START, friction)
 			process_ground(delta, wall_accel, slide_accel)
-		State.Slip:
-			process_air(ACCEL_AIR, delta)
 		State.Jumping:
-			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING, delta)
 		State.SlidingJump:
-			#$Armature/Skeleton.rotate_x(delta*SPEED_FLIP_JUMP)
 			process_air(ACCEL_JUMPING_SLIDE, delta)
 
 	var speed = velocity.length()/MAX_SNEAK
@@ -369,35 +385,11 @@ func _physics_process(delta):
 			CAM_REORIENT_MIN*delta
 		))
 		camFollow.global_rotate(rollAxis, sign(rollAngle)*roll)
-		
-	# Pull out camera based on speed
-	camSpring.spring_length = clamp(
-		speed*SPRING_LEN_ADD+SPRING_LEN_BASE,
-		SPRING_LEN_MIN,
-		SPRING_LEN_MAX)
-
-	# Look ahead of the player
-	var camUp = camYaw.global_transform.basis.y
-	cam.global_transform = cam.global_transform.looking_at(
-		camSpring.global_transform.origin + velocity*delta*CAM_TILT,
-		camUp)
-	
-	#Yaw based on velocity
-	var cz = camYaw.global_transform.basis.z
-	if velocity.dot(cz) > 0:
-		var v2 = MoveMath.reject(velocity, camYaw.global_transform.basis.y)
-		var yawZaxis = cz.cross(v2).normalized()
-		if yawZaxis.is_normalized():
-			var yaw = cz.angle_to(v2)
-			var fyaw = sqrt(v2.length())*(abs(yaw) + 0.3)/PI
-			var cam_speed = CAMERA_VELOCITY_YAW*min(CAM_MAX_ROTATE_FOLLOW, fyaw*CAM_ROTATE_FOLLOW)
-			var yaw2 = sign(yaw)*min(abs(yaw), cam_speed*delta)
-			camYaw.rotate_y(yawZaxis.dot(camYaw.global_transform.basis.y)*yaw2)
 	
 	$debugUI/status/Up.text = "UP: " + MoveMath.pr(up)
 	$debugUI/status/Velocity.text = "VEL: " + str(velocity.length())
 	$debugUI/status/Position.text = "ORIG: " + MoveMath.pr(global_transform.origin)
-	$debugUI/status/Extra.text = "F_VEL: " + MoveMath.pr(velocity_floor)
+	#$debugUI/status/Extra.text = "F_VEL: " + MoveMath.pr(velocity_floor)
 
 func process_ground(delta, accel_move, accel_start):
 	sneaking = Input.is_action_pressed("mv_sneak")
@@ -492,7 +484,6 @@ func process_ground(delta, accel_move, accel_start):
 		return
 	if !up.is_normalized():
 		print("up is bad")
-	velocity_floor = move_and_slide(velocity_floor)
 	velocity -= up*delta*FLOOR_MAGNETISM
 	velocity = move_and_slide(velocity, target_up, false, 4, ANGLE_FLOOR)
 	vel_difference -= velocity
@@ -509,9 +500,6 @@ func process_ground(delta, accel_move, accel_start):
 				target_up = n
 			else:
 				target_up = lerp(target_up, n, 0.5)
-			velocity_floor = lerp(velocity_floor, get_floor_velocity().slide(target_up), delta*10)
-		else:
-			velocity_floor *= 0.1
 		reorient(target_up, 40, 60, delta)
 
 func process_air(accel, delta):
@@ -579,28 +567,26 @@ func find_good_wall(min_grounded = MIN_GROUNDED_ON_WALL) -> Vector3:
 	return new_wall
 
 func set_state(new_state):
+	$debugUI/status/State.text = State.keys()[state]
 	if state == new_state:
 		return
-	#$Armature/Skeleton.rotation = Vector3.ZERO
-	print(State.keys()[state], "->", State.keys()[new_state])
 	timer_wall_run = 0
 	timer_coyote = 0
+	if new_state == State.CustomAnimation:
+		journal.enabled = false
+	else:
+		journal.enabled = true
 	match new_state:
 		State.Ground:
 			can_wall_jump = true
 			$CustomAnimation.play("Jump-Reset")
 			timer_air = 0
 			statePlayback.travel("Ground")
-			recover = true
 			last_wall_jump = Vector3.ZERO
 		State.Air:
-			velocity += velocity_floor
-			velocity_floor = Vector3.ZERO
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
 		State.Jumping, State.SlidingJump:
-			velocity += velocity_floor
-			velocity_floor = Vector3.ZERO
 			statePlayback.travel("Jump")
 			$CustomAnimation.play("Jump-Roll")
 			if state == State.Slip:
@@ -619,11 +605,8 @@ func set_state(new_state):
 					set_wall(nw)
 			statePlayback.travel("Ground")
 		State.Slip:
-			velocity += velocity_floor
-			velocity_floor = Vector3.ZERO
 			$CustomAnimation.play("Jump-Reset")
 			statePlayback.travel("Fall")
-			recover = false
 	state = new_state
 
 # Rotate the player mesh about about axis by an angle in radians
@@ -668,8 +651,8 @@ func get_camera_rot()->Vector2:
 		Input.get_action_strength("cam_up") - Input.get_action_strength("cam_down")
 	)
 	c = Vector2(
-		sign(c.x)*pow(abs(c.x), 1.9),
-		-sign(c.y)*pow(abs(c.y), 1.9)
+		sign(c.x)*pow(abs(c.x), 2.6),
+		-sign(c.y)*pow(abs(c.y), 2.6)
 	)
 	return ret + c*SNS_CAM_CONTROLLER
 
@@ -700,6 +683,7 @@ func kill():
 		$"/root/Respawn".reset_no_respawn()
 
 func die():
+	state = State.Dead
 	$DeathScreen/Label.text = "Game Over"
 	$CustomAnimation.play("Die")
 
@@ -720,8 +704,8 @@ func set_rings(r):
 func give_points(p):
 	set_score(score + p)
 
-func playAnimation(anim:String):
-	statePlayback.travel(anim)
+func playAnimation(animation:String):
+	statePlayback.travel(animation)
 	set_state(State.CustomAnimation)
 
 func endAnimation():
