@@ -1,0 +1,71 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://assets/models-export/env/template_rect.mesh" type="ArrayMesh" id=1]
+[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=2]
+[ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=3]
+[ext_resource path="res://characters/badniks/motorbike.tscn" type="PackedScene" id=4]
+[ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/test/corridor_lights.tscn" type="PackedScene" id=6]
+
+[sub_resource type="Curve3D" id=1]
+_data = {
+"points": PoolVector3Array( 3.66365, 0.14001, -27.1219, -3.66365, -0.14001, 27.1219, 1.4988, 1.3444, -17.2113, 0.437706, -2.27422, -22.9151, -0.437706, 2.27422, 22.9151, -4.89912, 7.91387, 32.7656, 16.8944, 6.93346, 5.02698, -16.8944, -6.93346, -5.02698, -39.5805, 8.15209, 74.5267, 9.8092, -7.0196, 16.6721, -9.8092, 7.0196, -16.6721, -74.0525, 16.2843, 47.618 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=2]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -9.84557, 4.30108, -6.34588, -12.3277, 6.40272, -1.3306, 12.3277, -6.40272, 1.3306, -1.37746, 0.818959, 10.5354, -17.1555, 5.63031, 6.79307, 17.1555, -5.63031, -6.79307, 36.2984, -6.51702, -21.2667, -12.1515, -6.51753, -32.7023, 12.1515, 6.51753, 32.7023, 109.618, -4.00358, 3.52072, 61.6282, -11.7096, -26.8044, -61.6282, 11.7096, 26.8044, -16.6693, 51.7018, 108.424 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0 )
+}
+
+[sub_resource type="Curve3D" id=3]
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -1.26626, 0.152428, 0.0429077, -4.36, -5.55, -33.23, 4.36, 5.55, 33.23, 0.0618286, 3.24555, 61.6328, -27.1, 0.8, -35.6, 27.1, -0.8, 35.6, 14.0056, 22.9456, 165.271, -59.7, 52.2, 60.3, 59.7, -52.2, -60.3, 133.046, -34.0544, 181.686, -65.03, -44.97, -26.23, 65.03, 44.97, 26.23, 319.08, -5.35445, 221.872, -10.18, -8.6, 60.63, 10.18, 8.6, -60.63, 433.083, 32.5456, 72.3218, 40.4, -136.55, 83.06, -40.4, 136.55, -83.06, 391.737, 240.646, -134.599 ),
+"tilts": PoolRealArray( 0, 0, 0, 0, 0, 0, 0 )
+}
+
+[node name="Spatial" type="Spatial"]
+
+[node name="AutoRoad" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15694, 5.44069, -4.90295 )
+curve = SubResource( 1 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 1 )
+template_transform = Transform( 4, 0, 0, 0, 8, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="hovercraft" parent="AutoRoad" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7124, 5.32983, 47.3801 )
+
+[node name="AutoRoad" type="Path" parent="AutoRoad"]
+transform = Transform( -0.655611, 0, -0.755099, 0, 1, 0, 0.755099, 0, -0.655611, -98.7011, 14.2921, 36.0024 )
+curve = SubResource( 2 )
+script = ExtResource( 2 )
+template_mesh = ExtResource( 1 )
+template_transform = Transform( 3.587, 0, 0, 0, 7.509, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="motorbike" parent="AutoRoad/AutoRoad" instance=ExtResource( 4 )]
+transform = Transform( -0.501556, 0, 0.865125, 0, 1, 0, -0.865125, 0, -0.501556, 5.93724, -6.40936, 8.07847 )
+
+[node name="AutoRoad" type="Path" parent="AutoRoad/AutoRoad"]
+transform = Transform( 0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -21.5371, 51.0217, 111.745 )
+curve = SubResource( 3 )
+script = ExtResource( 2 )
+stay_vertical = false
+template_mesh = ExtResource( 1 )
+template_transform = Transform( 8, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0 )
+object_template = ExtResource( 6 )
+object_distance = 80.0
+
+[node name="hovercraft" parent="AutoRoad/AutoRoad/AutoRoad" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 40.8208, 19.6456, 194.429 )
+
+[node name="motorbike" parent="AutoRoad/AutoRoad/AutoRoad" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 185.085, -60.4544, 158.79 )
+
+[node name="motorbike2" parent="AutoRoad/AutoRoad/AutoRoad" instance=ExtResource( 4 )]
+transform = Transform( -0.996195, 0, 0.0871556, 0, 1, 0, -0.0871556, 0, -0.996195, -1.61688, -2.05444, 17.2047 )
+
+[node name="sonic" parent="." instance=ExtResource( 3 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 7.72094, 2.66282, -20.1038 )

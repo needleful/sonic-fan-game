@@ -58,6 +58,18 @@ tracks/3/keys = {
 "method": "queue_free"
 } ]
 }
+tracks/4/type = "value"
+tracks/4/path = NodePath("../OmniLight:omni_range")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 0.3 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 4.0, 0.2 ]
+}
 
 [sub_resource type="Animation" id=3]
 length = 4.0
@@ -114,11 +126,18 @@ shape = SubResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0193276, 0, 0 )
 
 [node name="dots" parent="." index="2"]
-transform = Transform( 1, 0, 0, 0, 0.707107, -0.707106, 0, 0.707107, 0.707106, 0, 0.405, 0 )
+transform = Transform( 1.00491, 0, 0, 0, 0.707107, -0.710398, 0, 0.707107, 0.710398, 0, 0.405, 0 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="3"]
 root_node = NodePath(".")
 autoplay = "idle"
 anims/activated = SubResource( 2 )
 anims/idle = SubResource( 3 )
+
+[node name="OmniLight" type="OmniLight" parent="." index="4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.169251, 0.175286 )
+light_color = Color( 1, 0.94902, 0.415686, 1 )
+light_energy = 0.5
+omni_range = 4.0
+
 [connection signal="body_entered" from="Area" to="." method="on_body_entered"]
