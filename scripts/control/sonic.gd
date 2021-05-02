@@ -316,14 +316,17 @@ func _physics_process(delta):
 				elif vp.length_squared() <= MIN_SPEED_WALL_RUN*MIN_SPEED_WALL_RUN:
 					new_state = State.Slip
 		State.Slip:
-			can_wall_jump = ( last_wall_jump.dot(target_up) <= MIN_DOT_WALLJUMP 
-				and timer_air < TIME_WALLJUMP_SLIP)
-			if can_wall_jump and Input.is_action_just_pressed("mv_jump"):
-				last_wall_jump = target_up
-				if statePlayback.get_current_node() == "Stop-loop":
-					new_state = State.SlidingJump
-				else:
-					new_state = State.Jumping
+			if Input.is_action_just_pressed("mv_jump"):
+				var wall = find_good_wall()
+				can_wall_jump = (wall != Vector3.ZERO
+					and last_wall_jump.dot(wall) <= MIN_DOT_WALLJUMP 
+					and timer_air < TIME_WALLJUMP_SLIP)
+				if can_wall_jump:
+					last_wall_jump = wall
+					if statePlayback.get_current_node() == "Stop-loop":
+						new_state = State.SlidingJump
+					else:
+						new_state = State.Jumping
 			elif is_on_floor():
 				var n = get_floor_normal()
 				if n.dot(true_up) >= WALL_DOT:
@@ -710,3 +713,10 @@ func playAnimation(animation:String):
 
 func endAnimation():
 	set_state(State.Ground) 
+	
+func read_hint_text(text:String):
+	$HintUI/Label.text = "Hint: "+text
+	$HintUI/hint_anim.play("show")
+
+func get_journal_page(page:Texture):
+	$HintUI/journal_anim.play("show_journal")

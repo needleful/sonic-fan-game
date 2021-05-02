@@ -16,13 +16,13 @@ __meta__ = {
 }
 
 [node name="Labels" type="VBoxContainer" parent="."]
-margin_right = 103.0
-margin_bottom = 146.0
+margin_right = 86.0
+margin_bottom = 115.0
 size_flags_horizontal = 3
 
 [node name="L1" type="Label" parent="Labels"]
-margin_right = 103.0
-margin_bottom = 46.0
+margin_right = 86.0
+margin_bottom = 33.0
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -30,9 +30,9 @@ custom_constants/shadow_offset_y = 2
 text = "SCORE"
 
 [node name="L2" type="Label" parent="Labels"]
-margin_top = 50.0
-margin_right = 103.0
-margin_bottom = 96.0
+margin_top = 41.0
+margin_right = 86.0
+margin_bottom = 74.0
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -40,9 +40,9 @@ custom_constants/shadow_offset_y = 2
 text = "TIME"
 
 [node name="L3" type="Label" parent="Labels"]
-margin_top = 100.0
-margin_right = 103.0
-margin_bottom = 146.0
+margin_top = 82.0
+margin_right = 86.0
+margin_bottom = 115.0
 custom_colors/font_color = Color( 1, 0.909804, 0.164706, 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -1
@@ -50,13 +50,13 @@ custom_constants/shadow_offset_y = 2
 text = "RINGS"
 
 [node name="Values" type="VBoxContainer" parent="."]
-margin_left = 107.0
-margin_right = 179.0
-margin_bottom = 146.0
+margin_left = 94.0
+margin_right = 146.0
+margin_bottom = 115.0
 
 [node name="Score" type="Label" parent="Values"]
-margin_right = 72.0
-margin_bottom = 46.0
+margin_right = 52.0
+margin_bottom = 33.0
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -2
 custom_constants/shadow_offset_y = 2
@@ -64,9 +64,9 @@ text = "000"
 align = 2
 
 [node name="Time" type="Label" parent="Values"]
-margin_top = 50.0
-margin_right = 72.0
-margin_bottom = 96.0
+margin_top = 41.0
+margin_right = 52.0
+margin_bottom = 74.0
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -2
 custom_constants/shadow_offset_y = 2
@@ -74,9 +74,9 @@ text = "0:00"
 align = 2
 
 [node name="Rings" type="Label" parent="Values"]
-margin_top = 100.0
-margin_right = 72.0
-margin_bottom = 146.0
+margin_top = 82.0
+margin_right = 52.0
+margin_bottom = 115.0
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 custom_constants/shadow_offset_x = -2
 custom_constants/shadow_offset_y = 2

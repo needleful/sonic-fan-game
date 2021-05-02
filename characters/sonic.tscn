@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=2]
+[gd_scene load_steps=60 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -8,10 +8,67 @@
 [ext_resource path="res://entities/journal.tscn" type="PackedScene" id=6]
 [ext_resource path="res://pages/00_intro.png" type="Texture" id=7]
 [ext_resource path="res://pages/01_premise.png" type="Texture" id=8]
+[ext_resource path="res://ui/game_theme.tres" type="Theme" id=9]
 
 [sub_resource type="DynamicFont" id=1]
 size = 48
 font_data = ExtResource( 5 )
+
+[sub_resource type="Animation" id=49]
+resource_name = "show_journal"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("journal:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("journal:percent_visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 3, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 1.0, 1.0, 0.0 ]
+}
+
+[sub_resource type="Animation" id=50]
+resource_name = "show"
+length = 6.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Label:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Label:percent_visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 5, 6 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 1.0, 1.0, 0.0 ]
+}
 
 [sub_resource type="SphereShape" id=2]
 radius = 0.47
@@ -210,7 +267,7 @@ nodes/Speed/position = Vector2( 280, 80 )
 nodes/Walk/node = SubResource( 25 )
 nodes/Walk/position = Vector2( 40, 80 )
 nodes/output/position = Vector2( 520, 100 )
-node_connections = [ "output", 0, "Speed", "Speed", 0, "Walk" ]
+node_connections = [ "Speed", 0, "Walk", "output", 0, "Speed" ]
 
 [sub_resource type="AnimationNodeAnimation" id=27]
 animation = "Ball-loop"
@@ -470,7 +527,49 @@ margin_top = 132.0
 margin_right = 173.0
 margin_bottom = 157.0
 
-[node name="Sun" parent="." index="2"]
+[node name="HintUI" type="Node" parent="." index="2"]
+
+[node name="journal" type="Label" parent="HintUI" index="0"]
+visible = false
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -460.081
+margin_top = 8.32445
+margin_right = -13.0813
+margin_bottom = 80.3244
+size_flags_horizontal = 3
+theme = ExtResource( 9 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "New Journal page!
+Press 'J'/Back to view"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="HintUI" index="1"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -223.5
+margin_top = -100.785
+margin_right = 223.5
+margin_bottom = -67.7849
+size_flags_horizontal = 3
+theme = ExtResource( 9 )
+custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
+text = "Hint: Fuck you"
+align = 1
+
+[node name="journal_anim" type="AnimationPlayer" parent="HintUI" index="2"]
+anims/show_journal = SubResource( 49 )
+
+[node name="hint_anim" type="AnimationPlayer" parent="HintUI" index="3"]
+anims/show = SubResource( 50 )
+
+[node name="Sun" parent="." index="3"]
 visible = false
 
 [node name="OmniLight" type="OmniLight" parent="Armature" index="0"]
@@ -488,11 +587,11 @@ collision_layer = 0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0 )
 shape = SubResource( 2 )
 
-[node name="CollisionShape" type="CollisionShape" parent="." index="5"]
+[node name="CollisionShape" type="CollisionShape" parent="." index="6"]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 3 )
 
-[node name="Cam" type="Spatial" parent="." index="6"]
+[node name="Cam" type="Spatial" parent="." index="7"]
 
 [node name="Yaw" type="Spatial" parent="Cam" index="0"]
 
@@ -565,7 +664,7 @@ visible = false
 mesh = SubResource( 8 )
 material/0 = SubResource( 9 )
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="7"]
+[node name="AnimationTree" type="AnimationTree" parent="." index="8"]
 tree_root = SubResource( 44 )
 anim_player = NodePath("../AnimationPlayer")
 active = true
@@ -575,11 +674,11 @@ parameters/Ground/Walk/blend_position = 2.99244
 parameters/Ground/Walk/1/blend_position = Vector2( 0, 0 )
 parameters/Ground/Walk/2/blend_position = Vector2( 0.228, -1.064 )
 
-[node name="CustomAnimation" type="AnimationPlayer" parent="." index="8"]
+[node name="CustomAnimation" type="AnimationPlayer" parent="." index="9"]
 autoplay = "Jump-Reset"
 anims/Die = SubResource( 46 )
 anims/Jump-Reset = SubResource( 47 )
 anims/Jump-Roll = SubResource( 48 )
 
-[node name="Audio" type="AudioStreamPlayer" parent="." index="9"]
+[node name="Audio" type="AudioStreamPlayer" parent="." index="10"]
 stream = ExtResource( 3 )

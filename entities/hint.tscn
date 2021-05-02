@@ -1,0 +1,124 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/models-export/props/hint.glb" type="PackedScene" id=1]
+[ext_resource path="res://entities/hint.gd" type="Script" id=2]
+
+[sub_resource type="SphereShape" id=1]
+radius = 0.611816
+
+[sub_resource type="Animation" id=2]
+resource_name = "activated"
+tracks/0/type = "value"
+tracks/0/path = NodePath("../dots:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.1, 0.2, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 1, 1, 1 ), Vector3( 1.15615, 1, 1.14797 ), Vector3( 0.100064, 1, 0.0993571 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("../question:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.4, 0.6 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 1, 1, 1 ), Vector3( 1.495, 0.052, 1.17 ), Vector3( 0, 0, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../dots:translation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.6 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0.405, 0 ), Vector3( 0, 0.020934, 0 ) ]
+}
+tracks/3/type = "method"
+tracks/3/path = NodePath("..")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0.9 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "queue_free"
+} ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 4.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("../dots:rotation_degrees")
+tracks/0/interp = 2
+tracks/0/loop_wrap = false
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1, 2, 3, 4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 45, 0, 0 ), Vector3( -1.36039e-13, -90, -41.937 ), Vector3( -45, -180, -5.00896e-06 ), Vector3( -2.813, -270, 34.578 ), Vector3( 45, -360, 0 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("../dots:translation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 4 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0.404511, 0 ), Vector3( 0, 0.404511, 0 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("../question:rotation_degrees")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 1.9, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( -4.25628, 7.33998, -2.14387 ), Vector3( 0, 0, 0 ) ]
+}
+
+[node name="hint" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="Area" type="Area" parent="." index="0"]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape" type="CollisionShape" parent="Area" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.404862, 0 )
+shape = SubResource( 1 )
+
+[node name="question" parent="." index="1"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0193276, 0, 0 )
+
+[node name="dots" parent="." index="2"]
+transform = Transform( 1, 0, 0, 0, 0.707107, -0.707106, 0, 0.707107, 0.707106, 0, 0.405, 0 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="3"]
+root_node = NodePath(".")
+autoplay = "idle"
+anims/activated = SubResource( 2 )
+anims/idle = SubResource( 3 )
+[connection signal="body_entered" from="Area" to="." method="on_body_entered"]

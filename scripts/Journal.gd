@@ -26,6 +26,7 @@ func _input(event):
 				$journal.show_page(pages[current_page])
 
 func set_open(o):
+	$"/root/Pause".set_process_input(!o)
 	if pages.size() > 0:
 		$journal.show_page(pages[current_page])
 	open = o
