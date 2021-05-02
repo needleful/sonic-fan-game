@@ -2,26 +2,27 @@
 
 importer="scene"
 type="PackedScene"
-path="res://.import/mystic-ruins.glb-0b378890133094ce12dbc00a93286105.scn"
+path="res://.import/template_rect.glb-d32638360fb0bae4baff96724dbc8f2f.scn"
 
 [deps]
 
-source_file="res://assets/models-export/env/mystic-ruins.glb"
-dest_files=[ "res://.import/mystic-ruins.glb-0b378890133094ce12dbc00a93286105.scn" ]
+source_file="res://assets/models-export/env/template_rect.glb"
+dest_files=[ "res://.import/template_rect.glb-d32638360fb0bae4baff96724dbc8f2f.scn" ]
 
 [params]
 
-nodes/root_type="StaticBody"
+nodes/root_type="Spatial"
 nodes/root_name="Scene Root"
 nodes/root_scale=1.0
 nodes/custom_script=""
 nodes/storage=0
+nodes/use_legacy_names=false
 materials/location=1
 materials/storage=1
 materials/keep_on_reimport=true
 meshes/compress=true
 meshes/ensure_tangents=true
-meshes/storage=0
+meshes/storage=1
 meshes/light_baking=0
 meshes/lightmap_texel_size=0.1
 skins/use_named_skins=true
