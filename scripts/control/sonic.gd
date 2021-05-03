@@ -16,6 +16,8 @@ enum State {
 	SlidingJump,
 	# Flying through the air with little control
 	Air,
+	#Needed this for some animation logic
+	Backflip,
 	# Landing on a wall
 	WallRun,
 	# Slipping off a wall
@@ -32,8 +34,9 @@ const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 1.5
 const ACCEL_SLIDE_WALLRUN = 30
 const ACCEL_JUMPING = 30
-const ACCEL_JUMPING_SLIDE = 500
+const ACCEL_JUMPING_SLIDE = 100
 const ACCEL_AIR = 10
+const ACCEL_BACKFLIP = 15
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
 const SPEED_RUN = 10
@@ -273,11 +276,15 @@ func _physics_process(delta):
 							new_state = State.Slip
 				else:
 					timer_coyote = 0
-		State.Jumping, State.SlidingJump:
+		State.Jumping:
 			timer_air += delta
 			if timer_air >= TIME_JUMP:
 				new_state = State.Air
-		State.Air:
+		State.SlidingJump:
+			timer_air += delta
+			if timer_air >= TIME_JUMP:
+				new_state = State.Backflip
+		State.Air, State.Backflip:
 			var n: Vector3 = Vector3.ZERO
 			if is_on_floor():
 				n = get_floor_normal()
@@ -344,15 +351,17 @@ func _physics_process(delta):
 			process_ground(delta, ACCEL_RUN, ACCEL_START)
 		State.Air, State.Slip:
 			process_air(ACCEL_AIR, delta)
+		State.Backflip:
+			process_air(ACCEL_BACKFLIP, delta)
 		State.WallRun:
 			var friction = clamp(target_up.dot(true_up), 0, 1)
 			var wall_accel = lerp(ACCEL_WALLRUN, ACCEL_RUN, friction)
 			var slide_accel = lerp(ACCEL_SLIDE_WALLRUN, ACCEL_START, friction)
 			process_ground(delta, wall_accel, slide_accel)
 		State.Jumping:
-			process_air(ACCEL_JUMPING, delta)
+			process_jump(ACCEL_JUMPING, delta, 4)
 		State.SlidingJump:
-			process_air(ACCEL_JUMPING_SLIDE, delta)
+			process_jump(ACCEL_JUMPING_SLIDE, delta, 8)
 
 	var speed = velocity.length()/MAX_SNEAK
 	
@@ -449,37 +458,21 @@ func process_ground(delta, accel_move, accel_start):
 		drag = -DRAG_GROUND*v
 		velocity += (movement + gravity + drag + centrifugal_force) * delta
 	
-	var steer_speed = 180/(max(6, (velocity.length())*4))
+	var steer_speed:float = 180/(max(6, (velocity.length())*4))
+	var steer_angle = steer(delta, input, steer_speed)
 	var floorvel = MoveMath.reject(velocity, up)
-	var steer = floorvel.angle_to(input)
-	var axis = floorvel.cross(input).normalized()
-	if PI - abs(steer) <= MIN_ANGLE_SLIDE and (
+	
+	if PI - abs(steer_angle) <= MIN_ANGLE_SLIDE and (
 		input != Vector3.ZERO and
 		floorvel.length_squared() >= SPEED_RUN*SPEED_RUN
 	):
 		statePlayback.travel("Stop-loop")
-		steer = movement.angle_to(input)
-		axis = movement.cross(input)
-	elif statePlayback.get_current_node() == "Stop-loop":
-		if (floorvel.length_squared() < SPEED_STOPPED*SPEED_STOPPED or
-			PI - abs(steer) > MAX_ANGLE_SLIDE
-		):
-			statePlayback.travel("Ground")
-		else:
-			steer -= PI
-			steer *= 0.2
-	if steer != 0 and axis.is_normalized():
-		var angle = sign(steer)*min(abs(steer), steer_speed*delta)
-		var factor = (1 - (angle*angle)/(4*PI*PI))
-		velocity = velocity.rotated(axis, angle)*factor
-		local_steer = -steer*up.dot(axis)
 	
 	vel_difference = velocity
 	if is_nan(velocity.length()):
 		print_debug("ded")
 		print("Velocity:", velocity)
-		print("Steer:", steer)
-		print("Axis:", axis)
+		print("Steer:", steer_angle)
 		print("Movement:", movement)
 		print("Input:",input)
 		print("Up:", up)
@@ -520,6 +513,50 @@ func process_air(accel, delta):
 	if timer_air >= TIME_REORIENT:
 		reorient_air(true_up, delta*REORIENT_AIR)
 	target_up = up
+
+func process_jump(accel, delta, turn_rate = 1):
+	var input: Vector3 = get_movement(target_up)
+	var movement:Vector3 
+	if MoveMath.reject(velocity, up).length_squared() < SPEED_STOPPED*SPEED_STOPPED:
+		movement = input
+	else:
+		movement = input.project(velocity)*accel
+	var drag = -DRAG_AIR*velocity*velocity*velocity
+	if movement.dot(velocity) > 0 && velocity.length_squared() > MAX_AIR_VEL*MAX_AIR_VEL:
+		movement = MoveMath.reject(movement, velocity)
+	velocity += (movement + gravity + drag) * delta
+	vel_difference = velocity
+	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
+	vel_difference -= velocity
+	
+	var steer_speed:float = 180/(max(6, (velocity.length())*4))
+	steer(delta, input, steer_speed*turn_rate)
+	
+	timer_air += delta
+	if timer_air >= TIME_REORIENT:
+		reorient_air(true_up, delta*REORIENT_AIR)
+	target_up = up
+
+func steer(delta:float, dir:Vector3, steer_speed:float):
+	var floorvel = MoveMath.reject(velocity, up)
+	var steer_angle = floorvel.angle_to(dir)
+	var axis = floorvel.cross(dir).normalized()
+	
+	if statePlayback.get_current_node() == "Stop-loop":
+		if (floorvel.length_squared() < SPEED_STOPPED*SPEED_STOPPED or
+			PI - abs(steer_angle) > MAX_ANGLE_SLIDE
+		):
+			statePlayback.travel("Ground")
+		else:
+			steer_angle -= PI
+			steer_angle *= 0.2
+	if steer_angle != 0 and axis.is_normalized():
+		var angle = sign(steer_angle)*min(abs(steer_angle), steer_speed*delta)
+		var factor = (1 - (angle*angle)/(4*PI*PI))
+		velocity = velocity.rotated(axis, angle)*factor
+		local_steer = -steer_angle*up.dot(axis)
+		
+	return steer_angle
 
 func reorient(new_up:Vector3, rotate_speed: float, min_rotate_speed:float, delta:float):
 	if !new_up.is_normalized():
@@ -589,7 +626,7 @@ func set_state(new_state):
 			timer_air = 0
 			statePlayback.travel("Ground")
 			last_wall_jump = Vector3.ZERO
-		State.Air:
+		State.Air, State.Backflip:
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
 		State.Jumping:
@@ -632,7 +669,11 @@ func rotate_up(axis: Vector3, angle:float):
 	mesh.global_transform = Transform(Basis(mx, up, mz), mesh.global_transform.origin)
 
 func rotate_by_speed(delta):
-	var bx = up.cross(velocity).normalized()
+	# reversed
+	var desired_forward = velocity
+	if state == State.SlidingJump or state == State.Backflip:
+		desired_forward = -velocity
+	var bx = up.cross(desired_forward).normalized()
 	var rx = mesh.global_transform.basis.x.normalized()
 	var r = rx.angle_to(bx)
 	if r == 0:
