@@ -34,7 +34,7 @@ const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 1.5
 const ACCEL_SLIDE_WALLRUN = 30
 const ACCEL_JUMPING = 30
-const ACCEL_JUMPING_SLIDE = 100
+const ACCEL_JUMPING_SLIDE = 300
 const ACCEL_AIR = 10
 const ACCEL_BACKFLIP = 15
 const MAX_RUN = 90
@@ -361,7 +361,7 @@ func _physics_process(delta):
 		State.Jumping:
 			process_jump(ACCEL_JUMPING, delta, 4)
 		State.SlidingJump:
-			process_jump(ACCEL_JUMPING_SLIDE, delta, 8)
+			process_air(ACCEL_JUMPING_SLIDE, delta)
 
 	var speed = velocity.length()/MAX_SNEAK
 	

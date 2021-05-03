@@ -1,4 +1,4 @@
-[gd_scene load_steps=62 format=2]
+[gd_scene load_steps=60 format=2]
 
 [ext_resource path="res://assets/models-export/sonic.glb" type="PackedScene" id=1]
 [ext_resource path="res://scripts/control/sonic.gd" type="Script" id=2]
@@ -73,7 +73,7 @@ tracks/1/keys = {
 radius = 0.47
 
 [sub_resource type="SphereShape" id=5]
-radius = 0.43
+radius = 0.35
 
 [sub_resource type="SphereShape" id=6]
 radius = 0.25
@@ -181,9 +181,6 @@ size = Vector3( 0.1, 0.1, 0.1 )
 [sub_resource type="SpatialMaterial" id=11]
 flags_no_depth_test = true
 albedo_color = Color( 1, 0, 0, 1 )
-
-[sub_resource type="AnimationNodeAnimation" id=12]
-animation = "Backflip"
 
 [sub_resource type="AnimationNodeAnimation" id=13]
 animation = "Fall-loop"
@@ -315,15 +312,9 @@ auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=45]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=46]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=47]
-switch_mode = 2
-auto_advance = true
+[sub_resource type="AnimationNodeStateMachineTransition" id=54]
 
 [sub_resource type="AnimationNodeStateMachine" id=48]
-states/Backflip/node = SubResource( 12 )
-states/Backflip/position = Vector2( 293, -158 )
 states/Fall/node = SubResource( 13 )
 states/Fall/position = Vector2( 514, 132 )
 states/Ground/node = SubResource( 29 )
@@ -337,10 +328,10 @@ states/Stand/position = Vector2( 514, 287 )
 states/StartJump/node = SubResource( 33 )
 states/StartJump/position = Vector2( 293, -44 )
 states/Stop-loop/node = SubResource( 34 )
-states/Stop-loop/position = Vector2( 514, -44 )
-transitions = [ "Fall", "Ground", SubResource( 35 ), "Ground", "Fall", SubResource( 36 ), "Ground", "Stop-loop", SubResource( 37 ), "Stop-loop", "Ground", SubResource( 38 ), "Stop-loop", "Fall", SubResource( 39 ), "Jump", "Ground", SubResource( 40 ), "Sit", "Stand", SubResource( 41 ), "Stand", "Ground", SubResource( 42 ), "Ground", "Sit", SubResource( 43 ), "StartJump", "Jump", SubResource( 44 ), "Ground", "StartJump", SubResource( 45 ), "Stop-loop", "Backflip", SubResource( 46 ), "Backflip", "Jump", SubResource( 47 ) ]
+states/Stop-loop/position = Vector2( 544, -44 )
+transitions = [ "Fall", "Ground", SubResource( 35 ), "Ground", "Fall", SubResource( 36 ), "Ground", "Stop-loop", SubResource( 37 ), "Stop-loop", "Ground", SubResource( 38 ), "Stop-loop", "Fall", SubResource( 39 ), "Jump", "Ground", SubResource( 40 ), "Sit", "Stand", SubResource( 41 ), "Stand", "Ground", SubResource( 42 ), "Ground", "Sit", SubResource( 43 ), "StartJump", "Jump", SubResource( 44 ), "Ground", "StartJump", SubResource( 45 ), "Stop-loop", "StartJump", SubResource( 54 ) ]
 start_node = "Ground"
-graph_offset = Vector2( -184, 56 )
+graph_offset = Vector2( -261, -96 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=49]
 
@@ -422,7 +413,7 @@ tracks/1/keys = {
 "times": PoolRealArray( 0, 1 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector3( 0, 180, 0 ), Vector3( -360, 180, 0 ) ]
+"values": [ Vector3( 0, 0, 0 ), Vector3( -360, 0, 0 ) ]
 }
 
 [sub_resource type="Animation" id=52]
@@ -615,7 +606,7 @@ light_specular = 0.0
 omni_range = 1.35735
 
 [node name="Skeleton" parent="Armature" index="1"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.102144, 0.00631003, -0.272074 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.07087e-09, -1.05556e-08, -1.24058e-09 )
 
 [node name="WallRunArea" type="Area" parent="Armature" index="2"]
 collision_layer = 0
