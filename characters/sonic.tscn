@@ -331,7 +331,7 @@ states/Stop-loop/node = SubResource( 34 )
 states/Stop-loop/position = Vector2( 544, -44 )
 transitions = [ "Fall", "Ground", SubResource( 35 ), "Ground", "Fall", SubResource( 36 ), "Ground", "Stop-loop", SubResource( 37 ), "Stop-loop", "Ground", SubResource( 38 ), "Stop-loop", "Fall", SubResource( 39 ), "Jump", "Ground", SubResource( 40 ), "Sit", "Stand", SubResource( 41 ), "Stand", "Ground", SubResource( 42 ), "Ground", "Sit", SubResource( 43 ), "StartJump", "Jump", SubResource( 44 ), "Ground", "StartJump", SubResource( 45 ), "Stop-loop", "StartJump", SubResource( 54 ) ]
 start_node = "Ground"
-graph_offset = Vector2( -261, -96 )
+graph_offset = Vector2( -164, 49 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=49]
 
@@ -509,7 +509,6 @@ __meta__ = {
 }
 
 [node name="debugUI" type="PanelContainer" parent="." index="1"]
-visible = false
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0

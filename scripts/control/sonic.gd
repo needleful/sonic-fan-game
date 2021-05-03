@@ -345,6 +345,9 @@ func _physics_process(delta):
 				new_state = State.WallRun
 			elif timer_air > TIME_SLIP_FORGET:
 				new_state = State.Air
+		State.CustomAnimation:
+			if statePlayback.get_current_node() == "Ground":
+				new_state = State.Ground
 	set_state(new_state)
 	match state:
 		State.Ground:
