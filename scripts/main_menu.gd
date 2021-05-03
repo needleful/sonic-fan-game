@@ -3,10 +3,14 @@ extends Control
 export(String) var zone_name
 export(String) var act
 export(Vector2) var camera_rotation
+export(Texture) var journal_page
 
 func _ready():
 	if !$"/root/Respawn".new_level:
 		visible = false
+		for sonic in get_tree().get_nodes_in_group("player"):
+			sonic.playAnimation("Stand")
+			sonic.get_journal_page(journal_page)
 		return
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	$"/root/Pause".set_process_input(false)
@@ -24,6 +28,7 @@ func start(other_scene:String = ""):
 	for sonic in get_tree().get_nodes_in_group("player"):
 		sonic.set_process_input(true)
 		sonic.playAnimation("Stand")
+		sonic.get_journal_page(journal_page)
 	$"/root/SceneCards".open_level(zone_name, act)
 
 func _on_Quit_pressed():

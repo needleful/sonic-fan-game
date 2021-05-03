@@ -2,8 +2,9 @@ extends KinematicBody
 
 class_name BadnikGround
 
-var gravity: Vector3 = Vector3(0, -9.8, 0)
-var up: Vector3 = Vector3.UP
+var gravity: Vector3 = Vector3(0, -9.8, 0) setget set_gravity
+var true_up: Vector3 = Vector3.UP
+var up: Vector3 = true_up
 
 var velocity: Vector3 = Vector3(0,0,0)
 
@@ -24,6 +25,8 @@ export(float) var time_to_forget: float = 30
 # If the 
 export(NodePath) var kill_box: NodePath
 var killbox: Area
+
+export(float) var kill_plane: float = -90
 
 const DRAG_AIR = 0.00005
 onready var cast = $GroundCast
@@ -75,7 +78,7 @@ func kill(body):
 		body.die()
 
 func _physics_process(delta):
-	if global_transform.origin.y <= -90:
+	if global_transform.origin.y <= kill_plane:
 		die()
 	match mstate:
 		MoveState.Ground:
@@ -149,7 +152,7 @@ func _physics_process(delta):
 		if cast.is_colliding():
 			reorient(cast.get_collision_normal(), 0.1, 60, delta)
 		else:
-			reorient(Vector3.UP, 0.1, 120, delta)
+			reorient(true_up, 0.1, 120, delta)
 	
 	if attacking:
 		attack_timer += delta
@@ -157,6 +160,10 @@ func _physics_process(delta):
 		attack_timer += delta
 		if attack_timer > ATTACK_TIME:
 			doneAttacking()
+
+func set_gravity(g):
+	gravity = g
+	true_up = -g.normalized()
 
 func get_patrol_point() -> Vector3:
 	if path == null:
@@ -183,7 +190,7 @@ func get_chase_dir() -> Vector3:
 	
 func reorient(new_up:Vector3, interp:float, max_degrees, delta):
 	if new_up.length_squared() <= 0.9:
-		new_up = Vector3.UP
+		new_up = true_up
 	if abs(new_up.dot(up)) >= 0.99999:
 		return
 	var mr = deg2rad(max_degrees)

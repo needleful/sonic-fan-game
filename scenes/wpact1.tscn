@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=2]
+[gd_scene load_steps=51 format=2]
 
 [ext_resource path="res://scenes/components/act1_main_level.tscn" type="PackedScene" id=1]
 [ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=2]
@@ -21,6 +21,9 @@
 [ext_resource path="res://assets/sfx/ambient/tech/spooky02.ogg" type="AudioStream" id=19]
 [ext_resource path="res://assets/sfx/ambient/tech/machine02.ogg" type="AudioStream" id=20]
 [ext_resource path="res://entities/hint.tscn" type="PackedScene" id=21]
+[ext_resource path="res://pages/01_premise.png" type="Texture" id=22]
+[ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=23]
+[ext_resource path="res://pages/02_jeffy.png" type="Texture" id=24]
 
 [sub_resource type="ProceduralSky" id=1]
 sky_top_color = Color( 0.317647, 0.341176, 0.356863, 1 )
@@ -160,6 +163,10 @@ extents = Vector3( 3, 1, 3 )
 [sub_resource type="SphereShape" id=25]
 radius = 14.4009
 
+[sub_resource type="CylinderShape" id=26]
+radius = 72.0783
+height = 69.1543
+
 [node name="wpact1" type="Spatial"]
 
 [node name="sonic" parent="." instance=ExtResource( 2 )]
@@ -176,6 +183,7 @@ __meta__ = {
 zone_name = "Water Processing Zone"
 act = "1"
 camera_rotation = Vector2( 1.5, 0.1 )
+journal_page = ExtResource( 22 )
 
 [node name="MainMenu" type="VBoxContainer" parent="main_menu"]
 anchor_left = 0.01
@@ -781,6 +789,28 @@ hint_text = "I can't jump from the same wall twice"
 
 [node name="hint3" parent="." instance=ExtResource( 21 )]
 transform = Transform( -0.985298, 0, -0.170846, 0, 1, 0, 0.170846, 0, -0.985298, 0.380891, -19.8471, -86.8496 )
+
+[node name="hovercraft" parent="." instance=ExtResource( 23 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.78996, 112.688, 735.608 )
+acceleration = 12.0
+pivot_acceleration = 10.0
+repulsion = 4.0
+avoidance_strength = 10.0
+kill_box = NodePath("../Area")
+
+[node name="Area" type="Area" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 126.819, 734.568 )
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.7264, 2.15674 )
+shape = SubResource( 26 )
+
+[node name="hint" parent="Area" instance=ExtResource( 21 )]
+transform = Transform( -0.995587, 0, -0.0938477, 0, 1, 0, 0.0938477, 0, -0.995587, -0.114502, -16.681, 2.43286 )
+hint_text = "Most badniks aren't this slow"
+journal_page = ExtResource( 24 )
 
 [connection signal="pressed" from="main_menu/MainMenu/NewGame" to="main_menu" method="_on_NewGame_pressed"]
 [connection signal="pressed" from="main_menu/MainMenu/LevelSelect" to="main_menu" method="_on_LevelSelect_pressed"]

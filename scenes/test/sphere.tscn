@@ -1,0 +1,311 @@
+[gd_scene load_steps=23 format=2]
+
+[ext_resource path="res://characters/sonic.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scripts/entities/gravity_zone.gd" type="Script" id=2]
+[ext_resource path="res://scripts/env/road_gen.gd" type="Script" id=3]
+[ext_resource path="res://assets/models-export/env/road-template-basin1.mesh" type="ArrayMesh" id=4]
+[ext_resource path="res://characters/badniks/hovercraft.tscn" type="PackedScene" id=5]
+[ext_resource path="res://characters/badniks/motorbike.tscn" type="PackedScene" id=6]
+[ext_resource path="res://assets/materials/skybox/test_boxes.png" type="Texture" id=7]
+[ext_resource path="res://assets/models-export/env/template_tunnel_small.tres" type="ArrayMesh" id=8]
+[ext_resource path="res://entities/spikes.tscn" type="PackedScene" id=9]
+[ext_resource path="res://entities/spring.tscn" type="PackedScene" id=10]
+
+[sub_resource type="CylinderShape" id=7]
+radius = 38.2
+height = 186.2
+
+[sub_resource type="SphereShape" id=4]
+radius = 219.9
+
+[sub_resource type="Curve3D" id=8]
+_data = {
+"points": PoolVector3Array( -30.2, -12.2, 1.9, 30.2, 12.2, -1.9, -59.8, -10, 4.9, -60.9, -48.4, 3.8, 60.9, 48.4, -3.8, 106.7, 13.7, -4.4 ),
+"tilts": PoolRealArray( 0, 0 )
+}
+
+[sub_resource type="SphereShape" id=1]
+radius = 158.2
+
+[sub_resource type="Curve3D" id=6]
+_data = {
+"points": PoolVector3Array( 1.14, -27.8, 5.99, -1.14, 27.8, -5.99, -0.600006, -0.2, 0.0999985, -37.5, 11.5, -103.8, 37.5, -11.5, 103.8, 47.3, 104.6, 110, -53.6, 55.2, 34.8, 53.6, -55.2, -34.8, -3.5, -74.2, 190.9, 0, 0, 0, 0, 0, 0, -56.8, -267.5, 78 ),
+"tilts": PoolRealArray( 0, 0, 0, 0 )
+}
+
+[sub_resource type="SphereShape" id=9]
+radius = 151.6
+
+[sub_resource type="CubeMesh" id=10]
+size = Vector3( 2, 48, 32 )
+
+[sub_resource type="BoxShape" id=11]
+extents = Vector3( 1, 24, 16 )
+
+[sub_resource type="Animation" id=12]
+resource_name = "loop"
+length = 30.0
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 30 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 40, 0, 0 ), Vector3( 40, 360, 720 ) ]
+}
+
+[sub_resource type="PanoramaSky" id=5]
+panorama = ExtResource( 7 )
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 5 )
+ambient_light_sky_contribution = 0.09
+
+[sub_resource type="Curve3D" id=3]
+_data = {
+"points": PoolVector3Array( -49.1, 180, 5.4, 49.1, -180, -5.4, -8.4, 5, -11.3, -3.8, -130.1, -2.7, 3.8, 130.1, 2.7, 201.8, -5, -3.7 ),
+"tilts": PoolRealArray( 0, 0 )
+}
+
+[node name="Spatial" type="Spatial"]
+
+[node name="sonic" parent="." instance=ExtResource( 1 )]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 109.808, 0 )
+kill_plane = -10000.0
+
+[node name="CSGCylinder" type="CSGCylinder" parent="."]
+transform = Transform( 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 0, 0, 1, 184.873, -382.967, -45.7 )
+use_collision = true
+collision_layer = 5
+radius = 40.6
+height = 165.0
+
+[node name="CSGCylinder" type="CSGCylinder" parent="CSGCylinder"]
+operation = 2
+radius = 23.0
+height = 181.0
+sides = 64
+
+[node name="spring" parent="CSGCylinder" instance=ExtResource( 10 )]
+transform = Transform( -0.749797, 0.0969066, -0.654533, -0.206638, 0.905445, 0.370769, 0.628574, 0.413253, -0.658876, 17.0999, 15.4606, -14.6772 )
+
+[node name="grav2" type="Area" parent="CSGCylinder"]
+space_override = 3
+gravity_vec = Vector3( -0.82, -0.57, 0 )
+gravity = 4.0
+collision_layer = 0
+collision_mask = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="CSGCylinder/grav2"]
+shape = SubResource( 7 )
+
+[node name="spikes" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( 1, -2.98023e-08, 0, 0, 0.605155, 0.796108, 0, -0.796108, 0.605155, 20.6717, 22.2346, -1.47512 )
+
+[node name="spikes2" parent="CSGCylinder/spikes" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+
+[node name="spikes3" parent="CSGCylinder/spikes" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.99955 )
+
+[node name="spikes4" parent="CSGCylinder/spikes" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.9996 )
+
+[node name="spikes2" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( 0.318258, 0.808013, -0.49581, 0.00393578, 0.521873, 0.853014, 0.947996, -0.27343, 0.16291, 6.38071, 24.0886, 19.5903 )
+
+[node name="spikes2" parent="CSGCylinder/spikes2" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+
+[node name="spikes3" parent="CSGCylinder/spikes2" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.99955 )
+
+[node name="spikes4" parent="CSGCylinder/spikes2" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.9996 )
+
+[node name="spikes3" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( -0.638592, 0.70694, -0.304033, 0.19538, 0.531078, 0.82449, 0.744329, 0.467111, -0.477264, -15.8489, 19.39, 13.5155 )
+
+[node name="spikes2" parent="CSGCylinder/spikes3" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+
+[node name="spikes3" parent="CSGCylinder/spikes3" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.99955 )
+
+[node name="spikes4" parent="CSGCylinder/spikes3" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.9996 )
+
+[node name="spikes4" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( 0.0206585, 0.934049, -0.356547, -0.148234, 0.355543, 0.92283, 0.988737, 0.0337883, 0.145803, -8.41934, 3.7538, -19.7182 )
+
+[node name="spikes2" parent="CSGCylinder/spikes4" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4 )
+
+[node name="spikes3" parent="CSGCylinder/spikes4" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 7.99955 )
+
+[node name="spikes4" parent="CSGCylinder/spikes4" instance=ExtResource( 9 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.9996 )
+
+[node name="spikes5" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( 0.297355, 0.139283, 0.944553, -0.0263783, 0.990123, -0.137698, -0.954403, 0.0160296, 0.298092, 6.20441, -14.6339, -19.6043 )
+
+[node name="spikes2" parent="CSGCylinder/spikes5" instance=ExtResource( 9 )]
+transform = Transform( 0.984807, -1.95578e-08, -0.173648, -8.3819e-09, 1, -3.07336e-08, 0.173648, -1.16415e-08, 0.984807, 1.52588e-05, 2.09808e-05, 3.99997 )
+
+[node name="spikes3" parent="CSGCylinder/spikes5/spikes2" instance=ExtResource( 9 )]
+transform = Transform( 0.984808, 7.45058e-09, -0.173648, 1.67638e-08, 1, -3.72529e-08, 0.173648, 1.49012e-08, 0.984808, 3.05176e-05, 9.53674e-06, 3.99954 )
+
+[node name="spikes4" parent="CSGCylinder/spikes5/spikes2/spikes3" instance=ExtResource( 9 )]
+transform = Transform( 0.965926, 1.11759e-08, -0.258819, -2.23517e-08, 1, -2.8871e-08, 0.258819, -1.11759e-08, 0.965926, -3.05176e-05, 1.90735e-05, 4.00003 )
+
+[node name="spikes6" parent="CSGCylinder" instance=ExtResource( 9 )]
+transform = Transform( 0.737487, 0.395337, 0.547559, -0.586159, 0.777395, 0.228199, -0.335454, -0.489251, 0.805049, 4.27277, -33.5719, -5.76422 )
+
+[node name="spikes2" parent="CSGCylinder/spikes6" instance=ExtResource( 9 )]
+transform = Transform( 0.965926, -0.258819, 0, 0.258819, 0.965926, 0, -8.9407e-08, -5.96046e-08, 1, -3.05176e-05, 7.62939e-06, 4 )
+
+[node name="spikes3" parent="CSGCylinder/spikes6" instance=ExtResource( 9 )]
+transform = Transform( 0.866026, -0.5, 5.96046e-08, 0.5, 0.866026, 5.96046e-08, -1.19209e-07, -5.96046e-08, 1, -3.05176e-05, -2.28882e-05, 7.9996 )
+
+[node name="spikes4" parent="CSGCylinder/spikes6" instance=ExtResource( 9 )]
+transform = Transform( 0.707107, -0.707107, -5.96046e-08, 0.707107, 0.707107, -5.96046e-08, 0, 3.72529e-08, 1, 0, 0, 11.9996 )
+
+[node name="CSGSphere" type="CSGSphere" parent="."]
+use_collision = true
+collision_layer = 5
+radius = 100.0
+radial_segments = 100
+rings = 100
+
+[node name="gravity" type="Area" parent="CSGSphere"]
+space_override = 3
+gravity_point = true
+gravity = 21.0
+collision_layer = 0
+collision_mask = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="CSGSphere/gravity"]
+shape = SubResource( 4 )
+
+[node name="AutoRoad" type="Path" parent="CSGSphere"]
+transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 35.7, -106.3, 0 )
+curve = SubResource( 8 )
+script = ExtResource( 3 )
+stay_vertical = false
+template_mesh = ExtResource( 4 )
+template_transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="CSGSphere2" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 379.1, 0, 0 )
+use_collision = true
+collision_layer = 5
+radius = 73.3
+radial_segments = 32
+rings = 32
+
+[node name="gravity" type="Area" parent="CSGSphere2"]
+space_override = 3
+gravity_point = true
+gravity = 15.0
+collision_layer = 0
+collision_mask = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="CSGSphere2/gravity"]
+shape = SubResource( 1 )
+
+[node name="hovercraft" parent="CSGSphere2/gravity" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10.7, 47.1, -114.6 )
+
+[node name="AutoRoad" type="Path" parent="CSGSphere2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -76.3 )
+curve = SubResource( 6 )
+script = ExtResource( 3 )
+stay_vertical = false
+template_mesh = ExtResource( 8 )
+
+[node name="CSGSphere3" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -331.1, -586.9, 128.4 )
+use_collision = true
+collision_layer = 5
+collision_mask = 5
+radius = 25.0
+radial_segments = 32
+rings = 32
+
+[node name="Area" type="Area" parent="CSGSphere3"]
+space_override = 3
+gravity_point = true
+gravity = 9.0
+collision_layer = 3
+collision_mask = 3
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
+base_radius = 25.0
+
+[node name="CollisionShape" type="CollisionShape" parent="CSGSphere3/Area"]
+shape = SubResource( 9 )
+
+[node name="MeshInstance" type="MeshInstance" parent="CSGSphere3"]
+transform = Transform( 1, -2.37303e-07, 1.33939e-07, 2.67879e-07, 0.766044, -0.642788, 4.99316e-08, 0.642788, 0.766044, -91.6, 0, -348.5 )
+mesh = SubResource( 10 )
+material/0 = null
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="KinematicBody" type="KinematicBody" parent="CSGSphere3/MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="CSGSphere3/MeshInstance/KinematicBody"]
+shape = SubResource( 11 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CSGSphere3/MeshInstance"]
+autoplay = "loop"
+anims/loop = SubResource( 12 )
+
+[node name="motorbike" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26.1, 112, -0.8 )
+kill_plane = -9000.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+
+[node name="AutoRoad" type="Path" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 106.2, 0, 0 )
+curve = SubResource( 3 )
+script = ExtResource( 3 )
+stay_vertical = false
+template_mesh = ExtResource( 4 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.956162, -0.0791562, -0.281938, 0.136448, -0.731447, 0.668107, -0.259108, -0.677288, -0.688581, 0, 0, 0 )
+shadow_enabled = true
+directional_shadow_mode = 1
+directional_shadow_normal_bias = 2.2
+directional_shadow_bias_split_scale = 0.37
+directional_shadow_depth_range = 1
+directional_shadow_max_distance = 185.0
+
+[node name="DirectionalLight2" type="DirectionalLight" parent="."]
+transform = Transform( 0.956162, -0.288975, -0.0474122, 0.136448, 0.296388, 0.945271, -0.259108, -0.910301, 0.322825, 0, 0, 0 )
+light_color = Color( 1, 0.376471, 0.376471, 1 )
+light_energy = 0.16
+directional_shadow_mode = 1
+directional_shadow_normal_bias = 2.2
+directional_shadow_bias_split_scale = 0.37
+directional_shadow_depth_range = 1
+directional_shadow_max_distance = 185.0
+
+[connection signal="body_exited" from="CSGSphere/gravity" to="CSGSphere/gravity" method="_on_gravity_body_exited"]
+[connection signal="body_exited" from="CSGSphere2/gravity" to="CSGSphere2/gravity" method="_on_gravity_body_exited"]

@@ -32,7 +32,7 @@ const ACCEL_RUN = 16
 const ACCEL_WALLRUN = 1.5
 const ACCEL_SLIDE_WALLRUN = 30
 const ACCEL_JUMPING = 30
-const ACCEL_JUMPING_SLIDE = 200
+const ACCEL_JUMPING_SLIDE = 500
 const ACCEL_AIR = 10
 const MAX_RUN = 90
 const MIN_SLIDE_ACCEL = 3
@@ -48,6 +48,7 @@ const DRAG_STOPPING = 2
 const DRAG_GROUND = 0.18
 const DRAG_AIR = 0.00005
 const FORCE_CENTRIFUGAL = 1
+const MAX_AIR_VEL = 30
 
 const MIN_GROUNDED_ON_WALL = -0.05
 const MIN_SPEED_WALL_RUN = 15
@@ -508,6 +509,8 @@ func process_ground(delta, accel_move, accel_start):
 func process_air(accel, delta):
 	var movement = get_movement()*accel
 	var drag = -DRAG_AIR*velocity*velocity*velocity
+	if movement.dot(velocity) > 0 && velocity.length_squared() > MAX_AIR_VEL*MAX_AIR_VEL:
+		movement = MoveMath.reject(movement, velocity)
 	velocity += (movement + gravity + drag) * delta
 	vel_difference = velocity
 	velocity = move_and_slide(velocity, up, false, 4, ANGLE_FLOOR)
@@ -589,9 +592,17 @@ func set_state(new_state):
 		State.Air:
 			if state != State.Jumping and state != State.SlidingJump:
 				statePlayback.travel("Fall")
-		State.Jumping, State.SlidingJump:
+		State.Jumping:
 			statePlayback.travel("Jump")
 			$CustomAnimation.play("Jump-Roll")
+			if state == State.Slip:
+				velocity += target_up*VEL_JUMP
+			else:
+				velocity += up*VEL_JUMP
+			sneaking = false
+		State.SlidingJump:
+			statePlayback.travel("Jump")
+			$CustomAnimation.play("Jump-Backflip")
 			if state == State.Slip:
 				velocity += target_up*VEL_JUMP
 			else:
@@ -719,4 +730,8 @@ func read_hint_text(text:String):
 	$HintUI/hint_anim.play("show")
 
 func get_journal_page(page:Texture):
-	$HintUI/journal_anim.play("show_journal")
+	var j = cam.get_node("Journal")
+	if !(page in j.pages):
+		j.pages.push_back(page)
+		$HintUI/journal_anim.play("show_journal")
+		j.current_page = j.pages.size() - 1

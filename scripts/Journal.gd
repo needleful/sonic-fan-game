@@ -28,6 +28,8 @@ func _input(event):
 func set_open(o):
 	$"/root/Pause".set_process_input(!o)
 	if pages.size() > 0:
+		if current_page > pages.size() - 1:
+			current_page = pages.size() - 1
 		$journal.show_page(pages[current_page])
 	open = o
 	visible = o
