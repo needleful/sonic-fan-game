@@ -11,38 +11,38 @@
 [ext_resource path="res://entities/spikes.tscn" type="PackedScene" id=9]
 [ext_resource path="res://entities/spring.tscn" type="PackedScene" id=10]
 
-[sub_resource type="CylinderShape" id=7]
+[sub_resource type="CylinderShape" id=1]
 radius = 38.2
 height = 186.2
 
-[sub_resource type="SphereShape" id=4]
+[sub_resource type="SphereShape" id=2]
 radius = 219.9
 
-[sub_resource type="Curve3D" id=8]
+[sub_resource type="Curve3D" id=3]
 _data = {
 "points": PoolVector3Array( -30.2, -12.2, 1.9, 30.2, 12.2, -1.9, -59.8, -10, 4.9, -60.9, -48.4, 3.8, 60.9, 48.4, -3.8, 106.7, 13.7, -4.4 ),
 "tilts": PoolRealArray( 0, 0 )
 }
 
-[sub_resource type="SphereShape" id=1]
+[sub_resource type="SphereShape" id=4]
 radius = 158.2
 
-[sub_resource type="Curve3D" id=6]
+[sub_resource type="Curve3D" id=5]
 _data = {
 "points": PoolVector3Array( 1.14, -27.8, 5.99, -1.14, 27.8, -5.99, -0.600006, -0.2, 0.0999985, -37.5, 11.5, -103.8, 37.5, -11.5, 103.8, 47.3, 104.6, 110, -53.6, 55.2, 34.8, 53.6, -55.2, -34.8, -3.5, -74.2, 190.9, 0, 0, 0, 0, 0, 0, -56.8, -267.5, 78 ),
 "tilts": PoolRealArray( 0, 0, 0, 0 )
 }
 
-[sub_resource type="SphereShape" id=9]
+[sub_resource type="SphereShape" id=6]
 radius = 151.6
 
-[sub_resource type="CubeMesh" id=10]
+[sub_resource type="CubeMesh" id=7]
 size = Vector3( 2, 48, 32 )
 
-[sub_resource type="BoxShape" id=11]
+[sub_resource type="BoxShape" id=8]
 extents = Vector3( 1, 24, 16 )
 
-[sub_resource type="Animation" id=12]
+[sub_resource type="Animation" id=9]
 resource_name = "loop"
 length = 30.0
 loop = true
@@ -59,15 +59,15 @@ tracks/0/keys = {
 "values": [ Vector3( 40, 0, 0 ), Vector3( 40, 360, 720 ) ]
 }
 
-[sub_resource type="PanoramaSky" id=5]
+[sub_resource type="PanoramaSky" id=10]
 panorama = ExtResource( 7 )
 
-[sub_resource type="Environment" id=2]
+[sub_resource type="Environment" id=11]
 background_mode = 2
-background_sky = SubResource( 5 )
+background_sky = SubResource( 10 )
 ambient_light_sky_contribution = 0.09
 
-[sub_resource type="Curve3D" id=3]
+[sub_resource type="Curve3D" id=12]
 _data = {
 "points": PoolVector3Array( -49.1, 180, 5.4, 49.1, -180, -5.4, -8.4, 5, -11.3, -3.8, -130.1, -2.7, 3.8, 130.1, 2.7, 201.8, -5, -3.7 ),
 "tilts": PoolRealArray( 0, 0 )
@@ -104,7 +104,7 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="CSGCylinder/grav2"]
-shape = SubResource( 7 )
+shape = SubResource( 1 )
 
 [node name="spikes" parent="CSGCylinder" instance=ExtResource( 9 )]
 transform = Transform( 1, -2.98023e-08, 0, 0, 0.605155, 0.796108, 0, -0.796108, 0.605155, 20.6717, 22.2346, -1.47512 )
@@ -194,11 +194,11 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="CSGSphere/gravity"]
-shape = SubResource( 4 )
+shape = SubResource( 2 )
 
 [node name="AutoRoad" type="Path" parent="CSGSphere"]
 transform = Transform( 1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 35.7, -106.3, 0 )
-curve = SubResource( 8 )
+curve = SubResource( 3 )
 script = ExtResource( 3 )
 stay_vertical = false
 template_mesh = ExtResource( 4 )
@@ -221,14 +221,14 @@ collision_mask = 3
 script = ExtResource( 2 )
 
 [node name="CollisionShape" type="CollisionShape" parent="CSGSphere2/gravity"]
-shape = SubResource( 1 )
+shape = SubResource( 4 )
 
 [node name="hovercraft" parent="CSGSphere2/gravity" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -10.7, 47.1, -114.6 )
 
 [node name="AutoRoad" type="Path" parent="CSGSphere2"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -76.3 )
-curve = SubResource( 6 )
+curve = SubResource( 5 )
 script = ExtResource( 3 )
 stay_vertical = false
 template_mesh = ExtResource( 8 )
@@ -255,11 +255,11 @@ __meta__ = {
 base_radius = 25.0
 
 [node name="CollisionShape" type="CollisionShape" parent="CSGSphere3/Area"]
-shape = SubResource( 9 )
+shape = SubResource( 6 )
 
 [node name="MeshInstance" type="MeshInstance" parent="CSGSphere3"]
 transform = Transform( 1, -2.37303e-07, 1.33939e-07, 2.67879e-07, 0.766044, -0.642788, 4.99316e-08, 0.642788, 0.766044, -91.6, 0, -348.5 )
-mesh = SubResource( 10 )
+mesh = SubResource( 7 )
 material/0 = null
 __meta__ = {
 "_edit_group_": true
@@ -268,22 +268,22 @@ __meta__ = {
 [node name="KinematicBody" type="KinematicBody" parent="CSGSphere3/MeshInstance"]
 
 [node name="CollisionShape" type="CollisionShape" parent="CSGSphere3/MeshInstance/KinematicBody"]
-shape = SubResource( 11 )
+shape = SubResource( 8 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CSGSphere3/MeshInstance"]
 autoplay = "loop"
-anims/loop = SubResource( 12 )
+anims/loop = SubResource( 9 )
 
 [node name="motorbike" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -26.1, 112, -0.8 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -59.2528, 81.8349, -0.8 )
 kill_plane = -9000.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 2 )
+environment = SubResource( 11 )
 
 [node name="AutoRoad" type="Path" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 106.2, 0, 0 )
-curve = SubResource( 3 )
+curve = SubResource( 12 )
 script = ExtResource( 3 )
 stay_vertical = false
 template_mesh = ExtResource( 4 )

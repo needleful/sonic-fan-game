@@ -1,0 +1,9 @@
+[gd_scene format=2]
+
+[node name="Spatial" type="Spatial"]
+
+[node name="CSGCylinder" type="CSGCylinder" parent="."]
+use_collision = true
+collision_layer = 5
+radius = 100.0
+height = 200.0
