@@ -509,6 +509,7 @@ __meta__ = {
 }
 
 [node name="debugUI" type="PanelContainer" parent="." index="1"]
+visible = false
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -621,6 +622,7 @@ shape = SubResource( 5 )
 [node name="Cam" type="Spatial" parent="." index="7"]
 
 [node name="Yaw" type="Spatial" parent="Cam" index="0"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.255865, 0 )
 
 [node name="Listener" type="Listener" parent="Cam/Yaw" index="0"]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.43, 0 )

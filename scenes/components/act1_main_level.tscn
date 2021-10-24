@@ -19,7 +19,16 @@ collision_layer = 5
 [node name="uptube" parent="." index="2"]
 use_in_baked_light = true
 
-[node name="static_collision" parent="uptube" index="0"]
+[node name="static_collision" parent="uptube/stair" index="0"]
+collision_layer = 5
+
+[node name="static_collision" parent="uptube/stair2" index="0"]
+collision_layer = 5
+
+[node name="static_collision" parent="uptube/stair2001" index="0"]
+collision_layer = 5
+
+[node name="static_collision" parent="uptube" index="3"]
 collision_layer = 5
 
 [node name="uptube001" parent="." index="3"]
@@ -32,4 +41,7 @@ collision_layer = 5
 use_in_baked_light = true
 
 [node name="static_collision" parent="sec2" index="0"]
+collision_layer = 5
+
+[node name="static_collision" parent="part2" index="0"]
 collision_layer = 5

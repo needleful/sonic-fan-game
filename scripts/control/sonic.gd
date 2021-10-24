@@ -688,12 +688,9 @@ func rotate_by_speed(delta):
 		mesh.global_rotate(axis, angle)
 
 func get_movement(movement_up: Vector3 = up)->Vector3:
-	var input = Vector2(
-		Input.get_action_strength("mv_left") - Input.get_action_strength("mv_right"),
-		Input.get_action_strength("mv_forward") - Input.get_action_strength("mv_back"))
-	
-	if input.length_squared() > 1:
-		input = input.normalized()
+	var input = Input.get_vector(
+		"mv_right", "mv_left",
+		"mv_back", "mv_forward")
 
 	var x = MoveMath.reject(camYaw.global_transform.basis.x, movement_up).normalized()
 	var z = MoveMath.reject(camYaw.global_transform.basis.z, movement_up).normalized() 
@@ -704,9 +701,9 @@ func get_movement(movement_up: Vector3 = up)->Vector3:
 func get_camera_rot()->Vector2:
 	var ret = cameraRot*SNS_CAM_MOUSE
 	cameraRot = Vector2(0,0)
-	var c = Vector2(
-		Input.get_action_strength("cam_right") - Input.get_action_strength("cam_left"),
-		Input.get_action_strength("cam_up") - Input.get_action_strength("cam_down")
+	var c = Input.get_vector(
+		"cam_left", "cam_right",
+		"cam_down", "cam_up"
 	)
 	c = Vector2(
 		sign(c.x)*pow(abs(c.x), 2.6),

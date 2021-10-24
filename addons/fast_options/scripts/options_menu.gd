@@ -26,6 +26,8 @@ var suboptions: Dictionary = {}
 onready var tabs = $vbox/tabs
 
 func _enter_tree():
+	if Engine.editor_hint:
+		return
 	if get_child_count() == 0:
 		var menu:Node = load("res://addons/fast_options/options_menu.tscn").instance()
 		for child in menu.get_children():
@@ -35,6 +37,8 @@ func _enter_tree():
 		#menu.queue_free()
 
 func _ready():
+	if Engine.editor_hint:
+		return
 	suboptions.clear()
 	for script in option_scripts:
 		var options:Object = script.new()
